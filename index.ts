@@ -12,6 +12,8 @@ import randomNumberRange from './src/randomNumberRange'
 import readFileSync from './src/readFileSync'
 import request from './src/request'
 import xlsxReader from './src/xlsxReader'
+import fastPage from './src/fastPage'
+import delay from 'delay'
 
 export {
     chunks,
@@ -19,6 +21,8 @@ export {
     createDirectories,
     downloader,
     errorLogger,
+    fastPage,
+    delay,
     exists,
     friendlyFileName,
     inquirer,
