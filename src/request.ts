@@ -1,6 +1,6 @@
 import requestPromise from 'request-promise'
 import pRetry from 'p-retry'
-import { error, info, warning, success } from './consoleMessage'
+import consoleMessage from './consoleMessage'
 
 let proxy = []
 let currentIndex = 0
@@ -10,23 +10,23 @@ let retries = 5
 let timeout = 5 * 1000
 
 export const setProxy = (pxy) => {
-    success(`Request::: Setting Proxies to`, pxy)
+    consoleMessage.success('Request Module', `Setting Proxies to`, pxy)
     currentIndex = 0
     proxy = pxy
 }
 
 export const setCookie = (c) => {
-    success(`Request::: Setting Cookie to ${c}`)
+    consoleMessage.success('Request Module', `Setting Cookie to ${c}`)
     cookie = c
 }
 
 export const setRetries = (t) => {
-    success(`Request::: Setting retries to ${t}`)
+    consoleMessage.success('Request Module', `Setting retries to ${t}`)
     retries = parseInt(t, 10)
 }
 
 export const setTout = (t) => {
-    success(`Request::: Setting Timeout to ${t}`)
+    consoleMessage.success('Request Module', `Setting Timeout to ${t}`)
     timeout = parseInt(t, 10) * 1000
 }
 
@@ -74,6 +74,6 @@ export default async (url, isMobile = false) => {
             },
         })
     } catch (e) {
-        error(e)
+        consoleMessage.error('Request Module', e)
     }
 }

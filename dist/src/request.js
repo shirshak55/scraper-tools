@@ -5,27 +5,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const request_promise_1 = __importDefault(require("request-promise"));
 const p_retry_1 = __importDefault(require("p-retry"));
-const consoleMessage_1 = require("./consoleMessage");
+const consoleMessage_1 = __importDefault(require("./consoleMessage"));
 let proxy = [];
 let currentIndex = 0;
 let cookie = '';
 let retries = 5;
 let timeout = 5 * 1000;
 exports.setProxy = (pxy) => {
-    consoleMessage_1.success(`Request::: Setting Proxies to`, pxy);
+    consoleMessage_1.default.success('Request Module', `Setting Proxies to`, pxy);
     currentIndex = 0;
     proxy = pxy;
 };
 exports.setCookie = (c) => {
-    consoleMessage_1.success(`Request::: Setting Cookie to ${c}`);
+    consoleMessage_1.default.success('Request Module', `Setting Cookie to ${c}`);
     cookie = c;
 };
 exports.setRetries = (t) => {
-    consoleMessage_1.success(`Request::: Setting retries to ${t}`);
+    consoleMessage_1.default.success('Request Module', `Setting retries to ${t}`);
     retries = parseInt(t, 10);
 };
 exports.setTout = (t) => {
-    consoleMessage_1.success(`Request::: Setting Timeout to ${t}`);
+    consoleMessage_1.default.success('Request Module', `Setting Timeout to ${t}`);
     timeout = parseInt(t, 10) * 1000;
 };
 exports.default = async (url, isMobile = false) => {
@@ -70,7 +70,7 @@ exports.default = async (url, isMobile = false) => {
         });
     }
     catch (e) {
-        consoleMessage_1.error(e);
+        consoleMessage_1.default.error('Request Module', e);
     }
 };
 //# sourceMappingURL=request.js.map

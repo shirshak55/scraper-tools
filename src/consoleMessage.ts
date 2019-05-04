@@ -25,7 +25,7 @@ export default (() => {
         let c = content
 
         try {
-            let c = JSON.stringify(titlify(title) + ' ', content, null, 4)
+            let c = JSON.stringify(titlify(title) + ' ' + content, null, 4)
         } catch (e) {}
 
         fs.appendFileSync(path.join(logFolder, 'log.txt'), '\n' + c)

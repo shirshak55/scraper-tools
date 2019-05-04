@@ -10,7 +10,7 @@ const puppeteer_extra_1 = __importDefault(require("puppeteer-extra"));
 const puppeteer_extra_plugin_stealth_1 = __importDefault(require("puppeteer-extra-plugin-stealth"));
 const puppeteer_extra_plugin_anonymize_ua_1 = __importDefault(require("puppeteer-extra-plugin-anonymize-ua"));
 const puppeteer_extra_plugin_recaptcha_1 = __importDefault(require("puppeteer-extra-plugin-recaptcha"));
-function fastPage() {
+exports.default = (() => {
     let proxy = null;
     let b = null;
     let twoCaptchaToken = '';
@@ -67,6 +67,5 @@ function fastPage() {
             twoCaptchaToken = value;
         },
     };
-}
-exports.default = fastPage();
+})();
 //# sourceMappingURL=fastPage.js.map
