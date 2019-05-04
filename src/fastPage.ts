@@ -7,7 +7,7 @@ import pluginUAFix from 'puppeteer-extra-plugin-anonymize-ua'
 import { Page, Browser } from 'puppeteer'
 import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
 
-function fastPage() {
+export default () => {
     let proxy = null
     let b = null
     let twoCaptchaToken = ''
@@ -74,5 +74,3 @@ function fastPage() {
         },
     }
 }
-
-export default fastPage()
