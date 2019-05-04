@@ -3,64 +3,76 @@ import chromePaths from 'chrome-paths'
 import path from 'path'
 import puppeteer from 'puppeteer-extra'
 import pluginStealth from 'puppeteer-extra-plugin-stealth'
+import pluginUAFix from 'puppeteer-extra-plugin-anonymize-ua'
 import { Page, Browser } from 'puppeteer'
 import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
-import chalk from 'chalk'
 
-const recaptchaPlugin = RecaptchaPlugin({
-    provider: { id: '2captcha', token: '2a82c98a5b6fb14b53bfbcc03fd02d20' },
-})
+function fastPage() {
+    let proxy = null
+    let b = null
+    let twoCaptchaToken = ''
 
-puppeteer.use(pluginStealth())
-puppeteer.use(recaptchaPlugin)
-let b = null
+    const recaptchaPlugin = RecaptchaPlugin({
+        provider: { id: '2captcha', token: twoCaptchaToken },
+    })
 
-let proxy = { value: null }
+    puppeteer.use(pluginStealth())
+    puppeteer.use(recaptchaPlugin)
+    puppeteer.use(
+        pluginUAFix({
+            stripHeadless: true,
+            makeWindows: true,
+        }),
+    )
 
-let browser = async (): Promise<Browser> => {
-    const uBlockExt = path.join(__dirname, './extensions/uBlock')
-    if (b) return b
+    async function browser(): Promise<Browser> {
+        const uBlockExt = path.join(__dirname, './extensions/uBlock')
+        if (b) return b
 
-    const args = ['--no-sandbox', `--disable-extensions-except=${uBlockExt}`, `--load-extension=${uBlockExt}`]
+        const args = ['--no-sandbox', `--disable-extensions-except=${uBlockExt}`, `--load-extension=${uBlockExt}`]
 
-    if (proxy.value) {
-        args.push(`--proxy-server=${proxy.value}`)
+        if (proxy) {
+            args.push(`--proxy-server=${proxy}`)
+        }
+
+        b = await puppeteer.launch({
+            userDataDir: path.join(__dirname + '../../../.user-dir'),
+            executablePath: chromePaths.chrome,
+            headless: false,
+            args,
+        })
+        return b
     }
 
-    console.log(chalk.magenta(`[Browser]`), 'Starting to launch bot with proxy', proxy.value)
-    b = await puppeteer.launch({
-        userDataDir: path.join(__dirname + '../../../.user-dir'),
-        executablePath: chromePaths.chrome,
-        headless: false,
-        args,
-    })
-    return b
-}
-
-async function makePageFaster(page): Promise<Page> {
-    await page.setDefaultNavigationTimeout(120 * 1000)
-    await page.evaluateOnNewDocument(() => {
-        Object.defineProperty(document, 'hidden', { value: false })
-    })
-    return page
-}
-
-export default {
-    newPage: async (): Promise<Page> => {
-        let brow = await browser()
-        let page = await brow.newPage()
-        await makePageFaster(page)
+    async function makePageFaster(page): Promise<Page> {
+        await page.setDefaultNavigationTimeout(120 * 1000)
+        await page.evaluateOnNewDocument(() => {
+            Object.defineProperty(document, 'hidden', { value: false })
+        })
         return page
-    },
-    closeBrowser: async () => {
-        if (b) {
+    }
+
+    return {
+        newPage: async (): Promise<Page> => {
             let brow = await browser()
-            await brow.close()
-        }
-        b = null
-    },
-    setProxy: (value) => {
-        let p = { ...proxy }
-        proxy = p
-    },
+            let page = await brow.newPage()
+            await makePageFaster(page)
+            return page
+        },
+        closeBrowser: async () => {
+            if (b) {
+                let brow = await browser()
+                await brow.close()
+            }
+            b = null
+        },
+        setProxy: (value) => {
+            proxy = value
+        },
+        set2captchaToken: (value) => {
+            twoCaptchaToken = value
+        },
+    }
 }
+
+export default fastPage()
