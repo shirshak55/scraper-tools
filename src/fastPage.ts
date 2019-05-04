@@ -27,7 +27,7 @@ export default (() => {
     )
 
     async function browser(): Promise<Browser> {
-        const uBlockExt = path.join(__dirname, './extensions/uBlock')
+        const uBlockExt = path.join(__dirname, '../extensions/uBlock')
         if (browserHandle) return browserHandle
 
         const args = ['--no-sandbox', `--disable-extensions-except=${uBlockExt}`, `--load-extension=${uBlockExt}`]
