@@ -1,11 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-let pkg = require('../package.json');
 let Configstore = require('configstore');
 let inquirer = require('inquirer');
 let isEmail = require('is-email');
-exports.default = async (cli) => {
-    let store = new Configstore(pkg.name);
+exports.default = async (name, cli) => {
+    let store = new Configstore(name);
     let c = await inquirer.prompt([
         {
             message: 'URL:',
@@ -13,7 +12,7 @@ exports.default = async (cli) => {
             name: 'url',
             default: cli.flags.url || store.get('url'),
             when: () => typeof cli.flags.url === 'undefined',
-            validate: input => input.length > 0,
+            validate: (input) => input.length > 0,
         },
         {
             message: 'Directory to create/download files into:',
@@ -21,7 +20,7 @@ exports.default = async (cli) => {
             name: 'dest',
             default: cli.flags.dest || store.get('dest') || '~/Desktop/masterclass-downloads',
             when: () => typeof cli.flags.dest === 'undefined',
-            validate: input => input.length > 0,
+            validate: (input) => input.length > 0,
         },
         {
             message: 'Quality (344,580,1040,1850,2702,4823):',
@@ -29,7 +28,7 @@ exports.default = async (cli) => {
             name: 'quality',
             default: cli.flags.quality || store.get('quality') || 2702,
             when: () => typeof cli.flags.url === 'undefined',
-            validate: input => [344, 580, 1040, 1850, 2702, 4823].includes(parseInt(input)),
+            validate: (input) => [344, 580, 1040, 1850, 2702, 4823].includes(parseInt(input)),
         },
         {
             message: 'Master Class Account Email:',
@@ -45,7 +44,7 @@ exports.default = async (cli) => {
             name: 'password',
             default: cli.input[1] || store.get('password'),
             when: () => typeof cli.input[1] === 'undefined',
-            validate: input => input.length > 0,
+            validate: (input) => input.length > 0,
         },
         {
             message: 'Headless:',
@@ -53,7 +52,7 @@ exports.default = async (cli) => {
             name: 'headless',
             default: cli.input[1] || store.get('headless') || false,
             when: () => typeof cli.input[1] === 'undefined',
-            validate: input => input.length > 0,
+            validate: (input) => input.length > 0,
         },
     ]);
     c = { ...store.all, ...c };

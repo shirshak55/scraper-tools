@@ -4,13 +4,7 @@
     "main": "dist/index.js",
     "license": "MIT",
     "scripts": {
-        "start": "ts-node src/bin.ts",
-        "watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/bin.ts",
-        "build": "tsc",
-        "start-prod": "node dist/bin.js --dest /tmp/downloads"
-    },
-    "bin": {
-        "dl-lnk": "./dist/bin.j"
+        "build": "tsc"
     },
     "dependencies": {
         "@types/node": "^11.13.0",
