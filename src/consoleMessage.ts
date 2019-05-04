@@ -3,44 +3,60 @@ import createDirectories from './createDirectories'
 import path from 'path'
 import fs from 'fs'
 import os from 'os'
+import rightPad from 'right-pad'
 
-const desktopPath = path.join(os.homedir(), 'Desktop')
-const logFolder = createDirectories(path.join(desktopPath, 'Aliexpress_Scrapper/logs'))
+export default (() => {
+    let desktopPath = path.join(os.homedir(), 'Desktop')
+    let logFolder = createDirectories(path.join(desktopPath, 'logs'))
 
-export const logToFile = (content) => {
-    let c = content
+    const setLogFolder = (value: string) => {
+        logFolder = value
+    }
 
-    try {
-        let c = JSON.stringify(content, null, 4)
-    } catch (e) {}
+    const titlify = (title: string | { title: string; padding: number }) => {
+        if (typeof title === 'object') {
+            return rightPad(`[${title.title}]`, title.padding, ' ')
+        } else {
+            return `[${title}]`
+        }
+    }
 
-    fs.appendFileSync(path.join(logFolder, 'log.txt'), '\n' + c)
-}
+    const logToFile = (title, content) => {
+        let c = content
 
-export const error = (...s) => {
-    logToFile(s.join(' '))
-    return console.log(chalk.bgRed.green(...s))
-}
-export const info = (...s) => {
-    logToFile(s.join(' '))
-    console.log(chalk.bgBlue.white(...s))
-}
-export const warning = (...s) => {
-    logToFile(s.join(' '))
-    console.log(chalk.bgYellow.red(...s))
-}
+        try {
+            let c = JSON.stringify(titlify(title) + ' ', content, null, 4)
+        } catch (e) {}
 
-export const success = (...s) => {
-    logToFile(s.join(' '))
-    console.log(chalk.bgGreen.red(...s))
-}
+        fs.appendFileSync(path.join(logFolder, 'log.txt'), '\n' + c)
+    }
 
-export default {
-    desktopPath,
-    logFolder,
-    logToFile,
-    error,
-    info,
-    warning,
-    success,
-}
+    const error = (title, ...s) => {
+        logToFile(title, s.join(' '))
+        return console.log(chalk.bgRed.green(titlify(title)), ...s)
+    }
+    const info = (title, ...s) => {
+        logToFile(title, s.join(' '))
+        console.log(chalk.bgBlue.white(titlify(title)), ...s)
+    }
+    const warning = (title, ...s) => {
+        logToFile(title, s.join(' '))
+        console.log(chalk.bgYellow.red(titlify(title)), ...s)
+    }
+
+    const success = (title, ...s) => {
+        logToFile(title, s.join(' '))
+        console.log(chalk.bgGreen.red(titlify(title)), ...s)
+    }
+
+    return {
+        desktopPath,
+        logFolder,
+        setLogFolder,
+        logToFile,
+        error,
+        info,
+        warning,
+        success,
+    }
+})()
