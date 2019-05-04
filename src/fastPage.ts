@@ -8,9 +8,10 @@ import { Page, Browser } from 'puppeteer'
 import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
 
 export default (() => {
+    let browserHandle = null
     let proxy = null
-    let b = null
     let twoCaptchaToken = ''
+    let headless = false
 
     const recaptchaPlugin = RecaptchaPlugin({
         provider: { id: '2captcha', token: twoCaptchaToken },
@@ -27,7 +28,7 @@ export default (() => {
 
     async function browser(): Promise<Browser> {
         const uBlockExt = path.join(__dirname, './extensions/uBlock')
-        if (b) return b
+        if (browserHandle) return browserHandle
 
         const args = ['--no-sandbox', `--disable-extensions-except=${uBlockExt}`, `--load-extension=${uBlockExt}`]
 
@@ -35,13 +36,13 @@ export default (() => {
             args.push(`--proxy-server=${proxy}`)
         }
 
-        b = await puppeteer.launch({
+        browserHandle = await puppeteer.launch({
             userDataDir: path.join(__dirname + '../../../.user-dir'),
             executablePath: chromePaths.chrome,
-            headless: false,
+            headless,
             args,
         })
-        return b
+        return browserHandle
     }
 
     async function makePageFaster(page): Promise<Page> {
@@ -60,16 +61,19 @@ export default (() => {
             return page
         },
         closeBrowser: async () => {
-            if (b) {
-                let brow = await browser()
-                await brow.close()
+            if (browserHandle) {
+                let bHandle = await browser()
+                await bHandle.close()
             }
-            b = null
+            browserHandle = null
         },
-        setProxy: (value) => {
+        setProxy: (value: string) => {
             proxy = value
         },
-        set2captchaToken: (value) => {
+        setHeadless: (value: boolean) => {
+            headless: value
+        },
+        set2captchaToken: (value: string) => {
             twoCaptchaToken = value
         },
     }
