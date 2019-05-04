@@ -25,7 +25,7 @@ exports.default = (() => {
         makeWindows: true,
     }));
     async function browser() {
-        const uBlockExt = path_1.default.join(__dirname, './extensions/uBlock');
+        const uBlockExt = path_1.default.join(__dirname, '../extensions/uBlock');
         if (browserHandle)
             return browserHandle;
         const args = ['--no-sandbox', `--disable-extensions-except=${uBlockExt}`, `--load-extension=${uBlockExt}`];

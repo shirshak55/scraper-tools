@@ -30,7 +30,7 @@ export default (() => {
         const uBlockExt = path.join(__dirname, '../extensions/uBlock')
         if (browserHandle) return browserHandle
 
-        const args = ['--no-sandbox', `--disable-extensions-except=${uBlockExt}`, `--load-extension=${uBlockExt}`]
+        const args = ['--no-sandbox']
 
         if (proxy) {
             args.push(`--proxy-server=${proxy}`)
