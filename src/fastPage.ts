@@ -7,7 +7,7 @@ import pluginUAFix from 'puppeteer-extra-plugin-anonymize-ua'
 import { Page, Browser } from 'puppeteer'
 import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
 
-export default () => {
+export default (() => {
     let proxy = null
     let b = null
     let twoCaptchaToken = ''
@@ -73,4 +73,4 @@ export default () => {
             twoCaptchaToken = value
         },
     }
-}
+})()
