@@ -1,6 +1,5 @@
 // import puppeteer from 'puppeteer-core'
 import chromePaths from 'chrome-paths'
-import path from 'path'
 import puppeteer from 'puppeteer-extra'
 import pluginStealth from 'puppeteer-extra-plugin-stealth'
 import pluginUAFix from 'puppeteer-extra-plugin-anonymize-ua'
@@ -12,6 +11,7 @@ export default (() => {
     let proxy = null
     let twoCaptchaToken = ''
     let headless = false
+    let userDataDir = null
 
     const recaptchaPlugin = RecaptchaPlugin({
         provider: { id: '2captcha', token: twoCaptchaToken },
@@ -27,7 +27,6 @@ export default (() => {
     )
 
     async function browser(): Promise<Browser> {
-        const uBlockExt = path.join(__dirname, '../extensions/uBlock')
         if (browserHandle) return browserHandle
 
         const args = ['--no-sandbox']
@@ -37,7 +36,7 @@ export default (() => {
         }
 
         browserHandle = await puppeteer.launch({
-            userDataDir: path.join(__dirname + '../../../.user-dir'),
+            userDataDir,
             executablePath: chromePaths.chrome,
             headless,
             args,
@@ -71,7 +70,10 @@ export default (() => {
             proxy = value
         },
         setHeadless: (value: boolean) => {
-            headless: value
+            headless = value
+        },
+        setUserDataDir: (value: string) => {
+            userDataDir = value
         },
         set2captchaToken: (value: string) => {
             twoCaptchaToken = value
