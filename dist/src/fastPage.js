@@ -15,6 +15,7 @@ exports.default = (() => {
     let twoCaptchaToken = '';
     let headless = false;
     let userDataDir = null;
+    let windowSize = { width: 595, height: 842 };
     const recaptchaPlugin = puppeteer_extra_plugin_recaptcha_1.default({
         provider: { id: '2captcha', token: twoCaptchaToken },
     });
@@ -27,7 +28,7 @@ exports.default = (() => {
     async function browser() {
         if (browserHandle)
             return browserHandle;
-        const args = ['--no-sandbox'];
+        const args = ['--no-sandbox', `--window-size=${windowSize.width},${windowSize.height}`];
         if (proxy) {
             args.push(`--proxy-server=${proxy}`);
         }
@@ -68,6 +69,9 @@ exports.default = (() => {
         },
         setUserDataDir: (value) => {
             userDataDir = value;
+        },
+        setWindowSizeArg: (value) => {
+            windowSize = value;
         },
         set2captchaToken: (value) => {
             twoCaptchaToken = value;

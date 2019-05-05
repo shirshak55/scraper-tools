@@ -12,6 +12,7 @@ export default (() => {
     let twoCaptchaToken = ''
     let headless = false
     let userDataDir = null
+    let windowSize = { width: 595, height: 842 }
 
     const recaptchaPlugin = RecaptchaPlugin({
         provider: { id: '2captcha', token: twoCaptchaToken },
@@ -29,7 +30,7 @@ export default (() => {
     async function browser(): Promise<Browser> {
         if (browserHandle) return browserHandle
 
-        const args = ['--no-sandbox']
+        const args = ['--no-sandbox', `--window-size=${windowSize.width},${windowSize.height}`]
 
         if (proxy) {
             args.push(`--proxy-server=${proxy}`)
@@ -74,6 +75,9 @@ export default (() => {
         },
         setUserDataDir: (value: string) => {
             userDataDir = value
+        },
+        setWindowSizeArg: (value: { width: number; height: number }) => {
+            windowSize = value
         },
         set2captchaToken: (value: string) => {
             twoCaptchaToken = value
