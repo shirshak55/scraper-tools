@@ -30,7 +30,11 @@ export default (() => {
     async function browser(): Promise<Browser> {
         if (browserHandle) return browserHandle
 
-        const args = ['--no-sandbox', `--window-size=${windowSize.width},${windowSize.height}`]
+        const args = [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            `--window-size=${windowSize.width},${windowSize.height}`,
+        ]
 
         if (proxy) {
             args.push(`--proxy-server=${proxy}`)
