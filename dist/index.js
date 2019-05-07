@@ -35,4 +35,6 @@ const fastPage_1 = __importDefault(require("./src/fastPage"));
 exports.fastPage = fastPage_1.default;
 const delay_1 = __importDefault(require("delay"));
 exports.delay = delay_1.default;
+const chalk_1 = __importDefault(require("chalk"));
+exports.chalk = chalk_1.default;
 //# sourceMappingURL=index.js.map

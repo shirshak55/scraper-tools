@@ -1,4 +1,6 @@
-import chunks from './src/chunks'
+import delay from 'delay'
+import chalk from 'chalk'
+import dateFormat from 'date-format'
 import consoleMessage from './src/consoleMessage'
 import createDirectories from './src/createDirectories'
 import downloader from './src/downloader'
@@ -13,8 +15,6 @@ import readFileSync from './src/readFileSync'
 import request from './src/request'
 import xlsxReader from './src/xlsxReader'
 import fastPage from './src/fastPage'
-import delay from 'delay'
-import chalk from 'chalk'
 
 export {
     chunks,
@@ -34,4 +34,5 @@ export {
     readFileSync,
     request,
     xlsxReader,
+    dateFormat,
 }
