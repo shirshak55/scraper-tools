@@ -14,6 +14,7 @@ import request from './src/request'
 import xlsxReader from './src/xlsxReader'
 import fastPage from './src/fastPage'
 import delay from 'delay'
+import chalk from 'chalk'
 
 export {
     chunks,
@@ -28,6 +29,7 @@ export {
     inquirer,
     loadDom,
     meow,
+    chalk,
     randomNumberRange,
     readFileSync,
     request,
