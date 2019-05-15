@@ -50,8 +50,8 @@ export default (() => {
     }
 
     async function makePageFaster(page): Promise<Page> {
+        await page.target().createCDPSession()
         await page.setBypassCSP(true)
-
         await page.setDefaultNavigationTimeout(120 * 1000)
         await page.evaluateOnNewDocument(() => {
             Object.defineProperty(document, 'hidden', { value: false })
