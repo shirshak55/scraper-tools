@@ -3,6 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const delay_1 = __importDefault(require("delay"));
+exports.delay = delay_1.default;
+const chalk_1 = __importDefault(require("chalk"));
+exports.chalk = chalk_1.default;
+const date_format_1 = __importDefault(require("date-format"));
+exports.dateFormat = date_format_1.default;
 const chunks_1 = __importDefault(require("./src/chunks"));
 exports.chunks = chunks_1.default;
 const consoleMessage_1 = __importDefault(require("./src/consoleMessage"));
@@ -33,8 +39,4 @@ const xlsxReader_1 = __importDefault(require("./src/xlsxReader"));
 exports.xlsxReader = xlsxReader_1.default;
 const fastPage_1 = __importDefault(require("./src/fastPage"));
 exports.fastPage = fastPage_1.default;
-const delay_1 = __importDefault(require("delay"));
-exports.delay = delay_1.default;
-const chalk_1 = __importDefault(require("chalk"));
-exports.chalk = chalk_1.default;
 //# sourceMappingURL=index.js.map

@@ -1,6 +1,7 @@
 import delay from 'delay'
 import chalk from 'chalk'
 import dateFormat from 'date-format'
+import chunks from './src/chunks'
 import consoleMessage from './src/consoleMessage'
 import createDirectories from './src/createDirectories'
 import downloader from './src/downloader'
