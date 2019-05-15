@@ -31,6 +31,7 @@ export default (() => {
         if (browserHandle) return browserHandle
 
         const args = [
+            '--disable-infobars',
             '--no-sandbox',
             '--disable-setuid-sandbox',
             `--window-size=${windowSize.width},${windowSize.height}`,
