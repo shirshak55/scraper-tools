@@ -1,4 +1,5 @@
 import delay from 'delay'
+import configstore from 'configstore'
 import chalk from 'chalk'
 import dateFormat from 'date-format'
 import chunks from './src/chunks'
@@ -18,6 +19,7 @@ import xlsxReader from './src/xlsxReader'
 import fastPage from './src/fastPage'
 
 export {
+    configstore,
     chunks,
     consoleMessage,
     createDirectories,

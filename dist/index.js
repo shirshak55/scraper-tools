@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const delay_1 = __importDefault(require("delay"));
 exports.delay = delay_1.default;
+const configstore_1 = __importDefault(require("configstore"));
+exports.configstore = configstore_1.default;
 const chalk_1 = __importDefault(require("chalk"));
 exports.chalk = chalk_1.default;
 const date_format_1 = __importDefault(require("date-format"));

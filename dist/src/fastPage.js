@@ -29,6 +29,7 @@ exports.default = (() => {
         if (browserHandle)
             return browserHandle;
         const args = [
+            '--disable-infobars',
             '--no-sandbox',
             '--disable-setuid-sandbox',
             `--window-size=${windowSize.width},${windowSize.height}`,
@@ -45,6 +46,8 @@ exports.default = (() => {
         return browserHandle;
     }
     async function makePageFaster(page) {
+        await page.target().createCDPSession();
+        await page.setBypassCSP(true);
         await page.setDefaultNavigationTimeout(120 * 1000);
         await page.evaluateOnNewDocument(() => {
             Object.defineProperty(document, 'hidden', { value: false });
