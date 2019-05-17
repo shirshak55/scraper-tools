@@ -3,6 +3,8 @@ import configstore from 'configstore'
 import chalk from 'chalk'
 import inquirer from 'inquirer'
 import dateFormat from 'date-format'
+import sanitizeFilename from 'sanitize-filename'
+import rightPad from 'right-pad'
 import chunks from './src/chunks'
 import consoleMessage from './src/consoleMessage'
 import createDirectories from './src/createDirectories'
@@ -19,8 +21,10 @@ import xlsxReader from './src/xlsxReader'
 import fastPage from './src/fastPage'
 
 export {
+    sanitizeFilename,
     configstore,
     chunks,
+    rightPad,
     consoleMessage,
     createDirectories,
     downloader,
