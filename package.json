@@ -1,6 +1,6 @@
 {
     "name": "scrapper-tools",
-    "version": "1.0.31",
+    "version": "1.0.32",
     "main": "dist/index.js",
     "license": "MIT",
     "scripts": {
@@ -22,6 +22,7 @@
         "meow": "^5.0.0",
         "nodemon": "^1.19.0",
         "p-retry": "^4.1.0",
+        "pending-xhr-puppeteer": "^2.0.0",
         "puppeteer": "^1.16.0",
         "puppeteer-core": "^1.16.0",
         "puppeteer-extra": "^2.1.3",
