@@ -28,7 +28,7 @@ Xvfb :99 &
 On LocalPC use SSH Tunnel
 
 ```bash
-ssh -p 2222 vagrant@127.0.0.1 -L 5900:127.0.0.1:5900 -N,
+ssh -L 5900:127.0.0.1:5900 -N -f -l username remote_ip
 brew install tiger-vnc
 vncviewer 127.0.0.1:5900
 ```
