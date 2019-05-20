@@ -14,7 +14,7 @@ sudo apt-get install xvfb
 Test running google chrome
 
 ```bash
-xvfb-run google-chrome --disable-gpu --no-sandbox --disable-setuid-sandbox
+DISPLAY=:99 google-chrome --no-sandbox
 ```
 
 To Debug use xfvb
