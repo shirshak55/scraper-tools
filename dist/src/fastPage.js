@@ -85,7 +85,7 @@ exports.default = (() => {
         setProxy: (value) => {
             proxy = value;
         },
-        setHeadless: (value) => {
+        setHeadless: (value = false) => {
             headless = value;
         },
         setUserDataDir: (value) => {
@@ -97,14 +97,14 @@ exports.default = (() => {
         set2captchaToken: (value) => {
             twoCaptchaToken = value;
         },
-        blockImages: () => {
-            blockImages = true;
+        blockImages: (value = false) => {
+            blockImages = value;
         },
-        blockFonts: () => {
-            blockFonts = true;
+        blockFonts: (value = false) => {
+            blockFonts = value;
         },
-        blockCSS: () => {
-            blockCSS = true;
+        blockCSS: (value = false) => {
+            blockCSS = value;
         },
     };
 })();
