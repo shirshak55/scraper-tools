@@ -35,6 +35,8 @@ exports.default = (() => {
             '--disable-infobars',
             '--no-sandbox',
             '--disable-setuid-sandbox',
+            '--ignore-certificate-errors',
+            '--enable-features=NetworkService',
             `--window-size=${windowSize.width},${windowSize.height}`,
         ];
         if (proxy) {
@@ -45,6 +47,7 @@ exports.default = (() => {
             executablePath: chrome_paths_1.default.chrome,
             headless,
             args,
+            ignoreHTTPSErrors: true,
         });
         return browserHandle;
     }
