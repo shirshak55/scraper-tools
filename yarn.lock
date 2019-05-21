@@ -2040,10 +2040,24 @@ p-retry@^4.1.0:
     "@types/retry" "^0.12.0"
     retry "^0.12.0"
 
+p-timeout@^3.0.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/p-timeout/-/p-timeout-3.1.0.tgz#198c1f503bb973e9b9727177a276c80afd6851f3"
+  integrity sha512-C27DYI+tCroT8J8cTEyySGydl2B7FlxrGNF5/wmMbl1V+jeehUCzEE/BVgzRebdm2K3ZitKOKx8YbdFumDyYmw==
+  dependencies:
+    p-finally "^1.0.0"
+
 p-try@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/p-try/-/p-try-1.0.0.tgz#cbc79cdbaf8fd4228e13f621f2b1a237c1b207b3"
   integrity sha1-y8ec26+P1CKOE/Yh8rGiN8GyB7M=
+
+p-wait-for@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/p-wait-for/-/p-wait-for-3.1.0.tgz#9da568a2adda3ea8175a3c43f46a5317e28c0e47"
+  integrity sha512-0Uy19uhxbssHelu9ynDMcON6BmMk6pH8551CvxROhiz3Vx+yC4RqxjyIDk2V4ll0g9177RKT++PK4zcV58uJ7A==
+  dependencies:
+    p-timeout "^3.0.0"
 
 package-json@^4.0.0:
   version "4.0.1"
@@ -2116,6 +2130,11 @@ pend@~1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/pend/-/pend-1.2.0.tgz#7a57eb550a6783f9115331fcf4663d5c8e007a50"
   integrity sha1-elfrVQpng/kRUzH89GY9XI4AelA=
+
+pending-xhr-puppeteer@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/pending-xhr-puppeteer/-/pending-xhr-puppeteer-2.0.0.tgz#ff49026857130498e0fd8053e91d03e7116cd48f"
+  integrity sha512-+AMGBbj9GS49O1c4hmXJrUYKtlXdB204CE+gkdvka7/raB+p5be3O568EbAadjOstd6MS1pjs5bRv1aE9N0w5w==
 
 performance-now@^2.1.0:
   version "2.1.0"

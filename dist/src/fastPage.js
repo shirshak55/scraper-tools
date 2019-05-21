@@ -16,6 +16,9 @@ exports.default = (() => {
     let headless = false;
     let userDataDir = null;
     let windowSize = { width: 595, height: 842 };
+    let blockFonts = false;
+    let blockImages = false;
+    let blockCSS = false;
     const recaptchaPlugin = puppeteer_extra_plugin_recaptcha_1.default({
         provider: { id: '2captcha', token: twoCaptchaToken },
     });
@@ -52,6 +55,18 @@ exports.default = (() => {
         await page.evaluateOnNewDocument(() => {
             Object.defineProperty(document, 'hidden', { value: false });
         });
+        page.on('request', (request) => {
+            if (blockImages && request.resourceType() === 'image') {
+                return request.abort();
+            }
+            if (blockFonts && request.resourceType() === 'font') {
+                return request.abort();
+            }
+            if (blockCSS && request.resourceType() === 'stylesheet') {
+                return request.abort();
+            }
+            return request.continue();
+        });
         return page;
     }
     return {
@@ -82,6 +97,15 @@ exports.default = (() => {
         },
         set2captchaToken: (value) => {
             twoCaptchaToken = value;
+        },
+        blockImages: () => {
+            blockImages = true;
+        },
+        blockFonts: () => {
+            blockFonts = true;
+        },
+        blockCSS: () => {
+            blockCSS = true;
         },
     };
 })();

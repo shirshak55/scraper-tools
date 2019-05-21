@@ -6,6 +6,7 @@ import dateFormat from 'date-format'
 import sanitizeFilename from 'sanitize-filename'
 import rightPad from 'right-pad'
 import { PendingXHR } from 'pending-xhr-puppeteer'
+import waitForXHR from './src/waitForXhr'
 import chunks from './src/chunks'
 import consoleMessage from './src/consoleMessage'
 import createDirectories from './src/createDirectories'
@@ -26,6 +27,7 @@ export {
     PendingXHR,
     configstore,
     chunks,
+    waitForXHR,
     rightPad,
     consoleMessage,
     createDirectories,
