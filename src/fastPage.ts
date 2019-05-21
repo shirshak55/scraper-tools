@@ -92,7 +92,7 @@ export default (() => {
         setProxy: (value: string) => {
             proxy = value
         },
-        setHeadless: (value: boolean) => {
+        setHeadless: (value: boolean = false) => {
             headless = value
         },
         setUserDataDir: (value: string) => {
@@ -104,14 +104,14 @@ export default (() => {
         set2captchaToken: (value: string) => {
             twoCaptchaToken = value
         },
-        blockImages: () => {
-            blockImages = true
+        blockImages: (value: boolean = false) => {
+            blockImages = value
         },
-        blockFonts: () => {
-            blockFonts = true
+        blockFonts: (value: boolean = false) => {
+            blockFonts = value
         },
-        blockCSS: () => {
-            blockCSS = true
+        blockCSS: (value: boolean = false) => {
+            blockCSS = value
         },
     }
 })()
