@@ -5,6 +5,7 @@ import inquirer from 'inquirer'
 import dateFormat from 'date-format'
 import sanitizeFilename from 'sanitize-filename'
 import rightPad from 'right-pad'
+import { PendingXHR } from 'pending-xhr-puppeteer'
 import chunks from './src/chunks'
 import consoleMessage from './src/consoleMessage'
 import createDirectories from './src/createDirectories'
@@ -22,6 +23,7 @@ import fastPage from './src/fastPage'
 
 export {
     sanitizeFilename,
+    PendingXHR,
     configstore,
     chunks,
     rightPad,
