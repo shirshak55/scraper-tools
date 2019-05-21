@@ -104,13 +104,13 @@ export default (() => {
         set2captchaToken: (value: string) => {
             twoCaptchaToken = value
         },
-        blockImages: (value: boolean = false) => {
+        blockImages: (value: boolean = true) => {
             blockImages = value
         },
-        blockFonts: (value: boolean = false) => {
+        blockFonts: (value: boolean = true) => {
             blockFonts = value
         },
-        blockCSS: (value: boolean = false) => {
+        blockCSS: (value: boolean = true) => {
             blockCSS = value
         },
     }

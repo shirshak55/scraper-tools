@@ -95,13 +95,13 @@ exports.default = (() => {
         set2captchaToken: (value) => {
             twoCaptchaToken = value;
         },
-        blockImages: (value = false) => {
+        blockImages: (value = true) => {
             blockImages = value;
         },
-        blockFonts: (value = false) => {
+        blockFonts: (value = true) => {
             blockFonts = value;
         },
-        blockCSS: (value = false) => {
+        blockCSS: (value = true) => {
             blockCSS = value;
         },
     };
