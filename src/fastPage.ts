@@ -12,6 +12,7 @@ export default (() => {
     let twoCaptchaToken = ''
     let headless = false
     let userDataDir = null
+    let useChrome = false
     let windowSize = { width: 595, height: 842 }
     let blockFonts = false
     let blockImages = false
@@ -46,29 +47,38 @@ export default (() => {
             args.push(`--proxy-server=${proxy}`)
         }
 
-        browserHandle = await puppeteer.launch({
+        let launchOptions: any = {
             userDataDir,
-            // executablePath: chromePaths.chrome,
+
             headless,
             args,
             ignoreHTTPSErrors: true,
-        })
+        }
+
+        if (!useChrome) {
+            launchOptions.executablePath = chromePaths.chrome
+        }
+
+        browserHandle = await puppeteer.launch(launchOptions)
         return browserHandle
     }
 
     async function makePageFaster(page): Promise<Page> {
-        await page.setRequestInterception(true)
-        page.on('request', (request) => {
-            if (
-                (blockImages && request.resourceType() === 'image') ||
-                (blockFonts && request.resourceType() === 'font') ||
-                (blockCSS && request.resourceType() === 'stylesheet')
-            ) {
-                request.abort()
-            } else {
-                request.continue()
-            }
-        })
+        if (blockCSS || blockFonts || blockImages) {
+            await page.setRequestInterception(true)
+            page.on('request', (request) => {
+                if (
+                    (blockImages && request.resourceType() === 'image') ||
+                    (blockFonts && request.resourceType() === 'font') ||
+                    (blockCSS && request.resourceType() === 'stylesheet')
+                ) {
+                    request.abort()
+                } else {
+                    request.continue()
+                }
+            })
+        }
+
         await page.target().createCDPSession()
         await page.setBypassCSP(true)
         await page.setDefaultNavigationTimeout(60 * 1000)
@@ -112,6 +122,9 @@ export default (() => {
         },
         blockCSS: (value: boolean = true) => {
             blockCSS = value
+        },
+        useChrome: (value: boolean = true) => {
+            useChrome = true
         },
     }
 })()
