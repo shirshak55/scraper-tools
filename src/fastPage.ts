@@ -37,6 +37,8 @@ export default (() => {
             '--disable-infobars',
             '--no-sandbox',
             '--disable-setuid-sandbox',
+            '--ignore-certificate-errors',
+            '--enable-features=NetworkService',
             `--window-size=${windowSize.width},${windowSize.height}`,
         ]
 
@@ -49,6 +51,7 @@ export default (() => {
             executablePath: chromePaths.chrome,
             headless,
             args,
+            ignoreHTTPSErrors: true,
         })
         return browserHandle
     }

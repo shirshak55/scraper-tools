@@ -50,12 +50,6 @@ exports.default = (() => {
     }
     async function makePageFaster(page) {
         await page.setRequestInterception(true);
-        await page.target().createCDPSession();
-        await page.setBypassCSP(true);
-        await page.setDefaultNavigationTimeout(120 * 1000);
-        await page.evaluateOnNewDocument(() => {
-            Object.defineProperty(document, 'hidden', { value: false });
-        });
         page.on('request', (request) => {
             if ((blockImages && request.resourceType() === 'image') ||
                 (blockFonts && request.resourceType() === 'font') ||
@@ -66,6 +60,9 @@ exports.default = (() => {
                 request.continue();
             }
         });
+        await page.target().createCDPSession();
+        await page.setBypassCSP(true);
+        await page.setDefaultNavigationTimeout(60 * 1000);
         return page;
     }
     return {
