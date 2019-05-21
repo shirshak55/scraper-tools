@@ -54,6 +54,7 @@ export default (() => {
     }
 
     async function makePageFaster(page): Promise<Page> {
+        await page.setRequestInterception(true)
         await page.target().createCDPSession()
         await page.setBypassCSP(true)
         await page.setDefaultNavigationTimeout(120 * 1000)
@@ -61,19 +62,13 @@ export default (() => {
             Object.defineProperty(document, 'hidden', { value: false })
         })
         page.on('request', (request) => {
-            if (blockImages && request.resourceType() === 'image') {
+            if (
+                (blockImages && request.resourceType() === 'image') ||
+                (blockFonts && request.resourceType() === 'font') ||
+                (blockCSS && request.resourceType() === 'stylesheet')
+            ) {
                 request.abort()
-            }
-
-            if (blockFonts && request.resourceType() === 'font') {
-                request.abort()
-            }
-
-            if (blockCSS && request.resourceType() === 'stylesheet') {
-                request.abort()
-            }
-
-            if (!blockCSS || !blockFonts || !blockImages) {
+            } else {
                 request.continue()
             }
         })

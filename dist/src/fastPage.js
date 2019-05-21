@@ -49,6 +49,7 @@ exports.default = (() => {
         return browserHandle;
     }
     async function makePageFaster(page) {
+        await page.setRequestInterception(true);
         await page.target().createCDPSession();
         await page.setBypassCSP(true);
         await page.setDefaultNavigationTimeout(120 * 1000);
@@ -56,16 +57,14 @@ exports.default = (() => {
             Object.defineProperty(document, 'hidden', { value: false });
         });
         page.on('request', (request) => {
-            if (blockImages && request.resourceType() === 'image') {
-                return request.abort();
+            if ((blockImages && request.resourceType() === 'image') ||
+                (blockFonts && request.resourceType() === 'font') ||
+                (blockCSS && request.resourceType() === 'stylesheet')) {
+                request.abort();
             }
-            if (blockFonts && request.resourceType() === 'font') {
-                return request.abort();
+            else {
+                request.continue();
             }
-            if (blockCSS && request.resourceType() === 'stylesheet') {
-                return request.abort();
-            }
-            return request.continue();
         });
         return page;
     }
