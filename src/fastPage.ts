@@ -62,18 +62,20 @@ export default (() => {
         })
         page.on('request', (request) => {
             if (blockImages && request.resourceType() === 'image') {
-                return request.abort()
+                request.abort()
             }
 
             if (blockFonts && request.resourceType() === 'font') {
-                return request.abort()
+                request.abort()
             }
 
             if (blockCSS && request.resourceType() === 'stylesheet') {
-                return request.abort()
+                request.abort()
             }
 
-            return request.continue()
+            if (!blockCSS || !blockFonts || !blockImages) {
+                request.continue()
+            }
         })
         return page
     }
