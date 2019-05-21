@@ -49,7 +49,7 @@ exports.default = (() => {
             args,
             ignoreHTTPSErrors: true,
         };
-        if (!useChrome) {
+        if (useChrome === true) {
             launchOptions.executablePath = chrome_paths_1.default.chrome;
         }
         browserHandle = await puppeteer_extra_1.default.launch(launchOptions);
@@ -113,7 +113,7 @@ exports.default = (() => {
             blockCSS = value;
         },
         useChrome: (value = true) => {
-            useChrome = true;
+            useChrome = value;
         },
     };
 })();

@@ -55,7 +55,7 @@ export default (() => {
             ignoreHTTPSErrors: true,
         }
 
-        if (!useChrome) {
+        if (useChrome === true) {
             launchOptions.executablePath = chromePaths.chrome
         }
 
@@ -124,7 +124,7 @@ export default (() => {
             blockCSS = value
         },
         useChrome: (value: boolean = true) => {
-            useChrome = true
+            useChrome = value
         },
     }
 })()
