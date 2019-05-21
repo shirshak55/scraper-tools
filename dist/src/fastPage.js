@@ -3,8 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// import puppeteer from 'puppeteer-core'
-const chrome_paths_1 = __importDefault(require("chrome-paths"));
 const puppeteer_extra_1 = __importDefault(require("puppeteer-extra"));
 const puppeteer_extra_plugin_stealth_1 = __importDefault(require("puppeteer-extra-plugin-stealth"));
 const puppeteer_extra_plugin_anonymize_ua_1 = __importDefault(require("puppeteer-extra-plugin-anonymize-ua"));
@@ -44,7 +42,7 @@ exports.default = (() => {
         }
         browserHandle = await puppeteer_extra_1.default.launch({
             userDataDir,
-            executablePath: chrome_paths_1.default.chrome,
+            // executablePath: chromePaths.chrome,
             headless,
             args,
             ignoreHTTPSErrors: true,
