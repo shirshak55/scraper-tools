@@ -55,12 +55,6 @@ export default (() => {
 
     async function makePageFaster(page): Promise<Page> {
         await page.setRequestInterception(true)
-        await page.target().createCDPSession()
-        await page.setBypassCSP(true)
-        await page.setDefaultNavigationTimeout(120 * 1000)
-        await page.evaluateOnNewDocument(() => {
-            Object.defineProperty(document, 'hidden', { value: false })
-        })
         page.on('request', (request) => {
             if (
                 (blockImages && request.resourceType() === 'image') ||
@@ -72,6 +66,9 @@ export default (() => {
                 request.continue()
             }
         })
+        await page.target().createCDPSession()
+        await page.setBypassCSP(true)
+        await page.setDefaultNavigationTimeout(60 * 1000)
         return page
     }
 
