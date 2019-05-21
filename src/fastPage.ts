@@ -48,7 +48,7 @@ export default (() => {
 
         browserHandle = await puppeteer.launch({
             userDataDir,
-            executablePath: chromePaths.chrome,
+            // executablePath: chromePaths.chrome,
             headless,
             args,
             ignoreHTTPSErrors: true,
