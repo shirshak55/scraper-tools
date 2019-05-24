@@ -17,6 +17,7 @@ export default (() => {
     let blockFonts = false
     let blockImages = false
     let blockCSS = false
+    let userAgent = ''
 
     const recaptchaPlugin = RecaptchaPlugin({
         provider: { id: '2captcha', token: twoCaptchaToken },
@@ -24,12 +25,15 @@ export default (() => {
 
     puppeteer.use(pluginStealth())
     puppeteer.use(recaptchaPlugin)
-    puppeteer.use(
-        pluginUAFix({
-            stripHeadless: true,
-            makeWindows: true,
-        }),
-    )
+
+    if (!userAgent) {
+        puppeteer.use(
+            pluginUAFix({
+                stripHeadless: true,
+                makeWindows: true,
+            }),
+        )
+    }
 
     async function browser(): Promise<Browser> {
         if (browserHandle) return browserHandle
@@ -125,6 +129,9 @@ export default (() => {
         },
         useChrome: (value: boolean = true) => {
             useChrome = value
+        },
+        setUserAgent: (value: string) => {
+            userAgent = value
         },
     }
 })()

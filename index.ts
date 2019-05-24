@@ -7,6 +7,9 @@ import sanitizeFilename from 'sanitize-filename'
 import rightPad from 'right-pad'
 import { PendingXHR } from 'pending-xhr-puppeteer'
 import meow from 'meow'
+import pRetry from 'p-retry'
+import pWaitFor from 'p-wait-for'
+import _ from 'lodash'
 import waitForXHR from './src/waitForXhr'
 import chunks from './src/chunks'
 import consoleMessage from './src/consoleMessage'
@@ -23,27 +26,30 @@ import xlsxReader from './src/xlsxReader'
 import fastPage from './src/fastPage'
 
 export {
-    sanitizeFilename,
-    PendingXHR,
-    configstore,
-    chunks,
-    waitForXHR,
-    rightPad,
-    consoleMessage,
-    createDirectories,
-    downloader,
-    errorLogger,
-    fastPage,
-    delay,
-    exists,
-    friendlyFileName,
-    inquirer,
-    loadDom,
-    meow,
-    chalk,
-    randomNumberRange,
-    readFileSync,
-    request,
-    xlsxReader,
-    dateFormat,
+  _,
+  pRetry,
+  pWaitFor,
+  sanitizeFilename,
+  PendingXHR,
+  configstore,
+  chunks,
+  waitForXHR,
+  rightPad,
+  consoleMessage,
+  createDirectories,
+  downloader,
+  errorLogger,
+  fastPage,
+  delay,
+  exists,
+  friendlyFileName,
+  inquirer,
+  loadDom,
+  meow,
+  chalk,
+  randomNumberRange,
+  readFileSync,
+  request,
+  xlsxReader,
+  dateFormat,
 }
