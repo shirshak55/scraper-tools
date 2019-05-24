@@ -20,15 +20,18 @@ exports.default = (() => {
     let blockFonts = false;
     let blockImages = false;
     let blockCSS = false;
+    let userAgent = '';
     const recaptchaPlugin = puppeteer_extra_plugin_recaptcha_1.default({
         provider: { id: '2captcha', token: twoCaptchaToken },
     });
     puppeteer_extra_1.default.use(puppeteer_extra_plugin_stealth_1.default());
     puppeteer_extra_1.default.use(recaptchaPlugin);
-    puppeteer_extra_1.default.use(puppeteer_extra_plugin_anonymize_ua_1.default({
-        stripHeadless: true,
-        makeWindows: true,
-    }));
+    if (!userAgent) {
+        puppeteer_extra_1.default.use(puppeteer_extra_plugin_anonymize_ua_1.default({
+            stripHeadless: true,
+            makeWindows: true,
+        }));
+    }
     async function browser() {
         if (browserHandle)
             return browserHandle;
@@ -114,6 +117,9 @@ exports.default = (() => {
         },
         useChrome: (value = true) => {
             useChrome = value;
+        },
+        setUserAgent: (value) => {
+            userAgent = value;
         },
     };
 })();

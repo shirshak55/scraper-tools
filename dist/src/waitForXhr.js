@@ -8,7 +8,7 @@ const pending_xhr_puppeteer_1 = __importDefault(require("pending-xhr-puppeteer")
 exports.default = async (page, no_of_xhr_request = 1) => {
     const p = new pending_xhr_puppeteer_1.default(page);
     await Promise.all([
-        p_wait_for_1.default(() => p.finishedWithSuccessXhrs.size === no_of_xhr_request),
+        p_wait_for_1.default(() => p.finishedWithSuccessXhrs.size >= no_of_xhr_request),
         pending_xhr_puppeteer_1.default.waitForAllXhrFinished(),
     ]);
 };
