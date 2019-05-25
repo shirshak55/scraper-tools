@@ -1,10 +1,10 @@
 import fs from 'fs'
-import { error } from './consoleMessage'
+import consoleMessage from './consoleMessage'
 
 export default (fileName, content) => {
-    try {
-        fs.writeFileSync(fileName, content)
-    } catch (e) {
-        error('Error while writing file:::', e)
-    }
+  try {
+    fs.writeFileSync(fileName, content)
+  } catch (e) {
+    consoleMessage.error('Error while writing file:::', e)
+  }
 }
