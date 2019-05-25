@@ -17,6 +17,7 @@ export default (() => {
     blockFonts: false,
     blockImages: false,
     blockCSS: false,
+    defaultNavigationTimeout: 30 * 1000,
   }
   let config = {
     default: { ...defaultConfig },
@@ -90,7 +91,7 @@ export default (() => {
 
     await page.target().createCDPSession()
     await page.setBypassCSP(true)
-    await page.setDefaultNavigationTimeout(60 * 1000)
+    await page.setDefaultNavigationTimeout(cfg.defaultNavigationTimeout)
     return page
   }
 
@@ -126,6 +127,12 @@ export default (() => {
     },
     set2captchaToken: (value: string, uniqueName: string = 'default') => {
       config[uniqueName].twoCaptchaToken = value
+    },
+    setDefaultNavigationTimeout: (
+      value: boolean,
+      uniqueName: string = 'default',
+    ) => {
+      config[uniqueName].defaultNavigationTimeout = value
     },
     blockImages: (value: boolean = true, uniqueName: string = 'default') => {
       config[uniqueName].blockImages = value

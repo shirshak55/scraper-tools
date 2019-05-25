@@ -1,12 +1,39 @@
 # Scrapper Tools
 
-Currently on develop and don't follow semantic versioning
+This tools is a result of my 2 years of scrapping from various sites. If u like my work please donate me. Contact me shirshak55[@]gmail.com and I will address it within 24 hours.
 
-After 1.0.0 it will follow semantic versioning
+Currently on develop mode and don't follow semantic versioning
+
+After 2.0.0 it will follow semantic versioning
+
+## Licence
+
+Free for student but costs 20$ for commericial use. Please test and don't ask for refund. $20 should be piece of cake because I know u will get addicted to it :). Once I have stable income I will make it free for commericial too :)
 
 ## Handbook
 
-Install xcfb
+### Goals
+
+- To be Parallel
+- Minimal Setup
+- To Prevent from herustics against bot detection
+- Make easy to scrape
+- Easy to bypass captcha (Using 2 captcha plugin)
+- Using typescript to serve documentation
+- VPS friendly so u can scrape over vps like digital ocean or aws without running ur computer
+
+### Examples
+
+There are various opensource and closed source example where this plugin has been used.
+
+1. AliExpress
+2. 1668
+3. Khan Academy for offline videos
+
+### Debugging Puppetter using monitor
+
+Install xvfb
+
 ```bash
 sudo apt-get install xvfb
 ```
@@ -38,3 +65,8 @@ On Remote PC
 ```bash
 DISPLAY=:99 xvfb-run --server-args='-screen 0 1024x768x24'
 ```
+
+### Thanks
+
+Shirshak Bajgain
+Google Team, Sindre Sir and dependencies author for their open source.

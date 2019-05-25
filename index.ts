@@ -24,6 +24,7 @@ import readFileSync from './src/readFileSync'
 import request from './src/request'
 import xlsxReader from './src/xlsxReader'
 import fastPage from './src/fastPage'
+import writeFileSync from './src/writeFileSync'
 
 export {
   _,
@@ -49,6 +50,7 @@ export {
   chalk,
   randomNumberRange,
   readFileSync,
+  writeFileSync,
   request,
   xlsxReader,
   dateFormat,

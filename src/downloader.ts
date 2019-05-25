@@ -5,28 +5,29 @@ const got = require('got')
 const exists = require('./exists')
 
 export default async function download(filePath, url) {
-    if (await exists(filePath)) {
-        return
-    }
+  if (await exists(filePath)) {
+    return
+  }
 
-    console.log(chalk.dim(`     downloading: ${chalk.italic(url)}`))
+  console.log(chalk.dim(`    Downloading: ${chalk.italic(url)}`))
 
-    await pRetry(
-        () => {
-            new Promise((resolve, reject) => {
-                got.stream(url, { retry: 4, throwHttpErrors: false })
-                    .on('error', err => {
-                        console.error(err)
-                        resolve()
-                    })
-                    .pipe(fs.createWriteStream(filePath))
-                    .on('finish', resolve)
-                    .on('error', err => {
-                        console.error(err)
-                        fs.unlink(filePath, () => resolve)
-                    })
-            })
-        },
-        { retries: 3 },
-    )
+  await pRetry(
+    () => {
+      new Promise((resolve, reject) => {
+        got
+          .stream(url, { retry: 4, throwHttpErrors: false })
+          .on('error', (err) => {
+            console.error(err)
+            resolve()
+          })
+          .pipe(fs.createWriteStream(filePath))
+          .on('finish', resolve)
+          .on('error', (err) => {
+            console.error(err)
+            fs.unlink(filePath, () => resolve)
+          })
+      })
+    },
+    { retries: 3 },
+  )
 }

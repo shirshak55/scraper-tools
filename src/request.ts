@@ -39,7 +39,7 @@ export default (() => {
       userAgent = value
     },
 
-    make: async (url) => {
+    make: async (url: string) => {
       let pxy = ''
 
       if (proxies.length === 0) {
@@ -71,7 +71,8 @@ export default (() => {
         return await pRetry(run, {
           retries,
           onFailedAttempt: (error: any) => {
-            console.log(
+            consoleMessage.warning(
+              'Request Module',
               `Attempt ${error.attemptNumber} failed. There are ${
                 error.retriesLeft
               } attempts left. Proxy: ${pxy} Url: ${
