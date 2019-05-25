@@ -1,16 +1,16 @@
 {
-    "compilerOptions": {
-        "target": "esnext",
-        "module": "commonjs",
-        "outDir": "dist",
-        "rootDir": "./",
-        "sourceMap": true,
-        "jsx": "react",
-        "esModuleInterop": true,
-        "resolveJsonModule": true,
-        "allowSyntheticDefaultImports": true,
-        "lib": ["dom", "es2015", "es2016", "es2017"]
-    },
-    "exclude": ["node_modules"],
-    "include": ["index.ts"]
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "outDir": "dist",
+    "rootDir": "./",
+    "sourceMap": true,
+    "jsx": "react",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": ["dom", "es2015", "es2016", "es2017"]
+  },
+  "exclude": ["node_modules"],
+  "include": ["index.ts"]
 }
