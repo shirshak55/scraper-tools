@@ -7,35 +7,40 @@ import { Page, Browser } from 'puppeteer'
 import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
 
 export default (() => {
-  let browserHandle = null
-  let proxy = null
-  let twoCaptchaToken = ''
-  let headless = false
-  let userDataDir = null
-  let useChrome = false
-  let windowSize = { width: 595, height: 842 }
-  let blockFonts = false
-  let blockImages = false
-  let blockCSS = false
-  let userAgent = ''
-
-  const recaptchaPlugin = RecaptchaPlugin({
-    provider: { id: '2captcha', token: twoCaptchaToken },
-  })
-
-  puppeteer.use(pluginStealth())
-  puppeteer.use(recaptchaPlugin)
-
-  if (!userAgent) {
-    puppeteer.use(
-      pluginUAFix({
-        stripHeadless: true,
-        makeWindows: true,
-      }),
-    )
+  let defaultConfig = {
+    browserHandle: null,
+    proxy: null,
+    headless: false,
+    userDataDir: null,
+    useChrome: false,
+    windowSize: { width: 595, height: 842 },
+    blockFonts: false,
+    blockImages: false,
+    blockCSS: false,
+  }
+  let config = {
+    default: { ...defaultConfig },
   }
 
-  async function browser(): Promise<Browser> {
+  let twoCaptchaToken: ''
+  if (twoCaptchaToken) {
+    const recaptchaPlugin = RecaptchaPlugin({
+      provider: { id: '2captcha', token: twoCaptchaToken },
+    })
+    puppeteer.use(recaptchaPlugin)
+  }
+
+  puppeteer.use(pluginStealth())
+  puppeteer.use(
+    pluginUAFix({
+      stripHeadless: true,
+      makeWindows: true,
+    }),
+  )
+
+  async function browser(name = 'default'): Promise<Browser> {
+    let cfg = config[name]
+    let browserHandle = cfg.browserHandle
     if (browserHandle) return browserHandle
 
     const args = [
@@ -44,22 +49,21 @@ export default (() => {
       '--disable-setuid-sandbox',
       '--ignore-certificate-errors',
       '--enable-features=NetworkService',
-      `--window-size=${windowSize.width},${windowSize.height}`,
+      `--window-size=${cfg.windowSize.width},${cfg.windowSize.height}`,
     ]
 
-    if (proxy) {
-      args.push(`--proxy-server=${proxy}`)
+    if (cfg.proxy) {
+      args.push(`--proxy-server=${cfg.proxy}`)
     }
 
     let launchOptions: any = {
-      userDataDir,
-
-      headless,
+      userDataDir: cfg.userDataDir,
+      headless: cfg.headless,
       args,
       ignoreHTTPSErrors: true,
     }
 
-    if (useChrome === true) {
+    if (cfg.useChrome === true) {
       launchOptions.executablePath = chromePaths.chrome
     }
 
@@ -67,14 +71,15 @@ export default (() => {
     return browserHandle
   }
 
-  async function makePageFaster(page): Promise<Page> {
-    if (blockCSS || blockFonts || blockImages) {
+  async function makePageFaster(page, name = 'default'): Promise<Page> {
+    let cfg = config[name]
+    if (cfg.blockCSS || cfg.blockFonts || cfg.blockImages) {
       await page.setRequestInterception(true)
       page.on('request', (request) => {
         if (
-          (blockImages && request.resourceType() === 'image') ||
-          (blockFonts && request.resourceType() === 'font') ||
-          (blockCSS && request.resourceType() === 'stylesheet')
+          (cfg.blockImages && request.resourceType() === 'image') ||
+          (cfg.blockFonts && request.resourceType() === 'font') ||
+          (cfg.blockCSS && request.resourceType() === 'stylesheet')
         ) {
           request.abort()
         } else {
@@ -90,48 +95,49 @@ export default (() => {
   }
 
   return {
-    newPage: async (): Promise<Page> => {
-      let brow = await browser()
+    newPage: async (uniqueName: string = 'default'): Promise<Page> => {
+      let brow = await browser(uniqueName)
       let page = await brow.newPage()
-      await makePageFaster(page)
+      await makePageFaster(page, uniqueName)
       return page
     },
-    closeBrowser: async () => {
+    closeBrowser: async (uniqueName: string = 'default') => {
+      let browserHandle = config[uniqueName].browserHandle
       if (browserHandle) {
         let bHandle = await browser()
         await bHandle.close()
       }
       browserHandle = null
     },
-    setProxy: (value: string) => {
-      proxy = value
+    setProxy: (value: string, uniqueName: string = 'default') => {
+      config[uniqueName].proxy = value
     },
-    setHeadless: (value: boolean = false) => {
-      headless = value
+    setHeadless: (value: boolean = false, uniqueName: string = 'default') => {
+      config[uniqueName].headless = value
     },
-    setUserDataDir: (value: string) => {
-      userDataDir = value
+    setUserDataDir: (value: string, uniqueName: string = 'default') => {
+      config[uniqueName].userDataDir = value
     },
-    setWindowSizeArg: (value: { width: number; height: number }) => {
-      windowSize = value
+    setWindowSizeArg: (
+      value: { width: number; height: number },
+      uniqueName: string = 'default',
+    ) => {
+      config[uniqueName].windowSize = value
     },
-    set2captchaToken: (value: string) => {
-      twoCaptchaToken = value
+    set2captchaToken: (value: string, uniqueName: string = 'default') => {
+      config[uniqueName].twoCaptchaToken = value
     },
-    blockImages: (value: boolean = true) => {
-      blockImages = value
+    blockImages: (value: boolean = true, uniqueName: string = 'default') => {
+      config[uniqueName].blockImages = value
     },
-    blockFonts: (value: boolean = true) => {
-      blockFonts = value
+    blockFonts: (value: boolean = true, uniqueName: string = 'default') => {
+      config[uniqueName].blockFonts = value
     },
-    blockCSS: (value: boolean = true) => {
-      blockCSS = value
+    blockCSS: (value: boolean = true, uniqueName: string = 'default') => {
+      config[uniqueName].blockCSS = value
     },
-    useChrome: (value: boolean = true) => {
-      useChrome = value
-    },
-    setUserAgent: (value: string) => {
-      userAgent = value
+    useChrome: (value: boolean = true, uniqueName: string = 'default') => {
+      config[uniqueName].useChrome = value
     },
   }
 })()
