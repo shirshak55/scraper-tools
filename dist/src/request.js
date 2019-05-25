@@ -64,7 +64,7 @@ exports.default = (() => {
                 return await p_retry_1.default(run, {
                     retries,
                     onFailedAttempt: (error) => {
-                        console.log(`Attempt ${error.attemptNumber} failed. There are ${error.retriesLeft} attempts left. Proxy: ${pxy} Url: ${error.options.uri} Error Message: ${error.message} `);
+                        consoleMessage_1.default.warning('Request Module', `Attempt ${error.attemptNumber} failed. There are ${error.retriesLeft} attempts left. Proxy: ${pxy} Url: ${error.options.uri} Error Message: ${error.message} `);
                     },
                 });
             }

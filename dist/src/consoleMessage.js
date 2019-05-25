@@ -10,6 +10,7 @@ const fs_1 = __importDefault(require("fs"));
 const os_1 = __importDefault(require("os"));
 const right_pad_1 = __importDefault(require("right-pad"));
 exports.default = (() => {
+    let shouldLogToFile = false;
     let desktopPath = path_1.default.join(os_1.default.homedir(), 'Desktop');
     let logFolder = createDirectories_1.default(path_1.default.join(desktopPath, 'logs'));
     const setLogFolder = (value) => {
@@ -24,6 +25,8 @@ exports.default = (() => {
         }
     };
     const logToFile = (title, content) => {
+        if (!shouldLogToFile)
+            return;
         let c = content;
         try {
             let c = JSON.stringify(titlify(title) + ' ' + content, null, 4);
@@ -56,6 +59,9 @@ exports.default = (() => {
         info,
         warning,
         success,
+        setShouldLogToFile: (value = false) => {
+            shouldLogToFile: value;
+        },
     };
 })();
 //# sourceMappingURL=consoleMessage.js.map

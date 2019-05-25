@@ -12,17 +12,18 @@ async function download(filePath, url) {
     if (await exists(filePath)) {
         return;
     }
-    console.log(chalk_1.default.dim(`     downloading: ${chalk_1.default.italic(url)}`));
+    console.log(chalk_1.default.dim(`    Downloading: ${chalk_1.default.italic(url)}`));
     await p_retry_1.default(() => {
         new Promise((resolve, reject) => {
-            got.stream(url, { retry: 4, throwHttpErrors: false })
-                .on('error', err => {
+            got
+                .stream(url, { retry: 4, throwHttpErrors: false })
+                .on('error', (err) => {
                 console.error(err);
                 resolve();
             })
                 .pipe(fs.createWriteStream(filePath))
                 .on('finish', resolve)
-                .on('error', err => {
+                .on('error', (err) => {
                 console.error(err);
                 fs.unlink(filePath, () => resolve);
             });

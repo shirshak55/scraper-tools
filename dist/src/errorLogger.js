@@ -9,7 +9,7 @@ const consoleMessage_1 = __importDefault(require("./consoleMessage"));
 exports.default = (err, path) => {
     consoleMessage_1.default.error('Error Logger', 'We Got Error', err);
     fs_extra_1.default.ensureFileSync(path);
-    var log_file_err = fs_extra_1.default.createWriteStream(path, { flags: 'a' });
+    let log_file_err = fs_extra_1.default.createWriteStream(path, { flags: 'a' });
     log_file_err.write(util_1.default.format('Caught exception: ' + err) + '\n');
     process.exit(1);
 };

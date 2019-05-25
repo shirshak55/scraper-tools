@@ -55,4 +55,6 @@ const xlsxReader_1 = __importDefault(require("./src/xlsxReader"));
 exports.xlsxReader = xlsxReader_1.default;
 const fastPage_1 = __importDefault(require("./src/fastPage"));
 exports.fastPage = fastPage_1.default;
+const writeFileSync_1 = __importDefault(require("./src/writeFileSync"));
+exports.writeFileSync = writeFileSync_1.default;
 //# sourceMappingURL=index.js.map
