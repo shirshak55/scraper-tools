@@ -45,8 +45,7 @@ export default (() => {
   async function browser(name = 'default'): Promise<Browser> {
     return await lock.acquire(name, async function() {
       let cfg = config[name]
-      let browserHandle = cfg.browserHandle
-      if (browserHandle) return browserHandle
+      if (cfg.browserHandle) return cfg.browserHandle
 
       const args = [
         '--disable-infobars',
@@ -72,8 +71,8 @@ export default (() => {
         launchOptions.executablePath = chromePaths.chrome
       }
 
-      browserHandle = await puppeteer.launch(launchOptions)
-      return browserHandle
+      cfg.browserHandle = await puppeteer.launch(launchOptions)
+      return cfg.browserHandle
     })
   }
 

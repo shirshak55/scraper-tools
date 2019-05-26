@@ -42,9 +42,8 @@ exports.default = (() => {
     async function browser(name = 'default') {
         return await lock.acquire(name, async function () {
             let cfg = config[name];
-            let browserHandle = cfg.browserHandle;
-            if (browserHandle)
-                return browserHandle;
+            if (cfg.browserHandle)
+                return cfg.browserHandle;
             const args = [
                 '--disable-infobars',
                 '--no-sandbox',
@@ -65,8 +64,8 @@ exports.default = (() => {
             if (cfg.useChrome === true) {
                 launchOptions.executablePath = chrome_paths_1.default.chrome;
             }
-            browserHandle = await puppeteer_extra_1.default.launch(launchOptions);
-            return browserHandle;
+            cfg.browserHandle = await puppeteer_extra_1.default.launch(launchOptions);
+            return cfg.browserHandle;
         });
     }
     async function makePageFaster(page, name = 'default') {
