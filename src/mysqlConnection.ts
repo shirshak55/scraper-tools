@@ -1,8 +1,10 @@
 /// # Allows you to make database request
 /// Very Useful if u use mysql database to queries. I like PGSQL so in future support will be added.
 import mysql from 'promise-mysql'
+import AsyncLock from 'async-lock'
 
 export default (() => {
+  let lock = new AsyncLock()
   let connection = null
   return {
     setConnection: async ({
@@ -16,17 +18,19 @@ export default (() => {
       password: string
       database: string
     }) => {
-      if (!connection) {
-        connection = await mysql.createConnection({
-          host,
-          user,
-          password,
-          database,
-        })
-      }
-      return connection
+      return await lock.acquire('mysqlConnection', async function() {
+        if (!connection) {
+          connection = await mysql.createConnection({
+            host,
+            user,
+            password,
+            database,
+          })
+        }
+        return connection
+      })
     },
-    getConnection: () => {
+    getConnection: async () => {
       if (!connection) {
         throw 'Please make connection before getting connection'
       }

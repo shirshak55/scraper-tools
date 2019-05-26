@@ -9,7 +9,9 @@ const puppeteer_extra_1 = __importDefault(require("puppeteer-extra"));
 const puppeteer_extra_plugin_stealth_1 = __importDefault(require("puppeteer-extra-plugin-stealth"));
 const puppeteer_extra_plugin_anonymize_ua_1 = __importDefault(require("puppeteer-extra-plugin-anonymize-ua"));
 const puppeteer_extra_plugin_recaptcha_1 = __importDefault(require("puppeteer-extra-plugin-recaptcha"));
+const async_lock_1 = __importDefault(require("async-lock"));
 exports.default = (() => {
+    let lock = new async_lock_1.default();
     let defaultConfig = {
         browserHandle: null,
         proxy: null,
@@ -38,32 +40,34 @@ exports.default = (() => {
         makeWindows: true,
     }));
     async function browser(name = 'default') {
-        let cfg = config[name];
-        let browserHandle = cfg.browserHandle;
-        if (browserHandle)
+        return await lock.acquire(name, async function () {
+            let cfg = config[name];
+            let browserHandle = cfg.browserHandle;
+            if (browserHandle)
+                return browserHandle;
+            const args = [
+                '--disable-infobars',
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--ignore-certificate-errors',
+                '--enable-features=NetworkService',
+                `--window-size=${cfg.windowSize.width},${cfg.windowSize.height}`,
+            ];
+            if (cfg.proxy) {
+                args.push(`--proxy-server=${cfg.proxy}`);
+            }
+            let launchOptions = {
+                userDataDir: cfg.userDataDir,
+                headless: cfg.headless,
+                args,
+                ignoreHTTPSErrors: true,
+            };
+            if (cfg.useChrome === true) {
+                launchOptions.executablePath = chrome_paths_1.default.chrome;
+            }
+            browserHandle = await puppeteer_extra_1.default.launch(launchOptions);
             return browserHandle;
-        const args = [
-            '--disable-infobars',
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--ignore-certificate-errors',
-            '--enable-features=NetworkService',
-            `--window-size=${cfg.windowSize.width},${cfg.windowSize.height}`,
-        ];
-        if (cfg.proxy) {
-            args.push(`--proxy-server=${cfg.proxy}`);
-        }
-        let launchOptions = {
-            userDataDir: cfg.userDataDir,
-            headless: cfg.headless,
-            args,
-            ignoreHTTPSErrors: true,
-        };
-        if (cfg.useChrome === true) {
-            launchOptions.executablePath = chrome_paths_1.default.chrome;
-        }
-        browserHandle = await puppeteer_extra_1.default.launch(launchOptions);
-        return browserHandle;
+        });
     }
     async function makePageFaster(page, name = 'default') {
         let cfg = config[name];
