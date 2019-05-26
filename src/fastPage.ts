@@ -5,8 +5,11 @@ import pluginStealth from 'puppeteer-extra-plugin-stealth'
 import pluginUAFix from 'puppeteer-extra-plugin-anonymize-ua'
 import { Page, Browser } from 'puppeteer'
 import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
+import AsyncLock from 'async-lock'
 
 export default (() => {
+  let lock = new AsyncLock()
+
   let defaultConfig = {
     browserHandle: null,
     proxy: null,
@@ -40,36 +43,38 @@ export default (() => {
   )
 
   async function browser(name = 'default'): Promise<Browser> {
-    let cfg = config[name]
-    let browserHandle = cfg.browserHandle
-    if (browserHandle) return browserHandle
+    return await lock.acquire(name, async function() {
+      let cfg = config[name]
+      let browserHandle = cfg.browserHandle
+      if (browserHandle) return browserHandle
 
-    const args = [
-      '--disable-infobars',
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--ignore-certificate-errors',
-      '--enable-features=NetworkService',
-      `--window-size=${cfg.windowSize.width},${cfg.windowSize.height}`,
-    ]
+      const args = [
+        '--disable-infobars',
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--ignore-certificate-errors',
+        '--enable-features=NetworkService',
+        `--window-size=${cfg.windowSize.width},${cfg.windowSize.height}`,
+      ]
 
-    if (cfg.proxy) {
-      args.push(`--proxy-server=${cfg.proxy}`)
-    }
+      if (cfg.proxy) {
+        args.push(`--proxy-server=${cfg.proxy}`)
+      }
 
-    let launchOptions: any = {
-      userDataDir: cfg.userDataDir,
-      headless: cfg.headless,
-      args,
-      ignoreHTTPSErrors: true,
-    }
+      let launchOptions: any = {
+        userDataDir: cfg.userDataDir,
+        headless: cfg.headless,
+        args,
+        ignoreHTTPSErrors: true,
+      }
 
-    if (cfg.useChrome === true) {
-      launchOptions.executablePath = chromePaths.chrome
-    }
+      if (cfg.useChrome === true) {
+        launchOptions.executablePath = chromePaths.chrome
+      }
 
-    browserHandle = await puppeteer.launch(launchOptions)
-    return browserHandle
+      browserHandle = await puppeteer.launch(launchOptions)
+      return browserHandle
+    })
   }
 
   async function makePageFaster(page, name = 'default'): Promise<Page> {
