@@ -83,8 +83,10 @@ exports.default = (() => {
                 }
             });
         }
-        await page.target().createCDPSession();
+        const session = await page.target().createCDPSession();
         await page.setBypassCSP(true);
+        await session.send('Page.enable');
+        await session.send('Page.setWebLifecycleState', { state: 'active' });
         await page.setDefaultNavigationTimeout(cfg.defaultNavigationTimeout);
         return page;
     }
