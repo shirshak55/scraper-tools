@@ -91,6 +91,14 @@ exports.default = (() => {
         return page;
     }
     return {
+        init: async (uniqueName, useCurrentDefaultConfig = false) => {
+            if (useCurrentDefaultConfig) {
+                config[uniqueName] = { ...config.default };
+            }
+            else {
+                config[uniqueName] = { ...defaultConfig };
+            }
+        },
         newPage: async (uniqueName = 'default') => {
             let brow = await browser(uniqueName);
             let page = await brow.newPage();
@@ -98,12 +106,14 @@ exports.default = (() => {
             return page;
         },
         closeBrowser: async (uniqueName = 'default') => {
-            let browserHandle = config[uniqueName].browserHandle;
-            if (browserHandle) {
-                let bHandle = await browser();
-                await bHandle.close();
-            }
-            browserHandle = null;
+            return await lock.acquire(name + '_close', async function () {
+                let browserHandle = config[uniqueName].browserHandle;
+                if (browserHandle) {
+                    let bHandle = await browser();
+                    await bHandle.close();
+                }
+                browserHandle = null;
+            });
         },
         setProxy: (value, uniqueName = 'default') => {
             config[uniqueName].proxy = value;

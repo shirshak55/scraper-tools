@@ -102,6 +102,13 @@ export default (() => {
   }
 
   return {
+    init: async (uniqueName: string, useCurrentDefaultConfig = false) => {
+      if (useCurrentDefaultConfig) {
+        config[uniqueName] = { ...config.default }
+      } else {
+        config[uniqueName] = { ...defaultConfig }
+      }
+    },
     newPage: async (uniqueName: string = 'default'): Promise<Page> => {
       let brow = await browser(uniqueName)
       let page = await brow.newPage()
@@ -109,12 +116,14 @@ export default (() => {
       return page
     },
     closeBrowser: async (uniqueName: string = 'default') => {
-      let browserHandle = config[uniqueName].browserHandle
-      if (browserHandle) {
-        let bHandle = await browser()
-        await bHandle.close()
-      }
-      browserHandle = null
+      return await lock.acquire(name + '_close', async function() {
+        let browserHandle = config[uniqueName].browserHandle
+        if (browserHandle) {
+          let bHandle = await browser()
+          await bHandle.close()
+        }
+        browserHandle = null
+      })
     },
     setProxy: (value: string, uniqueName: string = 'default') => {
       config[uniqueName].proxy = value
