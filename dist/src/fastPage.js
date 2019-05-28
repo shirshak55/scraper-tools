@@ -40,7 +40,7 @@ exports.default = (() => {
         makeWindows: true,
     }));
     async function browser(name = 'default') {
-        return await lock.acquire(name, async function () {
+        return await lock.acquire('instance_' + name, async function () {
             let cfg = config[name];
             if (cfg.browserHandle)
                 return cfg.browserHandle;
@@ -106,7 +106,7 @@ exports.default = (() => {
             return page;
         },
         closeBrowser: async (uniqueName = 'default') => {
-            return await lock.acquire(name + '_close', async function () {
+            return await lock.acquire('instance_' + name, async function () {
                 let browserHandle = config[uniqueName].browserHandle;
                 if (browserHandle) {
                     let bHandle = await browser();
