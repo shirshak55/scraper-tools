@@ -6,10 +6,11 @@ import dateFormat from 'date-format'
 import sanitizeFilename from 'sanitize-filename'
 import rightPad from 'right-pad'
 import { PendingXHR } from 'pending-xhr-puppeteer'
+import pLimit from 'p-limit'
+import asyncLock from 'async-lock'
 import meow from 'meow'
 import pRetry from 'p-retry'
 import pWaitFor from 'p-wait-for'
-import pLimit from 'p-limit'
 import _ from 'lodash'
 import waitForXHR from './src/waitForXhr'
 import chunks from './src/chunks'
@@ -56,6 +57,7 @@ export {
   chalk,
   randomNumberRange,
   readFileSync,
+  asyncLock,
   writeFileSync,
   request,
   xlsxReader,
