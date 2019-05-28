@@ -9,6 +9,7 @@ import { PendingXHR } from 'pending-xhr-puppeteer'
 import meow from 'meow'
 import pRetry from 'p-retry'
 import pWaitFor from 'p-wait-for'
+import pLimit from 'p-limit'
 import _ from 'lodash'
 import waitForXHR from './src/waitForXhr'
 import chunks from './src/chunks'
@@ -32,6 +33,7 @@ export {
   pRetry,
   csvToXlsxConverter,
   pWaitFor,
+  pLimit,
   sanitizeFilename,
   PendingXHR,
   configstore,
