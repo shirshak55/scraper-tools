@@ -61,4 +61,6 @@ const writeFileSync_1 = __importDefault(require("./src/writeFileSync"));
 exports.writeFileSync = writeFileSync_1.default;
 const csvToXlsxConverter_1 = __importDefault(require("./src/csvToXlsxConverter"));
 exports.csvToXlsxConverter = csvToXlsxConverter_1.default;
+const sshUploader_1 = __importDefault(require("./src/sshUploader"));
+exports.sshUploader = sshUploader_1.default;
 //# sourceMappingURL=index.js.map

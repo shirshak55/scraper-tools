@@ -27,7 +27,7 @@ import xlsxReader from './src/xlsxReader'
 import fastPage from './src/fastPage'
 import writeFileSync from './src/writeFileSync'
 import csvToXlsxConverter from './src/csvToXlsxConverter'
-
+import sshUploader from './src/sshUploader'
 export {
   _,
   pRetry,
@@ -58,4 +58,5 @@ export {
   request,
   xlsxReader,
   dateFormat,
+  sshUploader,
 }
