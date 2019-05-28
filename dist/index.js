@@ -57,4 +57,6 @@ const fastPage_1 = __importDefault(require("./src/fastPage"));
 exports.fastPage = fastPage_1.default;
 const writeFileSync_1 = __importDefault(require("./src/writeFileSync"));
 exports.writeFileSync = writeFileSync_1.default;
+const csvToXlsxConverter_1 = __importDefault(require("./src/csvToXlsxConverter"));
+exports.csvToXlsxConverter = csvToXlsxConverter_1.default;
 //# sourceMappingURL=index.js.map
