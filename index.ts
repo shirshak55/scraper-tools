@@ -25,10 +25,12 @@ import request from './src/request'
 import xlsxReader from './src/xlsxReader'
 import fastPage from './src/fastPage'
 import writeFileSync from './src/writeFileSync'
+import csvToXlsxConverter from './src/csvToXlsxConverter'
 
 export {
   _,
   pRetry,
+  csvToXlsxConverter,
   pWaitFor,
   sanitizeFilename,
   PendingXHR,

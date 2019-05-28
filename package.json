@@ -15,6 +15,7 @@
         "cheerio": "^1.0.0-rc.2",
         "chrome-paths": "^1.0.1",
         "configstore": "^4.0.0",
+        "csv-parse": "^4.4.1",
         "date-format": "^2.0.0",
         "delay": "^4.2.0",
         "fs-extra": "^8.0.1",
