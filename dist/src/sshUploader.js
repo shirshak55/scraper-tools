@@ -8,7 +8,7 @@ const consoleMessage_1 = __importDefault(require("./consoleMessage"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 /// # Allows you to upload Via SSH
-exports.default = () => {
+exports.default = (() => {
     let handler = new ssh2_sftp_client_1.default();
     return {
         upload: async ({ host, port, username, privatekeyPath, filePath, remoteFilePath, }) => {
@@ -32,5 +32,5 @@ exports.default = () => {
             }
         },
     };
-};
+})();
 //# sourceMappingURL=sshUploader.js.map
