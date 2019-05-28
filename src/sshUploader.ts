@@ -6,8 +6,6 @@ import path from 'path'
 /// # Allows you to upload Via SSH
 
 export default (() => {
-  let handler = new sftpClient()
-
   return {
     upload: async ({
       host,
