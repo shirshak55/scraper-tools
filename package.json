@@ -1,6 +1,6 @@
 {
     "name": "scrapper-tools",
-    "version": "1.0.52",
+    "version": "1.0.53",
     "main": "dist/index.js",
     "license": "MIT",
     "scripts": {
@@ -24,6 +24,7 @@
         "lodash": "^4.17.11",
         "meow": "^5.0.0",
         "nodemon": "^1.19.0",
+        "p-limit": "^2.2.0",
         "p-retry": "^4.1.0",
         "p-wait-for": "^3.1.0",
         "pending-xhr-puppeteer": "^2.0.0",
