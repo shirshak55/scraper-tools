@@ -28,6 +28,8 @@ import fastPage from './src/fastPage'
 import writeFileSync from './src/writeFileSync'
 import csvToXlsxConverter from './src/csvToXlsxConverter'
 import sshUploader from './src/sshUploader'
+import waitForFrames from './src/waitForFrames'
+
 export {
   _,
   pRetry,
@@ -59,4 +61,5 @@ export {
   xlsxReader,
   dateFormat,
   sshUploader,
+  waitForFrames,
 }

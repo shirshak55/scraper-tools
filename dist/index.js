@@ -63,4 +63,6 @@ const csvToXlsxConverter_1 = __importDefault(require("./src/csvToXlsxConverter")
 exports.csvToXlsxConverter = csvToXlsxConverter_1.default;
 const sshUploader_1 = __importDefault(require("./src/sshUploader"));
 exports.sshUploader = sshUploader_1.default;
+const waitForFrames_1 = __importDefault(require("./src/waitForFrames"));
+exports.waitForFrames = waitForFrames_1.default;
 //# sourceMappingURL=index.js.map
