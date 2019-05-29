@@ -1,12 +1,11 @@
-export default function waitForFrame(page, frameName) {
-  let fulfill
-  const promise = new Promise((x) => (fulfill = x))
-  checkFrame()
-  return promise
+import delay from 'delay'
 
-  function checkFrame() {
-    const frame = page.frames().find((f) => f.url().indexOf(frameName) > 0)
-    if (frame) fulfill(frame)
-    else page.once('frameattached', checkFrame)
+export default async function waitForFrame(page, frameName) {
+  while (true) {
+    let f = page.frames().find((f) => f.url().indexOf(frameName) > 0)
+    if (f) {
+      return true
+    }
+    await delay(100)
   }
 }
