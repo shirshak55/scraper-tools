@@ -21,6 +21,7 @@ export default (() => {
     blockImages: false,
     blockCSS: false,
     defaultNavigationTimeout: 30 * 1000,
+    extensions: [],
   }
   let config = {
     default: { ...defaultConfig },
@@ -151,7 +152,7 @@ export default (() => {
     },
 
     setExtensionsPaths: (
-      value: Array<string> = [],
+      value: Array<string>,
       uniqueName: string = 'default',
     ) => {
       config[uniqueName].extensions = value

@@ -23,6 +23,7 @@ exports.default = (() => {
         blockImages: false,
         blockCSS: false,
         defaultNavigationTimeout: 30 * 1000,
+        extensions: [],
     };
     let config = {
         default: { ...defaultConfig },
@@ -135,7 +136,7 @@ exports.default = (() => {
         set2captchaToken: (value, uniqueName = 'default') => {
             config[uniqueName].twoCaptchaToken = value;
         },
-        setExtensionsPaths: (value = [], uniqueName = 'default') => {
+        setExtensionsPaths: (value, uniqueName = 'default') => {
             config[uniqueName].extensions = value;
         },
         setDefaultNavigationTimeout: (value, uniqueName = 'default') => {
