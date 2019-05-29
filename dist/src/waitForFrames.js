@@ -1,16 +1,16 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-function waitForFrame(page, frameName) {
-    let fulfill;
-    const promise = new Promise((x) => (fulfill = x));
-    checkFrame();
-    return promise;
-    function checkFrame() {
-        const frame = page.frames().find((f) => f.url().indexOf(frameName) > 0);
-        if (frame)
-            fulfill(frame);
-        else
-            page.once('frameattached', checkFrame);
+const delay_1 = __importDefault(require("delay"));
+async function waitForFrame(page, frameName) {
+    while (true) {
+        let f = page.frames().find((f) => f.url().indexOf(frameName) > 0);
+        if (f) {
+            return f;
+        }
+        await delay_1.default(100);
     }
 }
 exports.default = waitForFrame;
