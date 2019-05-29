@@ -60,6 +60,12 @@ export default (() => {
         args.push(`--proxy-server=${cfg.proxy}`)
       }
 
+      if (cfg.extensions.length > 0) {
+        for (let p of cfg.extensions) {
+          args.push(`--disable-extensions-except=${p}`, `--load-extension=${p}`)
+        }
+      }
+
       let launchOptions: any = {
         userDataDir: cfg.userDataDir,
         headless: cfg.headless,
@@ -142,6 +148,13 @@ export default (() => {
     },
     set2captchaToken: (value: string, uniqueName: string = 'default') => {
       config[uniqueName].twoCaptchaToken = value
+    },
+
+    setExtensionsPaths: (
+      value: Array<string> = [],
+      uniqueName: string = 'default',
+    ) => {
+      config[uniqueName].extensions = value
     },
     setDefaultNavigationTimeout: (
       value: boolean,
