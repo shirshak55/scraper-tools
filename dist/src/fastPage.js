@@ -100,23 +100,23 @@ exports.default = (() => {
         return page;
     }
     return {
-        init: async (uniqueName, useCurrentDefaultConfig = false) => {
+        init: async (instanceName, useCurrentDefaultConfig = false) => {
             if (useCurrentDefaultConfig) {
-                config[uniqueName] = { ...config.default };
+                config[instanceName] = { ...config.default };
             }
             else {
-                config[uniqueName] = { ...defaultConfig };
+                config[instanceName] = { ...defaultConfig };
             }
         },
-        newPage: async (uniqueName = 'default') => {
-            let brow = await browser(uniqueName);
+        newPage: async (instanceName = 'default') => {
+            let brow = await browser(instanceName);
             let page = await brow.newPage();
-            await makePageFaster(page, uniqueName);
+            await makePageFaster(page, instanceName);
             return page;
         },
-        closeBrowser: async (uniqueName = 'default') => {
+        closeBrowser: async (instanceName = 'default') => {
             return await lock.acquire('instance_' + name, async function () {
-                let browserHandle = config[uniqueName].browserHandle;
+                let browserHandle = config[instanceName].browserHandle;
                 if (browserHandle) {
                     let bHandle = await browser();
                     await bHandle.close();
@@ -124,38 +124,38 @@ exports.default = (() => {
                 browserHandle = null;
             });
         },
-        setProxy: (value, uniqueName = 'default') => {
-            config[uniqueName].proxy = value;
+        setProxy: (value, instanceName = 'default') => {
+            config[instanceName].proxy = value;
         },
-        setHeadless: (value = false, uniqueName = 'default') => {
-            config[uniqueName].headless = value;
+        setHeadless: (value = false, instanceName = 'default') => {
+            config[instanceName].headless = value;
         },
-        setUserDataDir: (value, uniqueName = 'default') => {
-            config[uniqueName].userDataDir = value;
+        setUserDataDir: (value, instanceName = 'default') => {
+            config[instanceName].userDataDir = value;
         },
-        setWindowSizeArg: (value, uniqueName = 'default') => {
-            config[uniqueName].windowSize = value;
+        setWindowSizeArg: (value, instanceName = 'default') => {
+            config[instanceName].windowSize = value;
         },
-        set2captchaToken: (value, uniqueName = 'default') => {
-            config[uniqueName].twoCaptchaToken = value;
+        set2captchaToken: (value, instanceName = 'default') => {
+            config[instanceName].twoCaptchaToken = value;
         },
-        setExtensionsPaths: (value, uniqueName = 'default') => {
-            config[uniqueName].extensions = value;
+        setExtensionsPaths: (value, instanceName = 'default') => {
+            config[instanceName].extensions = value;
         },
-        setDefaultNavigationTimeout: (value, uniqueName = 'default') => {
-            config[uniqueName].defaultNavigationTimeout = value;
+        setDefaultNavigationTimeout: (value, instanceName = 'default') => {
+            config[instanceName].defaultNavigationTimeout = value;
         },
-        blockImages: (value = true, uniqueName = 'default') => {
-            config[uniqueName].blockImages = value;
+        blockImages: (value = true, instanceName = 'default') => {
+            config[instanceName].blockImages = value;
         },
-        blockFonts: (value = true, uniqueName = 'default') => {
-            config[uniqueName].blockFonts = value;
+        blockFonts: (value = true, instanceName = 'default') => {
+            config[instanceName].blockFonts = value;
         },
-        blockCSS: (value = true, uniqueName = 'default') => {
-            config[uniqueName].blockCSS = value;
+        blockCSS: (value = true, instanceName = 'default') => {
+            config[instanceName].blockCSS = value;
         },
-        useChrome: (value = true, uniqueName = 'default') => {
-            config[uniqueName].useChrome = value;
+        useChrome: (value = true, instanceName = 'default') => {
+            config[instanceName].useChrome = value;
         },
     };
 })();
