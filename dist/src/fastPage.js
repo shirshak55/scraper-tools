@@ -52,6 +52,9 @@ exports.default = (() => {
                 '--ignore-certificate-errors',
                 '--enable-features=NetworkService',
                 `--window-size=${cfg.windowSize.width},${cfg.windowSize.height}`,
+                '--disable-background-timer-throttling',
+                '--disable-backgrounding-occluded-windows',
+                '--disable-renderer-backgrounding',
             ];
             if (cfg.proxy) {
                 args.push(`--proxy-server=${cfg.proxy}`);

@@ -112,22 +112,22 @@ export default (() => {
   }
 
   return {
-    init: async (uniqueName: string, useCurrentDefaultConfig = false) => {
+    init: async (instanceName: string, useCurrentDefaultConfig = false) => {
       if (useCurrentDefaultConfig) {
-        config[uniqueName] = { ...config.default }
+        config[instanceName] = { ...config.default }
       } else {
-        config[uniqueName] = { ...defaultConfig }
+        config[instanceName] = { ...defaultConfig }
       }
     },
-    newPage: async (uniqueName: string = 'default'): Promise<Page> => {
-      let brow = await browser(uniqueName)
+    newPage: async (instanceName: string = 'default'): Promise<Page> => {
+      let brow = await browser(instanceName)
       let page = await brow.newPage()
-      await makePageFaster(page, uniqueName)
+      await makePageFaster(page, instanceName)
       return page
     },
-    closeBrowser: async (uniqueName: string = 'default') => {
+    closeBrowser: async (instanceName: string = 'default') => {
       return await lock.acquire('instance_' + name, async function() {
-        let browserHandle = config[uniqueName].browserHandle
+        let browserHandle = config[instanceName].browserHandle
         if (browserHandle) {
           let bHandle = await browser()
           await bHandle.close()
@@ -135,48 +135,48 @@ export default (() => {
         browserHandle = null
       })
     },
-    setProxy: (value: string, uniqueName: string = 'default') => {
-      config[uniqueName].proxy = value
+    setProxy: (value: string, instanceName: string = 'default') => {
+      config[instanceName].proxy = value
     },
-    setHeadless: (value: boolean = false, uniqueName: string = 'default') => {
-      config[uniqueName].headless = value
+    setHeadless: (value: boolean = false, instanceName: string = 'default') => {
+      config[instanceName].headless = value
     },
-    setUserDataDir: (value: string, uniqueName: string = 'default') => {
-      config[uniqueName].userDataDir = value
+    setUserDataDir: (value: string, instanceName: string = 'default') => {
+      config[instanceName].userDataDir = value
     },
     setWindowSizeArg: (
       value: { width: number; height: number },
-      uniqueName: string = 'default',
+      instanceName: string = 'default',
     ) => {
-      config[uniqueName].windowSize = value
+      config[instanceName].windowSize = value
     },
-    set2captchaToken: (value: string, uniqueName: string = 'default') => {
-      config[uniqueName].twoCaptchaToken = value
+    set2captchaToken: (value: string, instanceName: string = 'default') => {
+      config[instanceName].twoCaptchaToken = value
     },
 
     setExtensionsPaths: (
       value: Array<string>,
-      uniqueName: string = 'default',
+      instanceName: string = 'default',
     ) => {
-      config[uniqueName].extensions = value
+      config[instanceName].extensions = value
     },
     setDefaultNavigationTimeout: (
       value: boolean,
-      uniqueName: string = 'default',
+      instanceName: string = 'default',
     ) => {
-      config[uniqueName].defaultNavigationTimeout = value
+      config[instanceName].defaultNavigationTimeout = value
     },
-    blockImages: (value: boolean = true, uniqueName: string = 'default') => {
-      config[uniqueName].blockImages = value
+    blockImages: (value: boolean = true, instanceName: string = 'default') => {
+      config[instanceName].blockImages = value
     },
-    blockFonts: (value: boolean = true, uniqueName: string = 'default') => {
-      config[uniqueName].blockFonts = value
+    blockFonts: (value: boolean = true, instanceName: string = 'default') => {
+      config[instanceName].blockFonts = value
     },
-    blockCSS: (value: boolean = true, uniqueName: string = 'default') => {
-      config[uniqueName].blockCSS = value
+    blockCSS: (value: boolean = true, instanceName: string = 'default') => {
+      config[instanceName].blockCSS = value
     },
-    useChrome: (value: boolean = true, uniqueName: string = 'default') => {
-      config[uniqueName].useChrome = value
+    useChrome: (value: boolean = true, instanceName: string = 'default') => {
+      config[instanceName].useChrome = value
     },
   }
 })()
