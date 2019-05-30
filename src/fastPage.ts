@@ -126,7 +126,7 @@ export default (() => {
       return page
     },
     closeBrowser: async (instanceName: string = 'default') => {
-      return await lock.acquire('instance_' + name, async function() {
+      return await lock.acquire('instance_' + instanceName, async function() {
         let browserHandle = config[instanceName].browserHandle
         if (browserHandle) {
           let bHandle = await browser()
