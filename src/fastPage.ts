@@ -43,9 +43,9 @@ export default (() => {
     }),
   )
 
-  async function browser(name = 'default'): Promise<Browser> {
-    return await lock.acquire('instance_' + name, async function() {
-      let cfg = config[name]
+  async function browser(instanceName = 'default'): Promise<Browser> {
+    return await lock.acquire('instance_' + instanceName, async function() {
+      let cfg = config[instanceName]
       if (cfg.browserHandle) return cfg.browserHandle
 
       const args = [
@@ -86,8 +86,8 @@ export default (() => {
     })
   }
 
-  async function makePageFaster(page, name = 'default'): Promise<Page> {
-    let cfg = config[name]
+  async function makePageFaster(page, instanceName = 'default'): Promise<Page> {
+    let cfg = config[instanceName]
     if (cfg.blockCSS || cfg.blockFonts || cfg.blockImages) {
       await page.setRequestInterception(true)
       page.on('request', (request) => {
@@ -112,7 +112,7 @@ export default (() => {
   }
 
   return {
-    init: async (instanceName: string, useCurrentDefaultConfig = false) => {
+    init: async (instanceName: string, useCurrentDefaultConfig = true) => {
       if (useCurrentDefaultConfig) {
         config[instanceName] = { ...config.default }
       } else {

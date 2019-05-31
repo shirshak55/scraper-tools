@@ -44,27 +44,37 @@ Test running google chrome
 DISPLAY=:99 google-chrome --no-sandbox
 ```
 
-To Debug use xfvb
-
-On Remote
-
 ```bash
 Xvfb :99 &
+DISPLAY=:99 xvfb-run --server-args='-screen 0 1024x768x24' yarn start
 ```
+
+### Using VNC Server
+
+Install tightvnc
+
+```bash
+sudo apt install tightvncserver
+```
+
+Start the vnc server port screen 99 lets say
+/usr/bin/tightvncserver :99
 
 On LocalPC use SSH Tunnel
 
 ```bash
-ssh -L 5900:127.0.0.1:5900 -N -f -l username remote_ip
+ssh -L 5999:127.0.0.1:5999 -N -f -l username remote_ip
 brew install tiger-vnc
-vncviewer 127.0.0.1:5900
+vncviewer 127.0.0.1:5999
+```
+
+Now run script using that screen
+
+```bash
+DISPLAY=:99 yarn start
 ```
 
 On Remote PC
-
-```bash
-DISPLAY=:99 xvfb-run --server-args='-screen 0 1024x768x24'
-```
 
 ### Thanks
 
