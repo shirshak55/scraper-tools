@@ -40,9 +40,9 @@ exports.default = (() => {
         stripHeadless: true,
         makeWindows: true,
     }));
-    async function browser(name = 'default') {
-        return await lock.acquire('instance_' + name, async function () {
-            let cfg = config[name];
+    async function browser(instanceName = 'default') {
+        return await lock.acquire('instance_' + instanceName, async function () {
+            let cfg = config[instanceName];
             if (cfg.browserHandle)
                 return cfg.browserHandle;
             const args = [
@@ -77,8 +77,8 @@ exports.default = (() => {
             return cfg.browserHandle;
         });
     }
-    async function makePageFaster(page, name = 'default') {
-        let cfg = config[name];
+    async function makePageFaster(page, instanceName = 'default') {
+        let cfg = config[instanceName];
         if (cfg.blockCSS || cfg.blockFonts || cfg.blockImages) {
             await page.setRequestInterception(true);
             page.on('request', (request) => {
@@ -100,7 +100,7 @@ exports.default = (() => {
         return page;
     }
     return {
-        init: async (instanceName, useCurrentDefaultConfig = false) => {
+        init: async (instanceName, useCurrentDefaultConfig = true) => {
             if (useCurrentDefaultConfig) {
                 config[instanceName] = { ...config.default };
             }
