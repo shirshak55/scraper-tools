@@ -161,7 +161,7 @@ export default (() => {
       config[instanceName].extensions = value
     },
     setDefaultNavigationTimeout: (
-      value: boolean,
+      value: number,
       instanceName: string = 'default',
     ) => {
       config[instanceName].defaultNavigationTimeout = value
