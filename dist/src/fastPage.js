@@ -157,6 +157,12 @@ exports.default = (() => {
         useChrome: (value = true, instanceName = 'default') => {
             config[instanceName].useChrome = value;
         },
+        getConfig(instanceName = null) {
+            if (instanceName === null) {
+                return config;
+            }
+            return config[instanceName];
+        },
     };
 })();
 //# sourceMappingURL=fastPage.js.map

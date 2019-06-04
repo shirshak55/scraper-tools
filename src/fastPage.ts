@@ -178,5 +178,12 @@ export default (() => {
     useChrome: (value: boolean = true, instanceName: string = 'default') => {
       config[instanceName].useChrome = value
     },
+    getConfig(instanceName = null) {
+      if (instanceName === null) {
+        return config
+      }
+
+      return config[instanceName]
+    },
   }
 })()
