@@ -130,15 +130,13 @@ export default (() => {
       return page
     },
     closeBrowser: async (instanceName: string = 'default') => {
-      let browserHandle = config[instanceName].browserHandle
-
       return await lock
         .acquire('instance_' + instanceName, async function() {
-          if (browserHandle) {
+          if (config[instanceName].browserHandle) {
             let bHandle = await browser(instanceName)
             await bHandle.close()
           }
-          browserHandle = null
+          config[instanceName].browserHandle = null
           return null
         })
         .catch((err) =>

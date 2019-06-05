@@ -41,41 +41,43 @@ exports.default = (() => {
         makeWindows: true,
     }));
     async function browser(instanceName = 'default') {
-        return await lock.acquire('instance_' + instanceName, async function () {
-            let cfg = config[instanceName];
-            if (cfg.browserHandle)
-                return cfg.browserHandle;
-            const args = [
-                '--disable-infobars',
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--ignore-certificate-errors',
-                '--enable-features=NetworkService',
-                `--window-size=${cfg.windowSize.width},${cfg.windowSize.height}`,
-                '--disable-background-timer-throttling',
-                '--disable-backgrounding-occluded-windows',
-                '--disable-renderer-backgrounding',
-            ];
-            if (cfg.proxy) {
-                args.push(`--proxy-server=${cfg.proxy}`);
+        let cfg = config[instanceName];
+        if (cfg.browserHandle)
+            return cfg.browserHandle;
+        const args = [
+            '--disable-infobars',
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--ignore-certificate-errors',
+            '--enable-features=NetworkService',
+            `--window-size=${cfg.windowSize.width},${cfg.windowSize.height}`,
+            '--disable-background-timer-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-renderer-backgrounding',
+        ];
+        if (cfg.proxy) {
+            args.push(`--proxy-server=${cfg.proxy}`);
+        }
+        if (cfg.extensions.length > 0) {
+            for (let p of cfg.extensions) {
+                args.push(`--disable-extensions-except=${p}`, `--load-extension=${p}`);
             }
-            if (cfg.extensions.length > 0) {
-                for (let p of cfg.extensions) {
-                    args.push(`--disable-extensions-except=${p}`, `--load-extension=${p}`);
-                }
-            }
-            let launchOptions = {
-                userDataDir: cfg.userDataDir,
-                headless: cfg.headless,
-                args,
-                ignoreHTTPSErrors: true,
-            };
-            if (cfg.useChrome === true) {
-                launchOptions.executablePath = chrome_paths_1.default.chrome;
-            }
+        }
+        let launchOptions = {
+            userDataDir: cfg.userDataDir,
+            headless: cfg.headless,
+            args,
+            ignoreHTTPSErrors: true,
+        };
+        if (cfg.useChrome === true) {
+            launchOptions.executablePath = chrome_paths_1.default.chrome;
+        }
+        return await lock
+            .acquire('instance_' + instanceName, async function () {
             cfg.browserHandle = await puppeteer_extra_1.default.launch(launchOptions);
             return cfg.browserHandle;
-        });
+        })
+            .catch((err) => console.log('Error on starting new page: Lock Error ->', err));
     }
     async function makePageFaster(page, instanceName = 'default') {
         let cfg = config[instanceName];
@@ -115,15 +117,16 @@ exports.default = (() => {
             return page;
         },
         closeBrowser: async (instanceName = 'default') => {
-            return await lock.acquire('instance_' + instanceName, async function () {
-                let browserHandle = config[instanceName].browserHandle;
-                if (browserHandle) {
-                    let bHandle = await browser();
+            return await lock
+                .acquire('instance_' + instanceName, async function () {
+                if (config[instanceName].browserHandle) {
+                    let bHandle = await browser(instanceName);
                     await bHandle.close();
                 }
-                browserHandle = null;
+                config[instanceName].browserHandle = null;
                 return null;
-            });
+            })
+                .catch((err) => console.log('Error on closing browser: Lock Error ->', err));
         },
         setProxy: (value, instanceName = 'default') => {
             config[instanceName].proxy = value;
