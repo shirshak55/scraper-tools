@@ -133,6 +133,7 @@ export default (() => {
           await bHandle.close()
         }
         browserHandle = null
+        return null
       })
     },
     setProxy: (value: string, instanceName: string = 'default') => {
