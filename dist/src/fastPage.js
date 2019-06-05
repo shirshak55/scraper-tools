@@ -122,6 +122,7 @@ exports.default = (() => {
                     await bHandle.close();
                 }
                 browserHandle = null;
+                return null;
             });
         },
         setProxy: (value, instanceName = 'default') => {

@@ -44,46 +44,50 @@ export default (() => {
   )
 
   async function browser(instanceName = 'default'): Promise<Browser> {
-    return await lock.acquire('instance_' + instanceName, async function() {
-      let cfg = config[instanceName]
-      if (cfg.browserHandle) return cfg.browserHandle
+    let cfg = config[instanceName]
+    if (cfg.browserHandle) return cfg.browserHandle
 
-      const args = [
-        '--disable-infobars',
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--ignore-certificate-errors',
-        '--enable-features=NetworkService',
-        `--window-size=${cfg.windowSize.width},${cfg.windowSize.height}`,
-        '--disable-background-timer-throttling',
-        '--disable-backgrounding-occluded-windows',
-        '--disable-renderer-backgrounding',
-      ]
+    const args = [
+      '--disable-infobars',
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--ignore-certificate-errors',
+      '--enable-features=NetworkService',
+      `--window-size=${cfg.windowSize.width},${cfg.windowSize.height}`,
+      '--disable-background-timer-throttling',
+      '--disable-backgrounding-occluded-windows',
+      '--disable-renderer-backgrounding',
+    ]
 
-      if (cfg.proxy) {
-        args.push(`--proxy-server=${cfg.proxy}`)
+    if (cfg.proxy) {
+      args.push(`--proxy-server=${cfg.proxy}`)
+    }
+
+    if (cfg.extensions.length > 0) {
+      for (let p of cfg.extensions) {
+        args.push(`--disable-extensions-except=${p}`, `--load-extension=${p}`)
       }
+    }
 
-      if (cfg.extensions.length > 0) {
-        for (let p of cfg.extensions) {
-          args.push(`--disable-extensions-except=${p}`, `--load-extension=${p}`)
-        }
-      }
+    let launchOptions: any = {
+      userDataDir: cfg.userDataDir,
+      headless: cfg.headless,
+      args,
+      ignoreHTTPSErrors: true,
+    }
 
-      let launchOptions: any = {
-        userDataDir: cfg.userDataDir,
-        headless: cfg.headless,
-        args,
-        ignoreHTTPSErrors: true,
-      }
+    if (cfg.useChrome === true) {
+      launchOptions.executablePath = chromePaths.chrome
+    }
 
-      if (cfg.useChrome === true) {
-        launchOptions.executablePath = chromePaths.chrome
-      }
-
-      cfg.browserHandle = await puppeteer.launch(launchOptions)
-      return cfg.browserHandle
-    })
+    return await lock
+      .acquire('instance_' + instanceName, async function() {
+        cfg.browserHandle = await puppeteer.launch(launchOptions)
+        return cfg.browserHandle
+      })
+      .catch((err) =>
+        console.log('Error on starting new page: Lock Error ->', err),
+      )
   }
 
   async function makePageFaster(page, instanceName = 'default'): Promise<Page> {
@@ -126,15 +130,20 @@ export default (() => {
       return page
     },
     closeBrowser: async (instanceName: string = 'default') => {
-      return await lock.acquire('instance_' + instanceName, async function() {
-        let browserHandle = config[instanceName].browserHandle
-        if (browserHandle) {
-          let bHandle = await browser()
-          await bHandle.close()
-        }
-        browserHandle = null
-        return null
-      })
+      let browserHandle = config[instanceName].browserHandle
+
+      return await lock
+        .acquire('instance_' + instanceName, async function() {
+          if (browserHandle) {
+            let bHandle = await browser(instanceName)
+            await bHandle.close()
+          }
+          browserHandle = null
+          return null
+        })
+        .catch((err) =>
+          console.log('Error on closing browser: Lock Error ->', err),
+        )
     },
     setProxy: (value: string, instanceName: string = 'default') => {
       config[instanceName].proxy = value
