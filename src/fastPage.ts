@@ -64,9 +64,10 @@ export default (() => {
     }
 
     if (cfg.extensions.length > 0) {
-      for (let p of cfg.extensions) {
-        args.push(`--disable-extensions-except=${p}`, `--load-extension=${p}`)
-      }
+      args.push(
+        `--disable-extensions-except=${cfg.extensions.join(',')}`,
+        `--load-extension=${cfg.extensions.join(',')}`,
+      )
     }
 
     let launchOptions: any = {
