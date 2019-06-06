@@ -44,45 +44,45 @@ export default (() => {
   )
 
   async function browser(instanceName = 'default'): Promise<Browser> {
-    let cfg = config[instanceName]
-    if (cfg.browserHandle) return cfg.browserHandle
-
-    const args = [
-      '--disable-infobars',
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--ignore-certificate-errors',
-      '--enable-features=NetworkService',
-      `--window-size=${cfg.windowSize.width},${cfg.windowSize.height}`,
-      '--disable-background-timer-throttling',
-      '--disable-backgrounding-occluded-windows',
-      '--disable-renderer-backgrounding',
-    ]
-
-    if (cfg.proxy) {
-      args.push(`--proxy-server=${cfg.proxy}`)
-    }
-
-    if (cfg.extensions.length > 0) {
-      args.push(
-        `--disable-extensions-except=${cfg.extensions.join(',')}`,
-        `--load-extension=${cfg.extensions.join(',')}`,
-      )
-    }
-
-    let launchOptions: any = {
-      userDataDir: cfg.userDataDir,
-      headless: cfg.headless,
-      args,
-      ignoreHTTPSErrors: true,
-    }
-
-    if (cfg.useChrome === true) {
-      launchOptions.executablePath = chromePaths.chrome
-    }
-
     return await lock
       .acquire('instance_' + instanceName, async function() {
+        let cfg = config[instanceName]
+        if (cfg.browserHandle) return cfg.browserHandle
+
+        const args = [
+          '--disable-infobars',
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--ignore-certificate-errors',
+          '--enable-features=NetworkService',
+          `--window-size=${cfg.windowSize.width},${cfg.windowSize.height}`,
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding',
+        ]
+
+        if (cfg.proxy) {
+          args.push(`--proxy-server=${cfg.proxy}`)
+        }
+
+        if (cfg.extensions.length > 0) {
+          args.push(
+            `--disable-extensions-except=${cfg.extensions.join(',')}`,
+            `--load-extension=${cfg.extensions.join(',')}`,
+          )
+        }
+
+        let launchOptions: any = {
+          userDataDir: cfg.userDataDir,
+          headless: cfg.headless,
+          args,
+          ignoreHTTPSErrors: true,
+        }
+
+        if (cfg.useChrome === true) {
+          launchOptions.executablePath = chromePaths.chrome
+        }
+
         cfg.browserHandle = await puppeteer.launch(launchOptions)
         return cfg.browserHandle
       })
