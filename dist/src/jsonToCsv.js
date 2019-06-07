@@ -7,7 +7,7 @@ const async_lock_1 = __importDefault(require("async-lock"));
 let lock = new async_lock_1.default();
 const json2csv_1 = require("json2csv");
 exports.default = async (fields, jsObjects) => {
-    return await lock.acquire('productCSVUpdate', async () => {
+    return await lock.acquire('jsonToCSV', async () => {
         const parser = new json2csv_1.Parser({
             fields,
         });
