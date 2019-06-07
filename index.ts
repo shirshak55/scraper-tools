@@ -30,6 +30,8 @@ import writeFileSync from './src/writeFileSync'
 import csvToXlsxConverter from './src/csvToXlsxConverter'
 import sshUploader from './src/sshUploader'
 import waitForFrames from './src/waitForFrames'
+import csvToJson from './src/csvToJson'
+import jsonToCsv from './src/jsonToCsv'
 
 export {
   _,
@@ -64,4 +66,6 @@ export {
   dateFormat,
   sshUploader,
   waitForFrames,
+  csvToJson,
+  jsonToCsv,
 }
