@@ -157,7 +157,7 @@ export default (() => {
             await bHandle.close()
           }
           config[instanceName].browserHandle = null
-          return null
+          return 'closed'
         })
         .catch((err) =>
           console.log('Error on closing browser: Lock Error ->', err),
