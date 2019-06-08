@@ -6,6 +6,7 @@ import pluginUAFix from 'puppeteer-extra-plugin-anonymize-ua'
 import { Page, Browser } from 'puppeteer'
 import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
 import AsyncLock from 'async-lock'
+import { _ } from '..'
 
 export default (() => {
   let lock = new AsyncLock()
@@ -46,8 +47,8 @@ export default (() => {
   async function browser(instanceName = 'default'): Promise<Browser> {
     return await lock
       .acquire('instance_' + instanceName, async function() {
-        let cfg = config[instanceName]
-        if (cfg.browserHandle) return cfg.browserHandle
+        if (config[instanceName].browserHandle)
+          return config[instanceName].browserHandle
 
         const args = [
           '--disable-infobars',
@@ -55,36 +56,42 @@ export default (() => {
           '--disable-setuid-sandbox',
           '--ignore-certificate-errors',
           '--enable-features=NetworkService',
-          `--window-size=${cfg.windowSize.width},${cfg.windowSize.height}`,
+          `--window-size=${config[instanceName].windowSize.width},${
+            config[instanceName].windowSize.height
+          }`,
           '--disable-background-timer-throttling',
           '--disable-backgrounding-occluded-windows',
           '--disable-renderer-backgrounding',
         ]
 
-        if (cfg.proxy) {
-          args.push(`--proxy-server=${cfg.proxy}`)
+        if (config[instanceName].proxy) {
+          args.push(`--proxy-server=${config[instanceName].proxy}`)
         }
 
-        if (cfg.extensions.length > 0) {
+        if (config[instanceName].extensions.length > 0) {
           args.push(
-            `--disable-extensions-except=${cfg.extensions.join(',')}`,
-            `--load-extension=${cfg.extensions.join(',')}`,
+            `--disable-extensions-except=${config[instanceName].extensions.join(
+              ',',
+            )}`,
+            `--load-extension=${config[instanceName].extensions.join(',')}`,
           )
         }
 
         let launchOptions: any = {
-          userDataDir: cfg.userDataDir,
-          headless: cfg.headless,
+          userDataDir: config[instanceName].userDataDir,
+          headless: config[instanceName].headless,
           args,
           ignoreHTTPSErrors: true,
         }
 
-        if (cfg.useChrome === true) {
+        if (config[instanceName].useChrome === true) {
           launchOptions.executablePath = chromePaths.chrome
         }
 
-        cfg.browserHandle = await puppeteer.launch(launchOptions)
-        return cfg.browserHandle
+        config[instanceName].browserHandle = await puppeteer.launch(
+          launchOptions,
+        )
+        return config[instanceName].browserHandle
       })
       .catch((err) =>
         console.log('Error on starting new page: Lock Error ->', err),
@@ -92,28 +99,40 @@ export default (() => {
   }
 
   async function makePageFaster(page, instanceName = 'default'): Promise<Page> {
-    let cfg = config[instanceName]
-    if (cfg.blockCSS || cfg.blockFonts || cfg.blockImages) {
-      await page.setRequestInterception(true)
-      page.on('request', (request) => {
-        if (
-          (cfg.blockImages && request.resourceType() === 'image') ||
-          (cfg.blockFonts && request.resourceType() === 'font') ||
-          (cfg.blockCSS && request.resourceType() === 'stylesheet')
-        ) {
-          request.abort()
-        } else {
-          request.continue()
-        }
-      })
-    }
+    return await lock.acquire('instance_' + instanceName, async function() {
+      if (
+        config[instanceName].blockCSS ||
+        config[instanceName].blockFonts ||
+        config[instanceName].blockImages
+      ) {
+        await page.setRequestInterception(true)
+        page.on('request', (request) => {
+          if (
+            (config[instanceName].blockImages &&
+              request.resourceType() === 'image') ||
+            (config[instanceName].blockFonts &&
+              request.resourceType() === 'font') ||
+            (config[instanceName].blockCSS &&
+              request.resourceType() === 'stylesheet')
+          ) {
+            request.abort()
+          } else {
+            request.continue()
+          }
+        })
+      }
 
-    const session = await page.target().createCDPSession()
-    await page.setBypassCSP(true)
-    await session.send('Page.enable')
-    await session.send('Page.setWebLifecycleState', { state: 'active' })
-    await page.setDefaultNavigationTimeout(cfg.defaultNavigationTimeout)
-    return page
+      const session = await page.target().createCDPSession()
+      await page.setBypassCSP(true)
+      await session.send('Page.enable')
+      await session.send('Page.setWebLifecycleState', {
+        state: 'active',
+      })
+      await page.setDefaultNavigationTimeout(
+        config[instanceName].defaultNavigationTimeout,
+      )
+      return page
+    })
   }
 
   return {
