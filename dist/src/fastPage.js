@@ -123,7 +123,7 @@ exports.default = (() => {
         },
         closeBrowser: async (instanceName = 'default') => {
             return await lock
-                .acquire('instance_' + instanceName, async function () {
+                .acquire('instance_close_' + instanceName, async function () {
                 if (config[instanceName].browserHandle) {
                     let bHandle = await browser(instanceName);
                     await bHandle.close();
