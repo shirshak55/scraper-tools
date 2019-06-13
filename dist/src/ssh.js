@@ -25,6 +25,7 @@ exports.default = (() => {
                     username,
                     privateKey: privatekeyPath,
                 });
+                return handler;
             }
             catch (e) {
                 consoleMessage_1.default.error('Error at ssh', e);
