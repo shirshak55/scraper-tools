@@ -8,7 +8,9 @@ const consoleMessage_1 = __importDefault(require("./consoleMessage"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 /// # Allows you to upload Via SSH
+/// @Todo Lock
 exports.default = (() => {
+    let sshHandler;
     return {
         upload: async ({ host, port, username, privatekeyPath, filePath, remoteFilePath, }) => {
             try {
@@ -19,6 +21,7 @@ exports.default = (() => {
                     username,
                     privateKey: fs_1.default.readFileSync(privatekeyPath),
                 });
+                let sshHandler = sftp;
                 try {
                     await sftp.mkdir(path_1.default.dirname(remoteFilePath), true);
                 }
@@ -29,6 +32,12 @@ exports.default = (() => {
             catch (e) {
                 consoleMessage_1.default.error('SSH Uploader Module', e);
             }
+        },
+        returnHandler: async () => {
+            if (!sshHandler) {
+                throw 'No SSH Handler found';
+            }
+            return sshHandler;
         },
     };
 })();

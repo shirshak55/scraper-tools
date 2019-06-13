@@ -2,10 +2,13 @@ import sftpClient from 'ssh2-sftp-client'
 import consoleMessage from './consoleMessage'
 import fs from 'fs'
 import path from 'path'
+import { async } from 'rxjs/internal/scheduler/async'
 
 /// # Allows you to upload Via SSH
+/// @Todo Lock
 
 export default (() => {
+  let sshHandler
   return {
     upload: async ({
       host,
@@ -30,6 +33,7 @@ export default (() => {
           username,
           privateKey: fs.readFileSync(privatekeyPath),
         })
+        let sshHandler = sftp
         try {
           await sftp.mkdir(path.dirname(remoteFilePath), true)
         } catch (e) {}
@@ -38,6 +42,12 @@ export default (() => {
       } catch (e) {
         consoleMessage.error('SSH Uploader Module', e)
       }
+    },
+    returnHandler: async () => {
+      if (!sshHandler) {
+        throw 'No SSH Handler found'
+      }
+      return sshHandler
     },
   }
 })()
