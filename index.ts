@@ -28,7 +28,8 @@ import xlsxReader from './src/xlsxReader'
 import fastPage from './src/fastPage'
 import writeFileSync from './src/writeFileSync'
 import csvToXlsxConverter from './src/csvToXlsxConverter'
-import sshUploader from './src/sshUploader'
+import sftp from './src/sftp'
+import ssh from './src/ssh'
 import waitForFrames from './src/waitForFrames'
 import csvToJson from './src/csvToJson'
 import jsonToCsv from './src/jsonToCsv'
@@ -64,7 +65,8 @@ export {
   request,
   xlsxReader,
   dateFormat,
-  sshUploader,
+  sftp,
+  ssh,
   waitForFrames,
   csvToJson,
   jsonToCsv,
