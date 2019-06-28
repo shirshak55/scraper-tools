@@ -8,7 +8,7 @@ After 2.0.0 it will follow semantic versioning
 
 ## Licence
 
-Free for student but costs 20$ for commericial use. Please test and don't ask for refund. $20 should be piece of cake because I know u will get addicted to it :). Once I have stable income I will make it free for commericial too :)
+Please support me by sending payment to https://www.paypal.me/KGajurel. Please inform me if you have helped me.
 
 ## Handbook
 
