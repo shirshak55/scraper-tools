@@ -7,6 +7,7 @@ import { Page, Browser } from 'puppeteer'
 import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
 import AsyncLock from 'async-lock'
 import { _ } from '..'
+import consoleMessage from './consoleMessage'
 
 export default (() => {
   let lock = new AsyncLock()
@@ -99,6 +100,10 @@ export default (() => {
   }
 
   async function makePageFaster(page, instanceName = 'default'): Promise<Page> {
+    await page.setDefaultNavigationTimeout(
+      config[instanceName].defaultNavigationTimeout,
+    )
+
     return await lock.acquire('instance_' + instanceName, async function() {
       if (
         config[instanceName].blockCSS ||
@@ -128,9 +133,7 @@ export default (() => {
       await session.send('Page.setWebLifecycleState', {
         state: 'active',
       })
-      await page.setDefaultNavigationTimeout(
-        config[instanceName].defaultNavigationTimeout,
-      )
+
       return page
     })
   }
@@ -144,12 +147,14 @@ export default (() => {
       }
     },
     newPage: async (instanceName: string = 'default'): Promise<Page> => {
+      consoleMessage.info('Fast Page', 'Launching new page ')
       let brow = await browser(instanceName)
       let page = await brow.newPage()
       await makePageFaster(page, instanceName)
       return page
     },
     closeBrowser: async (instanceName: string = 'default') => {
+      consoleMessage.info('Fast Page', 'Requesting to close browser ')
       return await lock
         .acquire('instance_close_' + instanceName, async function() {
           if (config[instanceName].browserHandle) {
@@ -164,21 +169,26 @@ export default (() => {
         )
     },
     setProxy: (value: string, instanceName: string = 'default') => {
+      consoleMessage.info('Fast Page', 'Setting proxy to ', value)
       config[instanceName].proxy = value
     },
     setHeadless: (value: boolean = false, instanceName: string = 'default') => {
+      consoleMessage.info('Fast Page', 'Setting headless to ', value)
       config[instanceName].headless = value
     },
     setUserDataDir: (value: string, instanceName: string = 'default') => {
+      consoleMessage.info('Fast Page', 'Storing chrome cache in  ', value)
       config[instanceName].userDataDir = value
     },
     setWindowSizeArg: (
       value: { width: number; height: number },
       instanceName: string = 'default',
     ) => {
+      consoleMessage.info('Fast Page', 'Setting window size to ', value)
       config[instanceName].windowSize = value
     },
     set2captchaToken: (value: string, instanceName: string = 'default') => {
+      consoleMessage.info('Fast Page', 'Setting 2captcha token to ', value)
       config[instanceName].twoCaptchaToken = value
     },
 
@@ -192,18 +202,23 @@ export default (() => {
       value: number,
       instanceName: string = 'default',
     ) => {
+      consoleMessage.info('Fast Page', 'Default navigation timeout', value)
       config[instanceName].defaultNavigationTimeout = value
     },
     blockImages: (value: boolean = true, instanceName: string = 'default') => {
+      consoleMessage.info('Fast Page', 'Block Image', value)
       config[instanceName].blockImages = value
     },
     blockFonts: (value: boolean = true, instanceName: string = 'default') => {
+      consoleMessage.info('Fast Page', 'Block Font', value)
       config[instanceName].blockFonts = value
     },
     blockCSS: (value: boolean = true, instanceName: string = 'default') => {
+      consoleMessage.info('Fast Page', 'Block CSS', value)
       config[instanceName].blockCSS = value
     },
     useChrome: (value: boolean = true, instanceName: string = 'default') => {
+      consoleMessage.info('Fast Page', 'Setting to use chrome', value)
       config[instanceName].useChrome = value
     },
     getConfig(instanceName = null) {

@@ -10,6 +10,7 @@ const puppeteer_extra_plugin_stealth_1 = __importDefault(require("puppeteer-extr
 const puppeteer_extra_plugin_anonymize_ua_1 = __importDefault(require("puppeteer-extra-plugin-anonymize-ua"));
 const puppeteer_extra_plugin_recaptcha_1 = __importDefault(require("puppeteer-extra-plugin-recaptcha"));
 const async_lock_1 = __importDefault(require("async-lock"));
+const consoleMessage_1 = __importDefault(require("./consoleMessage"));
 exports.default = (() => {
     let lock = new async_lock_1.default();
     let defaultConfig = {
@@ -77,6 +78,7 @@ exports.default = (() => {
             .catch((err) => console.log('Error on starting new page: Lock Error ->', err));
     }
     async function makePageFaster(page, instanceName = 'default') {
+        await page.setDefaultNavigationTimeout(config[instanceName].defaultNavigationTimeout);
         return await lock.acquire('instance_' + instanceName, async function () {
             if (config[instanceName].blockCSS ||
                 config[instanceName].blockFonts ||
@@ -102,7 +104,6 @@ exports.default = (() => {
             await session.send('Page.setWebLifecycleState', {
                 state: 'active',
             });
-            await page.setDefaultNavigationTimeout(config[instanceName].defaultNavigationTimeout);
             return page;
         });
     }
@@ -116,12 +117,14 @@ exports.default = (() => {
             }
         },
         newPage: async (instanceName = 'default') => {
+            consoleMessage_1.default.info('Fast Page', 'Launching new page ');
             let brow = await browser(instanceName);
             let page = await brow.newPage();
             await makePageFaster(page, instanceName);
             return page;
         },
         closeBrowser: async (instanceName = 'default') => {
+            consoleMessage_1.default.info('Fast Page', 'Requesting to close browser ');
             return await lock
                 .acquire('instance_close_' + instanceName, async function () {
                 if (config[instanceName].browserHandle) {
@@ -134,36 +137,46 @@ exports.default = (() => {
                 .catch((err) => console.log('Error on closing browser: Lock Error ->', err));
         },
         setProxy: (value, instanceName = 'default') => {
+            consoleMessage_1.default.info('Fast Page', 'Setting proxy to ', value);
             config[instanceName].proxy = value;
         },
         setHeadless: (value = false, instanceName = 'default') => {
+            consoleMessage_1.default.info('Fast Page', 'Setting headless to ', value);
             config[instanceName].headless = value;
         },
         setUserDataDir: (value, instanceName = 'default') => {
+            consoleMessage_1.default.info('Fast Page', 'Storing chrome cache in  ', value);
             config[instanceName].userDataDir = value;
         },
         setWindowSizeArg: (value, instanceName = 'default') => {
+            consoleMessage_1.default.info('Fast Page', 'Setting window size to ', value);
             config[instanceName].windowSize = value;
         },
         set2captchaToken: (value, instanceName = 'default') => {
+            consoleMessage_1.default.info('Fast Page', 'Setting 2captcha token to ', value);
             config[instanceName].twoCaptchaToken = value;
         },
         setExtensionsPaths: (value, instanceName = 'default') => {
             config[instanceName].extensions = value;
         },
         setDefaultNavigationTimeout: (value, instanceName = 'default') => {
+            consoleMessage_1.default.info('Fast Page', 'Default navigation timeout', value);
             config[instanceName].defaultNavigationTimeout = value;
         },
         blockImages: (value = true, instanceName = 'default') => {
+            consoleMessage_1.default.info('Fast Page', 'Block Image', value);
             config[instanceName].blockImages = value;
         },
         blockFonts: (value = true, instanceName = 'default') => {
+            consoleMessage_1.default.info('Fast Page', 'Block Font', value);
             config[instanceName].blockFonts = value;
         },
         blockCSS: (value = true, instanceName = 'default') => {
+            consoleMessage_1.default.info('Fast Page', 'Block CSS', value);
             config[instanceName].blockCSS = value;
         },
         useChrome: (value = true, instanceName = 'default') => {
+            consoleMessage_1.default.info('Fast Page', 'Setting to use chrome', value);
             config[instanceName].useChrome = value;
         },
         getConfig(instanceName = null) {
