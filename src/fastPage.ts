@@ -104,6 +104,8 @@ export default (() => {
       config[instanceName].defaultNavigationTimeout,
     )
 
+    await page.setDefaultTimeout(config[instanceName].defaultNavigationTimeout)
+
     return await lock.acquire('instance_' + instanceName, async function() {
       if (
         config[instanceName].blockCSS ||
