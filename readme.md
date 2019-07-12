@@ -76,6 +76,19 @@ DISPLAY=:99 yarn start
 
 On Remote PC
 
+## Injecting Functions
+
+I have added inject function like waiting for dom element etc which is not available in evaluation script.
+
+```js
+import { functionsToInject } from 'scrapper-tools'
+await page.addScriptTag({
+  content: `${functionsToInject.waitForElement} ${
+    functionsToInject.waitForElementToBeRemoved
+  } ${functionsToInject.delay}`,
+})
+```
+
 ### Thanks
 
 Shirshak Bajgain
