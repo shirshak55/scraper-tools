@@ -73,4 +73,6 @@ const csvToJson_1 = __importDefault(require("./src/csvToJson"));
 exports.csvToJson = csvToJson_1.default;
 const jsonToCsv_1 = __importDefault(require("./src/jsonToCsv"));
 exports.jsonToCsv = jsonToCsv_1.default;
+const functionToInject_1 = __importDefault(require("./src/functionToInject"));
+exports.functionsToInject = functionToInject_1.default;
 //# sourceMappingURL=index.js.map

@@ -33,6 +33,7 @@ import ssh from './src/ssh'
 import waitForFrames from './src/waitForFrames'
 import csvToJson from './src/csvToJson'
 import jsonToCsv from './src/jsonToCsv'
+import functionsToInject from './src/functionToInject'
 
 export {
   _,
@@ -70,4 +71,5 @@ export {
   waitForFrames,
   csvToJson,
   jsonToCsv,
+  functionsToInject,
 }
