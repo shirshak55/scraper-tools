@@ -61,7 +61,7 @@ export default (() => {
     warning,
     success,
     setShouldLogToFile: (value: boolean = false) => {
-      shouldLogToFile: value
+      shouldLogToFile = value
     },
   }
 })()
