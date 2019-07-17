@@ -60,7 +60,7 @@ exports.default = (() => {
         warning,
         success,
         setShouldLogToFile: (value = false) => {
-            shouldLogToFile: value;
+            shouldLogToFile = value;
         },
     };
 })();
