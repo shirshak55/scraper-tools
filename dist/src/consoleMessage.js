@@ -9,6 +9,7 @@ const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const os_1 = __importDefault(require("os"));
 const right_pad_1 = __importDefault(require("right-pad"));
+const util_1 = __importDefault(require("util"));
 exports.default = (() => {
     let shouldLogToFile = false;
     let desktopPath = path_1.default.join(os_1.default.homedir(), 'Desktop');
@@ -27,12 +28,10 @@ exports.default = (() => {
     const logToFile = (title, content) => {
         if (!shouldLogToFile)
             return;
-        let c = content;
-        try {
-            let c = JSON.stringify(titlify(title) + ' ' + content, null, 4);
-        }
-        catch (e) { }
-        fs_1.default.appendFileSync(path_1.default.join(logFolder, 'log.txt'), '\n' + c);
+        let stream = fs_1.default.createWriteStream(path_1.default.join(logFolder, 'log.txt'), {
+            flags: 'a',
+        });
+        stream.write(util_1.default.format(`[${title}] ` + content) + '\n');
     };
     const error = (title, ...s) => {
         logToFile(title, s.join(' '));

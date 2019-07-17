@@ -4,6 +4,7 @@ import path from 'path'
 import fs from 'fs'
 import os from 'os'
 import rightPad from 'right-pad'
+import util from 'util'
 
 export default (() => {
   let shouldLogToFile = false
@@ -24,13 +25,10 @@ export default (() => {
 
   const logToFile = (title, content) => {
     if (!shouldLogToFile) return
-    let c = content
-
-    try {
-      let c = JSON.stringify(titlify(title) + ' ' + content, null, 4)
-    } catch (e) {}
-
-    fs.appendFileSync(path.join(logFolder, 'log.txt'), '\n' + c)
+    let stream = fs.createWriteStream(path.join(logFolder, 'log.txt'), {
+      flags: 'a',
+    })
+    stream.write(util.format(`[${title}] ` + content) + '\n')
   }
 
   const error = (title, ...s) => {
