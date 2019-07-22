@@ -106,6 +106,14 @@ export default (() => {
 
     await page.setDefaultTimeout(config[instanceName].defaultNavigationTimeout)
 
+    page.on('error', (err) => {
+      consoleMessage.error('Error happen at the page: ', err)
+    })
+
+    page.on('pageerror', (pageerr) => {
+      consoleMessage.error('PageError occurred: ', pageerr)
+    })
+
     return await lock.acquire('instance_' + instanceName, async function() {
       if (
         config[instanceName].blockCSS ||

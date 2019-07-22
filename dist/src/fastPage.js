@@ -80,6 +80,12 @@ exports.default = (() => {
     async function makePageFaster(page, instanceName = 'default') {
         await page.setDefaultNavigationTimeout(config[instanceName].defaultNavigationTimeout);
         await page.setDefaultTimeout(config[instanceName].defaultNavigationTimeout);
+        page.on('error', (err) => {
+            consoleMessage_1.default.error('Error happen at the page: ', err);
+        });
+        page.on('pageerror', (pageerr) => {
+            consoleMessage_1.default.error('PageError occurred: ', pageerr);
+        });
         return await lock.acquire('instance_' + instanceName, async function () {
             if (config[instanceName].blockCSS ||
                 config[instanceName].blockFonts ||
