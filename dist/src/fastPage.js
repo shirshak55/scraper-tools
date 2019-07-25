@@ -47,6 +47,7 @@ exports.default = (() => {
             if (config[instanceName].browserHandle)
                 return config[instanceName].browserHandle;
             const args = [
+                '--disable-web-security',
                 '--disable-infobars',
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
