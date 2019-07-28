@@ -9,7 +9,7 @@
     "dependencies": {
         "@types/inquirer": "^6.0.3",
         "@types/node": "^12.6.8",
-        "@types/puppeteer": "^1.12.4",
+        "@types/puppeteer": "^1.19.0",
         "async-lock": "^1.2.2",
         "chalk": "^2.4.2",
         "cheerio": "^1.0.0-rc.2",
@@ -41,7 +41,7 @@
         "request": "^2.88.0",
         "request-promise": "^4.2.4",
         "right-pad": "^1.0.1",
-        "sanitize-filename": "^1.6.1",
+        "sanitize-filename": "^1.6.2",
         "ssh2-sftp-client": "^2.5.0",
         "ts-node": "^8.3.0",
         "typescript": "^3.5.3",
