@@ -7,15 +7,15 @@
         "build": "tsc"
     },
     "dependencies": {
-        "@types/inquirer": "^6.0.3",
-        "@types/node": "^12.6.8",
+        "@types/inquirer": "^6.5.0",
+        "@types/node": "^12.7.1",
         "@types/puppeteer": "^1.19.0",
         "async-lock": "^1.2.2",
         "chalk": "^2.4.2",
         "cheerio": "^1.0.0-rc.2",
         "chrome-paths": "^1.0.1",
         "configstore": "^5.0.0",
-        "csv-parse": "^4.4.3",
+        "csv-parse": "^4.4.4",
         "csvtojson": "^2.0.10",
         "date-format": "^2.1.0",
         "delay": "^4.3.0",
@@ -45,6 +45,6 @@
         "ssh2-sftp-client": "^2.5.0",
         "ts-node": "^8.3.0",
         "typescript": "^3.5.3",
-        "xlsx": "^0.14.4"
+        "xlsx": "^0.15.0"
     }
 }
