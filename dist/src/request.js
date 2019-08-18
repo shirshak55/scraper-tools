@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const request_promise_1 = __importDefault(require("request-promise"));
 const p_retry_1 = __importDefault(require("p-retry"));
 const consoleMessage_1 = __importDefault(require("./consoleMessage"));
+const request_1 = __importDefault(require("request"));
 exports.default = (() => {
     let proxies = [];
     let currentIndex = 0;
@@ -14,6 +15,12 @@ exports.default = (() => {
     let timeout = 5 * 1000;
     let userAgent = null;
     return {
+        getOriginalRequestPromise: () => {
+            return request_promise_1.default;
+        },
+        getOriginalRequest: () => {
+            return request_1.default;
+        },
         setProxy: (pxy) => {
             consoleMessage_1.default.success('Request Module', `Setting Proxies to`, pxy);
             currentIndex = 0;

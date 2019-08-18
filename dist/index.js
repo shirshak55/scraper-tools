@@ -75,4 +75,6 @@ const jsonToCsv_1 = __importDefault(require("./src/jsonToCsv"));
 exports.jsonToCsv = jsonToCsv_1.default;
 const functionToInject_1 = __importDefault(require("./src/functionToInject"));
 exports.functionsToInject = functionToInject_1.default;
+const request_promise_1 = __importDefault(require("request-promise"));
+exports.requestPromise = request_promise_1.default;
 //# sourceMappingURL=index.js.map
