@@ -34,6 +34,7 @@ import waitForFrames from './src/waitForFrames'
 import csvToJson from './src/csvToJson'
 import jsonToCsv from './src/jsonToCsv'
 import functionsToInject from './src/functionToInject'
+import requestPromise from 'request-promise'
 
 export {
   _,
@@ -72,4 +73,5 @@ export {
   csvToJson,
   jsonToCsv,
   functionsToInject,
+  requestPromise,
 }

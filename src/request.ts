@@ -1,6 +1,7 @@
 import requestPromise from 'request-promise'
 import pRetry from 'p-retry'
 import consoleMessage from './consoleMessage'
+import request from 'request'
 
 export default (() => {
   let proxies = []
@@ -12,6 +13,12 @@ export default (() => {
   let userAgent = null
 
   return {
+    getOriginalRequestPromise: () => {
+      return requestPromise
+    },
+    getOriginalRequest: () => {
+      return request
+    },
     setProxy: (pxy: Array<string>) => {
       consoleMessage.success('Request Module', `Setting Proxies to`, pxy)
       currentIndex = 0
@@ -60,8 +67,7 @@ export default (() => {
           headers: {
             cookie,
             'user-agent': userAgent,
-            'content-type':
-              'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+            'content-type': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
             'accept-language': 'en-US,en;q=0.9',
           },
           timeout,
@@ -75,9 +81,7 @@ export default (() => {
               'Request Module',
               `Attempt ${error.attemptNumber} failed. There are ${
                 error.retriesLeft
-              } attempts left. Proxy: ${pxy} Url: ${
-                error.options.uri
-              } Error Message: ${error.message} `,
+              } attempts left. Proxy: ${pxy} Url: ${error.options.uri} Error Message: ${error.message} `,
             )
           },
         })
