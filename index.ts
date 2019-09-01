@@ -12,7 +12,6 @@ import meow from 'meow'
 import pRetry from 'p-retry'
 import pWaitFor from 'p-wait-for'
 import _ from 'lodash'
-import waitForXHR from './src/waitForXhr'
 import chunks from './src/chunks'
 import consoleMessage from './src/consoleMessage'
 import createDirectories from './src/createDirectories'
@@ -46,7 +45,6 @@ export {
   PendingXHR,
   configstore,
   chunks,
-  waitForXHR,
   rightPad,
   consoleMessage,
   createDirectories,
