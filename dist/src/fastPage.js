@@ -25,6 +25,7 @@ exports.default = (() => {
         blockCSS: false,
         defaultNavigationTimeout: 30 * 1000,
         extensions: [],
+        showPageError: false,
     };
     let config = {
         default: { ...defaultConfig },
@@ -84,21 +85,18 @@ exports.default = (() => {
         page.on('error', (err) => {
             consoleMessage_1.default.error('Error happen at the page: ', err);
         });
-        page.on('pageerror', (pageerr) => {
-            consoleMessage_1.default.error('PageError occurred: ', pageerr);
-        });
+        if (config[instanceName].showPageError === true) {
+            page.on('pageerror', (pageerr) => {
+                consoleMessage_1.default.error('Page Error occurred: ', pageerr);
+            });
+        }
         return await lock.acquire('instance_' + instanceName, async function () {
-            if (config[instanceName].blockCSS ||
-                config[instanceName].blockFonts ||
-                config[instanceName].blockImages) {
+            if (config[instanceName].blockCSS || config[instanceName].blockFonts || config[instanceName].blockImages) {
                 await page.setRequestInterception(true);
                 page.on('request', (request) => {
-                    if ((config[instanceName].blockImages &&
-                        request.resourceType() === 'image') ||
-                        (config[instanceName].blockFonts &&
-                            request.resourceType() === 'font') ||
-                        (config[instanceName].blockCSS &&
-                            request.resourceType() === 'stylesheet')) {
+                    if ((config[instanceName].blockImages && request.resourceType() === 'image') ||
+                        (config[instanceName].blockFonts && request.resourceType() === 'font') ||
+                        (config[instanceName].blockCSS && request.resourceType() === 'stylesheet')) {
                         request.abort();
                     }
                     else {
