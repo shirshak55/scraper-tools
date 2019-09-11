@@ -24,6 +24,7 @@ export default (() => {
     blockCSS: false,
     defaultNavigationTimeout: 30 * 1000,
     extensions: [],
+    showPageError: false,
   }
   let config = {
     default: { ...defaultConfig },
@@ -48,8 +49,7 @@ export default (() => {
   async function browser(instanceName = 'default'): Promise<Browser> {
     return await lock
       .acquire('instance_' + instanceName, async function() {
-        if (config[instanceName].browserHandle)
-          return config[instanceName].browserHandle
+        if (config[instanceName].browserHandle) return config[instanceName].browserHandle
 
         const args = [
           '--disable-web-security',
@@ -58,9 +58,7 @@ export default (() => {
           '--disable-setuid-sandbox',
           '--ignore-certificate-errors',
           '--enable-features=NetworkService',
-          `--window-size=${config[instanceName].windowSize.width},${
-            config[instanceName].windowSize.height
-          }`,
+          `--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`,
           '--disable-background-timer-throttling',
           '--disable-backgrounding-occluded-windows',
           '--disable-renderer-backgrounding',
@@ -72,9 +70,7 @@ export default (() => {
 
         if (config[instanceName].extensions.length > 0) {
           args.push(
-            `--disable-extensions-except=${config[instanceName].extensions.join(
-              ',',
-            )}`,
+            `--disable-extensions-except=${config[instanceName].extensions.join(',')}`,
             `--load-extension=${config[instanceName].extensions.join(',')}`,
           )
         }
@@ -90,20 +86,14 @@ export default (() => {
           launchOptions.executablePath = chromePaths.chrome
         }
 
-        config[instanceName].browserHandle = await puppeteer.launch(
-          launchOptions,
-        )
+        config[instanceName].browserHandle = await puppeteer.launch(launchOptions)
         return config[instanceName].browserHandle
       })
-      .catch((err) =>
-        console.log('Error on starting new page: Lock Error ->', err),
-      )
+      .catch((err) => console.log('Error on starting new page: Lock Error ->', err))
   }
 
   async function makePageFaster(page, instanceName = 'default'): Promise<Page> {
-    await page.setDefaultNavigationTimeout(
-      config[instanceName].defaultNavigationTimeout,
-    )
+    await page.setDefaultNavigationTimeout(config[instanceName].defaultNavigationTimeout)
 
     await page.setDefaultTimeout(config[instanceName].defaultNavigationTimeout)
 
@@ -111,25 +101,20 @@ export default (() => {
       consoleMessage.error('Error happen at the page: ', err)
     })
 
-    page.on('pageerror', (pageerr) => {
-      consoleMessage.error('PageError occurred: ', pageerr)
-    })
+    if (config[instanceName].showPageError === true) {
+      page.on('pageerror', (pageerr) => {
+        consoleMessage.error('Page Error occurred: ', pageerr)
+      })
+    }
 
     return await lock.acquire('instance_' + instanceName, async function() {
-      if (
-        config[instanceName].blockCSS ||
-        config[instanceName].blockFonts ||
-        config[instanceName].blockImages
-      ) {
+      if (config[instanceName].blockCSS || config[instanceName].blockFonts || config[instanceName].blockImages) {
         await page.setRequestInterception(true)
         page.on('request', (request) => {
           if (
-            (config[instanceName].blockImages &&
-              request.resourceType() === 'image') ||
-            (config[instanceName].blockFonts &&
-              request.resourceType() === 'font') ||
-            (config[instanceName].blockCSS &&
-              request.resourceType() === 'stylesheet')
+            (config[instanceName].blockImages && request.resourceType() === 'image') ||
+            (config[instanceName].blockFonts && request.resourceType() === 'font') ||
+            (config[instanceName].blockCSS && request.resourceType() === 'stylesheet')
           ) {
             request.abort()
           } else {
@@ -175,9 +160,7 @@ export default (() => {
           config[instanceName].browserHandle = null
           return 'closed'
         })
-        .catch((err) =>
-          console.log('Error on closing browser: Lock Error ->', err),
-        )
+        .catch((err) => console.log('Error on closing browser: Lock Error ->', err))
     },
     setProxy: (value: string, instanceName: string = 'default') => {
       consoleMessage.info('Fast Page', 'Setting proxy to ', value)
@@ -191,10 +174,7 @@ export default (() => {
       consoleMessage.info('Fast Page', 'Storing chrome cache in  ', value)
       config[instanceName].userDataDir = value
     },
-    setWindowSizeArg: (
-      value: { width: number; height: number },
-      instanceName: string = 'default',
-    ) => {
+    setWindowSizeArg: (value: { width: number; height: number }, instanceName: string = 'default') => {
       consoleMessage.info('Fast Page', 'Setting window size to ', value)
       config[instanceName].windowSize = value
     },
@@ -203,16 +183,10 @@ export default (() => {
       config[instanceName].twoCaptchaToken = value
     },
 
-    setExtensionsPaths: (
-      value: Array<string>,
-      instanceName: string = 'default',
-    ) => {
+    setExtensionsPaths: (value: Array<string>, instanceName: string = 'default') => {
       config[instanceName].extensions = value
     },
-    setDefaultNavigationTimeout: (
-      value: number,
-      instanceName: string = 'default',
-    ) => {
+    setDefaultNavigationTimeout: (value: number, instanceName: string = 'default') => {
       consoleMessage.info('Fast Page', 'Default navigation timeout', value)
       config[instanceName].defaultNavigationTimeout = value
     },
