@@ -3,7 +3,7 @@ import fastPage from '../../src/fastPage'
 async function main() {
   let page = await fastPage.newPage()
 
-  await page.goto('https://subscription.packtpub.com/book/application_development/9781788399975', {
+  await page.goto('https://bot.sannysoft.com/', {
     waitUntil: 'networkidle0',
   })
 }
