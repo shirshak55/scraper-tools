@@ -54,6 +54,7 @@ export default (() => {
         const args = [
           '--disable-web-security',
           '--disable-infobars',
+          '--enable-automation',
           '--no-sandbox',
           '--disable-setuid-sandbox',
           '--ignore-certificate-errors',
