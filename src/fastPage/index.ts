@@ -1,23 +1,20 @@
-// import puppeteer from 'puppeteer-core'
+import puppeteer from 'puppeteer-core'
 import chromePaths from 'chrome-paths'
-import puppeteer from 'puppeteer-extra'
-import pluginStealth from 'puppeteer-extra-plugin-stealth'
-import pluginUAFix from 'puppeteer-extra-plugin-anonymize-ua'
 import { Page, Browser } from 'puppeteer'
-import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
 import AsyncLock from 'async-lock'
-import { _ } from '..'
-import consoleMessage from './consoleMessage'
+import { _ } from 'lodash'
+import consoleMessage from '../consoleMessage'
+import pageStealth from './pageStealth'
+
+let lock = new AsyncLock()
 
 export default (() => {
-  let lock = new AsyncLock()
-
+  let twoCaptchaToken: ''
   let defaultConfig = {
     browserHandle: null,
     proxy: null,
     headless: false,
     userDataDir: null,
-    useChrome: false,
     windowSize: { width: 595, height: 842 },
     blockFonts: false,
     blockImages: false,
@@ -30,39 +27,13 @@ export default (() => {
     default: { ...defaultConfig },
   }
 
-  let twoCaptchaToken: ''
-  if (twoCaptchaToken) {
-    const recaptchaPlugin = RecaptchaPlugin({
-      provider: { id: '2captcha', token: twoCaptchaToken },
-    })
-    puppeteer.use(recaptchaPlugin)
-  }
-
-  puppeteer.use(pluginStealth())
-  puppeteer.use(
-    pluginUAFix({
-      stripHeadless: true,
-      makeWindows: true,
-    }),
-  )
-
   async function browser(instanceName = 'default'): Promise<Browser> {
     return await lock
       .acquire('instance_' + instanceName, async function() {
         if (config[instanceName].browserHandle) return config[instanceName].browserHandle
 
         const args = [
-          '--disable-web-security',
-          '--disable-infobars',
-          '--enable-automation',
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--ignore-certificate-errors',
-          '--enable-features=NetworkService',
           `--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`,
-          '--disable-background-timer-throttling',
-          '--disable-backgrounding-occluded-windows',
-          '--disable-renderer-backgrounding',
         ]
 
         if (config[instanceName].proxy) {
@@ -83,9 +54,7 @@ export default (() => {
           ignoreHTTPSErrors: true,
         }
 
-        if (config[instanceName].useChrome === true) {
-          launchOptions.executablePath = chromePaths.chrome
-        }
+        launchOptions.executablePath = chromePaths.chrome
 
         config[instanceName].browserHandle = await puppeteer.launch(launchOptions)
         return config[instanceName].browserHandle
@@ -94,44 +63,43 @@ export default (() => {
   }
 
   async function makePageFaster(page, instanceName = 'default'): Promise<Page> {
-    await page.setRequestInterception(true)
     await page.setDefaultNavigationTimeout(config[instanceName].defaultNavigationTimeout)
     await page.setDefaultTimeout(config[instanceName].defaultNavigationTimeout)
 
-    page.on('error', (err) => {
-      consoleMessage.error('Error happen at the page: ', err)
-    })
+    const session = await page.target().createCDPSession()
+    await page.setBypassCSP(true)
+
+    await pageStealth(page)
 
     if (config[instanceName].showPageError === true) {
+      page.on('error', (err) => {
+        consoleMessage.error('Error happen at the page: ', err)
+      })
       page.on('pageerror', (pageerr) => {
         consoleMessage.error('Page Error occurred: ', pageerr)
       })
     }
-
-    return await lock.acquire('instance_' + instanceName, async function() {
-      if (config[instanceName].blockCSS || config[instanceName].blockFonts || config[instanceName].blockImages) {
-        page.on('request', (request) => {
-          if (
-            (config[instanceName].blockImages && request.resourceType() === 'image') ||
-            (config[instanceName].blockFonts && request.resourceType() === 'font') ||
-            (config[instanceName].blockCSS && request.resourceType() === 'stylesheet')
-          ) {
-            request.abort()
-          } else {
-            request.continue()
-          }
-        })
-      }
-
-      const session = await page.target().createCDPSession()
-      await page.setBypassCSP(true)
-      await session.send('Page.enable')
-      await session.send('Page.setWebLifecycleState', {
-        state: 'active',
+    if (config[instanceName].blockCSS || config[instanceName].blockFonts || config[instanceName].blockImages) {
+      await page.setRequestInterception(true)
+      page.on('request', (request) => {
+        if (
+          (config[instanceName].blockImages && request.resourceType() === 'image') ||
+          (config[instanceName].blockFonts && request.resourceType() === 'font') ||
+          (config[instanceName].blockCSS && request.resourceType() === 'stylesheet')
+        ) {
+          request.abort()
+        } else {
+          request.continue()
+        }
       })
+    }
 
-      return page
+    await session.send('Page.enable')
+    await session.send('Page.setWebLifecycleState', {
+      state: 'active',
     })
+
+    return page
   }
 
   return {
@@ -202,15 +170,10 @@ export default (() => {
       consoleMessage.info('Fast Page', 'Block CSS', value)
       config[instanceName].blockCSS = value
     },
-    useChrome: (value: boolean = true, instanceName: string = 'default') => {
-      consoleMessage.info('Fast Page', 'Setting to use chrome', value)
-      config[instanceName].useChrome = value
-    },
     getConfig(instanceName = null) {
       if (instanceName === null) {
         return config
       }
-
       return config[instanceName]
     },
   }
