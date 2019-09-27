@@ -1,24 +1,30 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-async function pageStealth(page) {
-    let ua = (await page.browser().userAgent())
-        .replace('HeadlessChrome/', 'Chrome/')
-        .replace(/\(([^)]+)\)/, '(Windows NT 10.0; Win64; x64)');
-    await page.setUserAgent(ua);
+async function runtimeStealth(page) {
     await page.evaluateOnNewDocument(() => {
-        // eslint-disable-next-line
-        const newProto = navigator.__proto__;
-        delete newProto.webdriver;
-        navigator.__proto__ = newProto;
+        ;
         window.chrome = {
             runtime: {},
         };
+    });
+}
+async function consoleDebug(page) {
+    await page.evaluateOnNewDocument(() => {
         window.console.debug = () => {
             return null;
         };
+    });
+}
+async function navigatorLanguages(page) {
+    await page.evaluateOnNewDocument(() => {
+        // Overwrite the `plugins` property to use a custom getter.
         Object.defineProperty(navigator, 'languages', {
             get: () => ['en-US', 'en'],
         });
+    });
+}
+async function navigatorPermissions(page) {
+    await page.evaluateOnNewDocument(() => {
         const originalQuery = window.navigator.permissions.query;
         window.navigator.permissions.__proto__.query = (parameters) => parameters.name === 'notifications'
             ? Promise.resolve({ state: Notification.permission }) //eslint-disable-line
@@ -43,6 +49,10 @@ async function pageStealth(page) {
         }
         // eslint-disable-next-line
         Function.prototype.toString = functionToString;
+    });
+}
+async function navigatorPlugin(page) {
+    await page.evaluateOnNewDocument(() => {
         function mockPluginsAndMimeTypes() {
             /* global MimeType MimeTypeArray PluginArray */
             // Disguise custom functions as being native
@@ -212,6 +222,17 @@ async function pageStealth(page) {
             mockPluginsAndMimeTypes();
         }
         catch (err) { }
+    });
+}
+async function navigatorWebDriver(page) {
+    await page.evaluateOnNewDocument(() => {
+        const newProto = navigator.__proto__;
+        delete newProto.webdriver;
+        navigator.__proto__ = newProto;
+    });
+}
+async function webGlVendor(page) {
+    await page.evaluateOnNewDocument(() => {
         try {
             /* global WebGLRenderingContext */
             const getParameter = WebGLRenderingContext.getParameter;
@@ -228,6 +249,10 @@ async function pageStealth(page) {
             };
         }
         catch (err) { }
+    });
+}
+async function outerWindow(page) {
+    await page.evaluateOnNewDocument(() => {
         try {
             if (window.outerWidth && window.outerHeight) {
                 return; // nothing to do here
@@ -239,6 +264,19 @@ async function pageStealth(page) {
         }
         catch (err) { }
     });
+}
+async function pageStealth(page) {
+    let ua = (await page.browser().userAgent())
+        .replace('HeadlessChrome/', 'Chrome/')
+        .replace(/\(([^)]+)\)/, '(Windows NT 10.0; Win64; x64)');
+    await page.setUserAgent(ua);
+    await runtimeStealth(page);
+    await consoleDebug(page);
+    await navigatorLanguages(page);
+    await navigatorPermissions(page);
+    await navigatorWebDriver(page);
+    await webGlVendor(page);
+    await outerWindow(page);
 }
 exports.default = pageStealth;
 //# sourceMappingURL=pageStealth.js.map

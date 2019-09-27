@@ -45,6 +45,7 @@ exports.default = (() => {
                 userDataDir: config[instanceName].userDataDir,
                 headless: config[instanceName].headless,
                 args,
+                defaultViewport: null,
                 ignoreHTTPSErrors: true,
             };
             launchOptions.executablePath = chrome_paths_1.default.chrome;
