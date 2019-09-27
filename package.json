@@ -43,6 +43,7 @@
         "right-pad": "^1.0.1",
         "sanitize-filename": "^1.6.3",
         "ssh2-sftp-client": "^4.2.0",
+        "toml": "^3.0.0",
         "ts-node": "^8.4.1",
         "typescript": "^3.6.3",
         "xlsx": "^0.15.1"

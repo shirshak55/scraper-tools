@@ -80,6 +80,7 @@ exports.default = (() => {
             .catch((err) => console.log('Error on starting new page: Lock Error ->', err));
     }
     async function makePageFaster(page, instanceName = 'default') {
+        await page.setRequestInterception(true);
         await page.setDefaultNavigationTimeout(config[instanceName].defaultNavigationTimeout);
         await page.setDefaultTimeout(config[instanceName].defaultNavigationTimeout);
         page.on('error', (err) => {
@@ -92,7 +93,6 @@ exports.default = (() => {
         }
         return await lock.acquire('instance_' + instanceName, async function () {
             if (config[instanceName].blockCSS || config[instanceName].blockFonts || config[instanceName].blockImages) {
-                await page.setRequestInterception(true);
                 page.on('request', (request) => {
                     if ((config[instanceName].blockImages && request.resourceType() === 'image') ||
                         (config[instanceName].blockFonts && request.resourceType() === 'font') ||
