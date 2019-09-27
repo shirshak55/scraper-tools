@@ -31,6 +31,7 @@ import parseToml from './src/parseToml'
 import randomNumberRange from './src/randomNumberRange'
 import readFileSync from './src/readFileSync'
 import request from './src/request'
+import scrollToBottom from './src/scrollToBot'
 import sftp from './src/sftp'
 import ssh from './src/ssh'
 import waitForFrames from './src/waitForFrames'
@@ -76,4 +77,5 @@ export {
   requestPromise,
   toml,
   parseToml,
+  scrollToBottom,
 }
