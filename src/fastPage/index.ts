@@ -51,6 +51,7 @@ export default (() => {
           userDataDir: config[instanceName].userDataDir,
           headless: config[instanceName].headless,
           args,
+          defaultViewport: null,
           ignoreHTTPSErrors: true,
         }
 
