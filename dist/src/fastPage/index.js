@@ -27,6 +27,10 @@ exports.default = (() => {
     let config = {
         default: { ...defaultConfig },
     };
+    let hooks = [];
+    async function loadHooks(name, ...args) {
+        hooks.filter((v) => v.name === name).forEach(async (v) => await v.action(...args));
+    }
     async function browser(instanceName = 'default') {
         return await lock
             .acquire('instance_' + instanceName, async function () {
@@ -55,6 +59,7 @@ exports.default = (() => {
             .catch((err) => console.log('Error on starting new page: Lock Error ->', err));
     }
     async function makePageFaster(page, instanceName = 'default') {
+        await loadHooks('make_page_faster', page);
         await page.setDefaultNavigationTimeout(config[instanceName].defaultNavigationTimeout);
         await page.setDefaultTimeout(config[instanceName].defaultNavigationTimeout);
         const session = await page.target().createCDPSession();
@@ -160,6 +165,9 @@ exports.default = (() => {
                 return config;
             }
             return config[instanceName];
+        },
+        addHook(name, action) {
+            hooks.push({ name, action });
         },
     };
 })();
