@@ -87,7 +87,6 @@ import path from 'path'
 
 async function main(){
   // You can change many other settings like using 2tickets  api key to bypass captcha, width ,height etc. All of the following config are optional so don't worry if you don't use them
-  await fastPage.useChrome()
   await fastPage.setUserDataDir(path.join(__dirname, '/../.userDataDir'))
   await fastPage.setWindowSizeArg({ width: 1660, height: 960 })
   await fastPage.setDefaultNavigationTimeout(120 * 1000)
