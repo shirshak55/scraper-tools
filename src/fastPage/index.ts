@@ -39,6 +39,7 @@ export default (() => {
 
         const args = [
           `--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`,
+          '--disable-web-security',
         ]
 
         if (config[instanceName].proxy) {
