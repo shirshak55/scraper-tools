@@ -57,6 +57,7 @@ export default (() => {
           userDataDir: config[instanceName].userDataDir,
           headless: config[instanceName].headless,
           args,
+          ignoreDefaultArgs: ['--enable-automation'],
           defaultViewport: null,
           ignoreHTTPSErrors: true,
         }

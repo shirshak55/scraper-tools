@@ -38,6 +38,7 @@ exports.default = (() => {
                 return config[instanceName].browserHandle;
             const args = [
                 `--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`,
+                '--disable-web-security',
             ];
             if (config[instanceName].proxy) {
                 args.push(`--proxy-server=${config[instanceName].proxy}`);
@@ -49,6 +50,7 @@ exports.default = (() => {
                 userDataDir: config[instanceName].userDataDir,
                 headless: config[instanceName].headless,
                 args,
+                ignoreDefaultArgs: ['--enable-automation'],
                 defaultViewport: null,
                 ignoreHTTPSErrors: true,
             };
