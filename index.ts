@@ -14,7 +14,7 @@ import requestPromise from 'request-promise'
 import rightPad from 'right-pad'
 import sanitizeFilename from 'sanitize-filename'
 import toml from 'toml'
-import browserRequest from './src/browserRequest'
+import browserRequest, { jsonBrowserRequest } from './src/browserRequest'
 import chunks from './src/chunks'
 import consoleMessage from './src/consoleMessage'
 import createDirectories from './src/createDirectories'
@@ -42,6 +42,7 @@ import xlsxReader from './src/xlsxReader'
 export {
   _,
   browserRequest,
+  jsonBrowserRequest,
   pRetry,
   csvToXlsxConverter,
   pWaitFor,

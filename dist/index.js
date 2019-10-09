@@ -2,6 +2,13 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const async_lock_1 = __importDefault(require("async-lock"));
 exports.asyncLock = async_lock_1.default;
@@ -35,8 +42,9 @@ const sanitize_filename_1 = __importDefault(require("sanitize-filename"));
 exports.sanitizeFilename = sanitize_filename_1.default;
 const toml_1 = __importDefault(require("toml"));
 exports.toml = toml_1.default;
-const browserRequest_1 = __importDefault(require("./src/browserRequest"));
+const browserRequest_1 = __importStar(require("./src/browserRequest"));
 exports.browserRequest = browserRequest_1.default;
+exports.jsonBrowserRequest = browserRequest_1.jsonBrowserRequest;
 const chunks_1 = __importDefault(require("./src/chunks"));
 exports.chunks = chunks_1.default;
 const consoleMessage_1 = __importDefault(require("./src/consoleMessage"));
