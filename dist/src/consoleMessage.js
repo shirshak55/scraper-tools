@@ -12,14 +12,11 @@ const right_pad_1 = __importDefault(require("right-pad"));
 const util_1 = __importDefault(require("util"));
 exports.default = (() => {
     let shouldLogToFile = false;
-    let desktopPath = path_1.default.join(os_1.default.homedir(), 'Desktop');
-    let logFolder = createDirectories_1.default(path_1.default.join(desktopPath, 'logs'));
-    const setLogFolder = (value) => {
-        logFolder = value;
-    };
+    let desktopPath = path_1.default.join(os_1.default.homedir(), "Desktop");
+    let logPath = () => createDirectories_1.default(path_1.default.join(desktopPath, "logs/logs.txt"));
     const titlify = (title) => {
-        if (typeof title === 'object') {
-            return right_pad_1.default(`[${title.title}]`, title.padding, ' ');
+        if (typeof title === "object") {
+            return right_pad_1.default(`[${title.title}]`, title.padding, " ");
         }
         else {
             return `[${title}]`;
@@ -28,39 +25,40 @@ exports.default = (() => {
     const logToFile = (title, content) => {
         if (!shouldLogToFile)
             return;
-        let stream = fs_1.default.createWriteStream(path_1.default.join(logFolder, 'log.txt'), {
-            flags: 'a',
+        let stream = fs_1.default.createWriteStream(logPath(), {
+            flags: "a"
         });
-        stream.write(util_1.default.format(`[${title}] ` + content) + '\n');
+        stream.write(util_1.default.format(`[${title}] ` + content) + "\n");
     };
     const error = (title, ...s) => {
-        logToFile(title, s.join(' '));
+        logToFile(title, s.join(" "));
         return console.log(chalk_1.default.bgRed.green(titlify(title)), ...s);
     };
     const info = (title, ...s) => {
-        logToFile(title, s.join(' '));
+        logToFile(title, s.join(" "));
         console.log(chalk_1.default.bgBlue.white(titlify(title)), ...s);
     };
     const warning = (title, ...s) => {
-        logToFile(title, s.join(' '));
+        logToFile(title, s.join(" "));
         console.log(chalk_1.default.bgYellow.red(titlify(title)), ...s);
     };
     const success = (title, ...s) => {
-        logToFile(title, s.join(' '));
+        logToFile(title, s.join(" "));
         console.log(chalk_1.default.bgGreen.red(titlify(title)), ...s);
     };
     return {
         desktopPath,
-        logFolder,
-        setLogFolder,
         logToFile,
         error,
         info,
         warning,
         success,
+        setLogPath: (value) => {
+            logPath = () => value;
+        },
         setShouldLogToFile: (value = false) => {
             shouldLogToFile = value;
-        },
+        }
     };
 })();
 //# sourceMappingURL=consoleMessage.js.map
