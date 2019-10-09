@@ -8,125 +8,120 @@ import pageStealth from './pageStealth'
 
 let lock = new AsyncLock()
 
-export default (() => {
-  let twoCaptchaToken: ''
-  let defaultConfig = {
-    browserHandle: null,
-    proxy: null,
-    headless: false,
-    userDataDir: null,
-    windowSize: { width: 595, height: 842 },
-    blockFonts: false,
-    blockImages: false,
-    blockCSS: false,
-    defaultNavigationTimeout: 30 * 1000,
-    extensions: [],
-    showPageError: false,
-  }
-  let config = {
-    default: { ...defaultConfig },
-  }
+let defaultConfig = {
+  browserHandle: null,
+  proxy: null,
+  headless: false,
+  userDataDir: null,
+  windowSize: { width: 595, height: 842 },
+  blockFonts: false,
+  blockImages: false,
+  blockCSS: false,
+  defaultNavigationTimeout: 30 * 1000,
+  extensions: [],
+  showPageError: false,
+  hooks: []
+}
 
-  let hooks = []
-  async function loadHooks(name, ...args) {
-    hooks.filter((v) => v.name === name).forEach(async (v) => await v.action(...args))
-  }
+let config = {
+  default: { ...defaultConfig }
+}
 
-  async function browser(instanceName = 'default'): Promise<Browser> {
-    return await lock
-      .acquire('instance_' + instanceName, async function() {
-        if (config[instanceName].browserHandle) return config[instanceName].browserHandle
+async function loadHooks(hooks, name, ...args) {
+  hooks.filter(v => v.name === name).forEach(async v => await v.action(...args))
+}
 
-        const args = [
-          `--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`,
-          '--disable-web-security',
-        ]
+async function browser(instanceName): Promise<Browser> {
+  return await lock
+    .acquire('instance_' + instanceName, async function() {
+      if (config[instanceName].browserHandle) return config[instanceName].browserHandle
 
-        if (config[instanceName].proxy) {
-          args.push(`--proxy-server=${config[instanceName].proxy}`)
-        }
+      const args = [`--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`, '--disable-web-security']
 
-        if (config[instanceName].extensions.length > 0) {
-          args.push(
-            `--disable-extensions-except=${config[instanceName].extensions.join(',')}`,
-            `--load-extension=${config[instanceName].extensions.join(',')}`,
-          )
-        }
+      if (config[instanceName].proxy) {
+        args.push(`--proxy-server=${config[instanceName].proxy}`)
+      }
 
-        let launchOptions: any = {
-          userDataDir: config[instanceName].userDataDir,
-          headless: config[instanceName].headless,
-          args,
-          ignoreDefaultArgs: ['--enable-automation'],
-          defaultViewport: null,
-          ignoreHTTPSErrors: true,
-        }
+      if (config[instanceName].extensions.length > 0) {
+        args.push(`--disable-extensions-except=${config[instanceName].extensions.join(',')}`, `--load-extension=${config[instanceName].extensions.join(',')}`)
+      }
 
-        launchOptions.executablePath = chromePaths.chrome
+      let launchOptions: any = {
+        userDataDir: config[instanceName].userDataDir,
+        headless: config[instanceName].headless,
+        args,
+        ignoreDefaultArgs: ['--enable-automation'],
+        defaultViewport: null,
+        ignoreHTTPSErrors: true
+      }
 
-        config[instanceName].browserHandle = await puppeteer.launch(launchOptions)
-        return config[instanceName].browserHandle
-      })
-      .catch((err) => console.log('Error on starting new page: Lock Error ->', err))
-  }
+      launchOptions.executablePath = chromePaths.chrome
 
-  async function makePageFaster(page, instanceName = 'default'): Promise<Page> {
-    await loadHooks('make_page_faster', page)
-    await page.setDefaultNavigationTimeout(config[instanceName].defaultNavigationTimeout)
-    await page.setDefaultTimeout(config[instanceName].defaultNavigationTimeout)
-
-    const session = await page.target().createCDPSession()
-    await page.setBypassCSP(true)
-
-    await pageStealth(page)
-
-    if (config[instanceName].showPageError === true) {
-      page.on('error', (err) => {
-        consoleMessage.error('Error happen at the page: ', err)
-      })
-      page.on('pageerror', (pageerr) => {
-        consoleMessage.error('Page Error occurred: ', pageerr)
-      })
-    }
-    if (config[instanceName].blockCSS || config[instanceName].blockFonts || config[instanceName].blockImages) {
-      await page.setRequestInterception(true)
-      page.on('request', (request) => {
-        if (
-          (config[instanceName].blockImages && request.resourceType() === 'image') ||
-          (config[instanceName].blockFonts && request.resourceType() === 'font') ||
-          (config[instanceName].blockCSS && request.resourceType() === 'stylesheet')
-        ) {
-          request.abort()
-        } else {
-          request.continue()
-        }
-      })
-    }
-
-    await session.send('Page.enable')
-    await session.send('Page.setWebLifecycleState', {
-      state: 'active',
+      config[instanceName].browserHandle = await puppeteer.launch(launchOptions)
+      return config[instanceName].browserHandle
     })
+    .catch(err => console.log('Error on starting new page: Lock Error ->', err))
+}
 
-    return page
+async function makePageFaster(page, instanceName): Promise<Page> {
+  let instanceConfig = config[instanceName]
+  await loadHooks(instanceConfig['hooks'], 'make_page_faster', page)
+  await page.setDefaultNavigationTimeout(instanceConfig.defaultNavigationTimeout)
+  await page.setDefaultTimeout(instanceConfig.defaultNavigationTimeout)
+
+  const session = await page.target().createCDPSession()
+  await page.setBypassCSP(true)
+
+  await pageStealth(page)
+
+  if (instanceConfig.showPageError === true) {
+    page.on('error', err => {
+      consoleMessage.error('Error happen at the page: ', err)
+    })
+    page.on('pageerror', pageerr => {
+      consoleMessage.error('Page Error occurred: ', pageerr)
+    })
+  }
+  if (instanceConfig.blockCSS || instanceConfig.blockFonts || instanceConfig.blockImages) {
+    await page.setRequestInterception(true)
+    page.on('request', request => {
+      if (
+        (instanceConfig.blockImages && request.resourceType() === 'image') ||
+        (instanceConfig.blockFonts && request.resourceType() === 'font') ||
+        (instanceConfig.blockCSS && request.resourceType() === 'stylesheet')
+      ) {
+        request.abort()
+      } else {
+        request.continue()
+      }
+    })
   }
 
+  await session.send('Page.enable')
+  await session.send('Page.setWebLifecycleState', {
+    state: 'active'
+  })
+
+  return page
+}
+
+export default (instanceName = 'default') => {
   return {
-    init: async (instanceName: string, useCurrentDefaultConfig = true) => {
+    init: async (useCurrentDefaultConfig = true) => {
       if (useCurrentDefaultConfig) {
         config[instanceName] = { ...config.default }
       } else {
         config[instanceName] = { ...defaultConfig }
       }
     },
-    newPage: async (instanceName: string = 'default'): Promise<Page> => {
+    newPage: async (): Promise<Page> => {
       consoleMessage.info('Fast Page', 'Launching new page ')
       let brow = await browser(instanceName)
       let page = await brow.newPage()
       await makePageFaster(page, instanceName)
       return page
     },
-    closeBrowser: async (instanceName: string = 'default') => {
+    closeBrowser: async () => {
       consoleMessage.info('Fast Page', 'Requesting to close browser ')
       return await lock
         .acquire('instance_close_' + instanceName, async function() {
@@ -137,45 +132,45 @@ export default (() => {
           config[instanceName].browserHandle = null
           return 'closed'
         })
-        .catch((err) => console.log('Error on closing browser: Lock Error ->', err))
+        .catch(err => console.log('Error on closing browser: Lock Error ->', err))
     },
-    setProxy: (value: string, instanceName: string = 'default') => {
+    setProxy: (value: string) => {
       consoleMessage.info('Fast Page', 'Setting proxy to ', value)
       config[instanceName].proxy = value
     },
-    setHeadless: (value: boolean = false, instanceName: string = 'default') => {
+    setHeadless: (value: boolean = false) => {
       consoleMessage.info('Fast Page', 'Setting headless to ', value)
       config[instanceName].headless = value
     },
-    setUserDataDir: (value: string, instanceName: string = 'default') => {
+    setUserDataDir: (value: string) => {
       consoleMessage.info('Fast Page', 'Storing chrome cache in  ', value)
       config[instanceName].userDataDir = value
     },
-    setWindowSizeArg: (value: { width: number; height: number }, instanceName: string = 'default') => {
+    setWindowSizeArg: (value: { width: number; height: number }) => {
       consoleMessage.info('Fast Page', 'Setting window size to ', value)
       config[instanceName].windowSize = value
     },
-    set2captchaToken: (value: string, instanceName: string = 'default') => {
+    set2captchaToken: (value: string) => {
       consoleMessage.info('Fast Page', 'Setting 2captcha token to ', value)
       config[instanceName].twoCaptchaToken = value
     },
 
-    setExtensionsPaths: (value: Array<string>, instanceName: string = 'default') => {
+    setExtensionsPaths: (value: Array<string>) => {
       config[instanceName].extensions = value
     },
-    setDefaultNavigationTimeout: (value: number, instanceName: string = 'default') => {
+    setDefaultNavigationTimeout: (value: number) => {
       consoleMessage.info('Fast Page', 'Default navigation timeout', value)
       config[instanceName].defaultNavigationTimeout = value
     },
-    blockImages: (value: boolean = true, instanceName: string = 'default') => {
+    blockImages: (value: boolean = true) => {
       consoleMessage.info('Fast Page', 'Block Image', value)
       config[instanceName].blockImages = value
     },
-    blockFonts: (value: boolean = true, instanceName: string = 'default') => {
+    blockFonts: (value: boolean = true) => {
       consoleMessage.info('Fast Page', 'Block Font', value)
       config[instanceName].blockFonts = value
     },
-    blockCSS: (value: boolean = true, instanceName: string = 'default') => {
+    blockCSS: (value: boolean = true) => {
       consoleMessage.info('Fast Page', 'Block CSS', value)
       config[instanceName].blockCSS = value
     },
@@ -186,7 +181,7 @@ export default (() => {
       return config[instanceName]
     },
     addHook(name, action) {
-      hooks.push({ name, action })
-    },
+      config[instanceName].hooks.push({ name, action })
+    }
   }
-})()
+}

@@ -25,6 +25,7 @@ There are various opensource and closed source example where this plugin has bee
 3. Khan Academy for offline videos
 
 ### Sample Example
+
 ```bash
 mkdir automate-khanacademy
 yarn init -y
@@ -32,6 +33,7 @@ yarn add scrapper-tools @types/node ts-node typescript
 ```
 
 Your package.json should look like this
+
 ```js
 {
   "name": "automate-khanacademy",
@@ -57,6 +59,7 @@ Please modify the scripts so that you can use commands like `yarn dev`, `yarn st
 This project encourage you to use typescript however Javascript should work fine too.
 
 So create tsconfig.json file with following content.
+
 ```
 {
   "compilerOptions": {
@@ -81,32 +84,28 @@ I have created folder src and created src/bin.ts file which will contain automat
 Here is sample `src/bin.ts` file.
 
 ```js
-import {fastPage} from 'scrapper-tools'
+import { fastPage } from 'scrapper-tools'
 import path from 'path'
 
-
-async function main(){
+async function main() {
   // You can change many other settings like using 2tickets  api key to bypass captcha, width ,height etc. All of the following config are optional so don't worry if you don't use them
-  await fastPage.setUserDataDir(path.join(__dirname, '/../.userDataDir'))
-  await fastPage.setWindowSizeArg({ width: 1660, height: 960 })
-  await fastPage.setDefaultNavigationTimeout(120 * 1000)
-  await fastPage.setHeadless(false)
+  await fastPage().setUserDataDir(path.join(__dirname, '/../.userDataDir'))
+  await fastPage().setWindowSizeArg({ width: 1660, height: 960 })
+  await fastPage().setDefaultNavigationTimeout(120 * 1000)
+  await fastPage().setHeadless(false)
 
-  let page = await fastPage.newPage()
-
-  await page.goto('https://khanacademy.com',{waitUntill: 'networkidle2'})
+  let page = await fastPage().newPage()
+  await page.goto('https://khanacademy.com', { waitUntill: 'networkidle2' })
   await page.close()
 
-
   // At the end don't forget to close browser
-   await fastPage.closeBrowser()
+  await fastPage().closeBrowser()
 }
 ```
 
 I recommend you to use prettier and eslint to make code super clear and bug free.
 
 If you want this project to move way to forward please consider donations which can be found in the end of the page.
-
 
 ## Intresting Findings.
 
@@ -160,21 +159,21 @@ On Remote PC
 
 ## Injecting Functions
 
-I have added inject function like waiting for dom element etc which is not available in evaluation script (page.evaluate function). 
+I have added inject function like waiting for dom element etc which is not available in evaluation script (page.evaluate function).
 
 ```js
 import { functionsToInject } from 'scrapper-tools'
 await page.addScriptTag({
-  content: `${functionsToInject.waitForElement} ${
-    functionsToInject.waitForElementToBeRemoved
-  } ${functionsToInject.delay}`,
+  content: `${functionsToInject.waitForElement} ${functionsToInject.waitForElementToBeRemoved} ${functionsToInject.delay}`
 })
 ```
 
 ## Licence
-MIT Licence 
+
+MIT Licence
 
 ## Support
+
 Please support me by sending payment to https://www.paypal.me/KGajurel. Please inform me if you have helped me.
 
 ### Thanks

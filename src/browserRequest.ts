@@ -4,7 +4,7 @@ export default async function browserRequest(page: Page, url, method = 'GET') {
   let evaluated = await page.evaluate(
     async (url, method) => {
       console.log('start--------------------------------------------------------------------------')
-      console.log('Sending Request TO url', url)
+      console.log('Sending Request to url', url, method)
 
       let res = await fetch(url, {
         credentials: 'include',
