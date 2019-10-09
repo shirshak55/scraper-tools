@@ -21,10 +21,7 @@ export default (() => {
 
   const logToFile = (title, content) => {
     if (!shouldLogToFile) return
-    let stream = fs.createWriteStream(logPath(), {
-      flags: "a"
-    })
-    stream.write(util.format(`[${title}] ` + content) + "\n")
+    fs.appendFileSync(logPath(), util.format(`[${title}] ` + content) + "\n")
   }
 
   const error = (title, ...s) => {
