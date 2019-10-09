@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@types/inquirer": "^6.5.0",
-    "@types/node": "^12.7.11",
+    "@types/node": "^12.7.12",
     "@types/puppeteer": "^1.20.1",
     "async-lock": "^1.2.2",
     "chalk": "^2.4.2",
