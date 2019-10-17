@@ -163,6 +163,10 @@ export default (instanceName = "default") => {
       consoleMessage.info("Fast Page", "Setting proxy to ", value)
       config[instanceName].proxy = value
     },
+    setShowPageError: (value: boolean) => {
+      consoleMessage.info("Fast Page", "Setting show page error to ", value)
+      config[instanceName].showPageError = value
+    },
     setHeadless: (value: boolean = false) => {
       consoleMessage.info("Fast Page", "Setting headless to ", value)
       config[instanceName].headless = value
