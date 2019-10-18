@@ -18,7 +18,7 @@ export default async function(page) {
       break
     }
 
-    if (tries > 200) {
+    if (tries > 20) {
       throw "cant find captcha frame"
       return
     }
@@ -26,6 +26,7 @@ export default async function(page) {
   }
   console.log("Got captcha frame", captchaFrame.url())
 
+  consoleMessage.success("Buster", "Clicking on captcha btn")
   let captchaBtn = await captchaFrame.waitForSelector(
     "#recaptcha-anchor > div.recaptcha-checkbox-border",
     { visible: true }
@@ -35,6 +36,7 @@ export default async function(page) {
 
   console.log(page.frames().map((v) => v.url()))
 
+  consoleMessage.success("Buster", "Waiting for buster frames")
   while (true) {
     bCaptchaFrame = page
       .frames()
@@ -52,6 +54,7 @@ export default async function(page) {
     await delay(100)
   }
 
+  consoleMessage.success("Buster", "Clicking on buster solver icon")
   while (true) {
     const recaptchaSolveButton = await bCaptchaFrame.waitForSelector(
       "#solver-button",

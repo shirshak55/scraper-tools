@@ -38,7 +38,8 @@ async function browser(instanceName) {
             return config[instanceName].browserHandle;
         const args = [
             `--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`,
-            "--disable-web-security"
+            "--disable-web-security",
+            "--disable-features=site-per-process"
         ];
         if (config[instanceName].proxy) {
             args.push(`--proxy-server=${config[instanceName].proxy}`);
