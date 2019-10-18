@@ -35,6 +35,7 @@ import request from "./src/request"
 import scrollToBottom from "./src/scrollToBot"
 import sftp from "./src/sftp"
 import solveCaptchaByBuster from "./src/solveCaptchaByBuster"
+import solveNoCaptchaRecaptcha from "./src/solveNoCaptchaRecaptchaByBuster"
 import ssh from "./src/ssh"
 import waitForFrames from "./src/waitForFrames"
 import writeFileSync from "./src/writeFileSync"
@@ -82,5 +83,6 @@ export {
   toml,
   parseToml,
   scrollToBottom,
-  solveCaptchaByBuster
+  solveCaptchaByBuster,
+  solveNoCaptchaRecaptcha
 }
