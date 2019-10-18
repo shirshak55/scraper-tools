@@ -21,12 +21,8 @@ async function default_1(page) {
         }
         await delay_1.default(100);
     }
-    // to click we can use following code
-    // let captchaClickHandler = await captchaFrame.waitForSelector(
-    //   "#recaptcha-anchor > div.recaptcha-checkbox-border",
-    //   { visible: true }
-    // )
-    // captchaClickHandler.click()
+    let captchaBtn = await captchaFrame.waitForSelector("#recaptcha-anchor > div.recaptcha-checkbox-border", { visible: true });
+    captchaBtn.click();
     const recaptchaSolveButton = await captchaFrame.waitForSelector("#solver-button", {
         visible: true
     });

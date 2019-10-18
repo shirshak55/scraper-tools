@@ -20,13 +20,12 @@ export default async function(page) {
     await delay(100)
   }
 
-  // to click we can use following code
-  // let captchaClickHandler = await captchaFrame.waitForSelector(
-  //   "#recaptcha-anchor > div.recaptcha-checkbox-border",
-  //   { visible: true }
-  // )
+  let captchaBtn = await captchaFrame.waitForSelector(
+    "#recaptcha-anchor > div.recaptcha-checkbox-border",
+    { visible: true }
+  )
 
-  // captchaClickHandler.click()
+  captchaBtn.click()
 
   const recaptchaSolveButton = await captchaFrame.waitForSelector(
     "#solver-button",
