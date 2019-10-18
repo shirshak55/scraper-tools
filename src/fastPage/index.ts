@@ -5,6 +5,7 @@ import AsyncLock from "async-lock"
 import { _ } from "lodash"
 import consoleMessage from "../consoleMessage"
 import pageStealth from "./pageStealth"
+import functionsToInject from "../functionToInject"
 
 let lock = new AsyncLock()
 
@@ -98,6 +99,10 @@ async function makePageFaster(page, instanceName): Promise<Page> {
   await page.setBypassCSP(true)
 
   await pageStealth(page)
+
+  await page.addScriptTag({
+    content: `${functionsToInject.waitForElement} ${functionsToInject.waitForElementToBeRemoved} ${functionsToInject.delay}`
+  })
 
   if (instanceConfig.showPageError === true) {
     page.on("error", (err) => {

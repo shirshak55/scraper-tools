@@ -25,7 +25,6 @@ import errorLogger from "./src/errorLogger"
 import exists from "./src/exists"
 import fastPage from "./src/fastPage"
 import friendlyFileName from "./src/friendlyFileName"
-import functionsToInject from "./src/functionToInject"
 import jsonToCsv from "./src/jsonToCsv"
 import loadDom from "./src/loadDom"
 import parseToml from "./src/parseToml"
@@ -78,7 +77,6 @@ export {
   waitForFrames,
   csvToJson,
   jsonToCsv,
-  functionsToInject,
   requestPromise,
   toml,
   parseToml,

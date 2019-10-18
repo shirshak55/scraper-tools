@@ -8,6 +8,7 @@ const chrome_paths_1 = __importDefault(require("chrome-paths"));
 const async_lock_1 = __importDefault(require("async-lock"));
 const consoleMessage_1 = __importDefault(require("../consoleMessage"));
 const pageStealth_1 = __importDefault(require("./pageStealth"));
+const functionToInject_1 = __importDefault(require("../functionToInject"));
 let lock = new async_lock_1.default();
 let defaultConfig = {
     browserHandle: null,
@@ -78,6 +79,9 @@ async function makePageFaster(page, instanceName) {
     const session = await page.target().createCDPSession();
     await page.setBypassCSP(true);
     await pageStealth_1.default(page);
+    await page.addScriptTag({
+        content: `${functionToInject_1.default.waitForElement} ${functionToInject_1.default.waitForElementToBeRemoved} ${functionToInject_1.default.delay}`
+    });
     if (instanceConfig.showPageError === true) {
         page.on("error", (err) => {
             consoleMessage_1.default.error("Error happen at the page: ", err);
