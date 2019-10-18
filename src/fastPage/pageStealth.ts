@@ -1,7 +1,7 @@
 async function runtimeStealth(page) {
   await page.evaluateOnNewDocument(() => {
     ;(window as any).chrome = {
-      runtime: {},
+      runtime: {}
     }
   })
 }
@@ -17,8 +17,8 @@ async function consoleDebug(page) {
 async function navigatorLanguages(page) {
   await page.evaluateOnNewDocument(() => {
     // Overwrite the `plugins` property to use a custom getter.
-    Object.defineProperty(navigator, 'languages', {
-      get: () => ['en-US', 'en'],
+    Object.defineProperty(navigator, "languages", {
+      get: () => ["en-US", "en"]
     })
   })
 }
@@ -28,7 +28,7 @@ async function navigatorPermissions(page) {
     const originalQuery = window.navigator.permissions.query
       // eslint-disable-next-line
     ;(window as any).navigator.permissions.__proto__.query = (parameters) =>
-      parameters.name === 'notifications'
+      parameters.name === "notifications"
         ? Promise.resolve({ state: Notification.permission }) //eslint-disable-line
         : originalQuery(parameters)
 
@@ -40,12 +40,15 @@ async function navigatorPermissions(page) {
     // eslint-disable-next-line
     Function.prototype.call = call
 
-    const nativeToStringFunctionString = Error.toString().replace(/Error/g, 'toString')
+    const nativeToStringFunctionString = Error.toString().replace(
+      /Error/g,
+      "toString"
+    )
     const oldToString = Function.prototype.toString
 
     function functionToString() {
       if (this === window.navigator.permissions.query) {
-        return 'function query() { [native code] }'
+        return "function query() { [native code] }"
       }
       if (this === functionToString) {
         return nativeToStringFunctionString
@@ -71,7 +74,10 @@ async function navigatorPlugin(page) {
         // eslint-disable-next-line
         Function.prototype.call = call
 
-        const nativeToStringFunctionString = Error.toString().replace(/Error/g, 'toString')
+        const nativeToStringFunctionString = Error.toString().replace(
+          /Error/g,
+          "toString"
+        )
         const oldToString = Function.prototype.toString
 
         function functionToString() {
@@ -95,47 +101,47 @@ async function navigatorPlugin(page) {
       const fakeData = {
         mimeTypes: [
           {
-            type: 'application/pdf',
-            suffixes: 'pdf',
-            description: '',
-            __pluginName: 'Chrome PDF Viewer',
+            type: "application/pdf",
+            suffixes: "pdf",
+            description: "",
+            __pluginName: "Chrome PDF Viewer"
           },
           {
-            type: 'application/x-google-chrome-pdf',
-            suffixes: 'pdf',
-            description: 'Portable Document Format',
-            __pluginName: 'Chrome PDF Plugin',
+            type: "application/x-google-chrome-pdf",
+            suffixes: "pdf",
+            description: "Portable Document Format",
+            __pluginName: "Chrome PDF Plugin"
           },
           {
-            type: 'application/x-nacl',
-            suffixes: '',
-            description: 'Native Client Executable',
+            type: "application/x-nacl",
+            suffixes: "",
+            description: "Native Client Executable",
             enabledPlugin: Plugin,
-            __pluginName: 'Native Client',
+            __pluginName: "Native Client"
           },
           {
-            type: 'application/x-pnacl',
-            suffixes: '',
-            description: 'Portable Native Client Executable',
-            __pluginName: 'Native Client',
-          },
+            type: "application/x-pnacl",
+            suffixes: "",
+            description: "Portable Native Client Executable",
+            __pluginName: "Native Client"
+          }
         ],
         plugins: [
           {
-            name: 'Chrome PDF Plugin',
-            filename: 'internal-pdf-viewer',
-            description: 'Portable Document Format',
+            name: "Chrome PDF Plugin",
+            filename: "internal-pdf-viewer",
+            description: "Portable Document Format"
           },
           {
-            name: 'Chrome PDF Viewer',
-            filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai',
-            description: '',
+            name: "Chrome PDF Viewer",
+            filename: "mhjfbmdgcfjbbpaeojofohoefgiehjai",
+            description: ""
           },
           {
-            name: 'Native Client',
-            filename: 'internal-nacl-plugin',
-            description: '',
-          },
+            name: "Native Client",
+            filename: "internal-nacl-plugin",
+            description: ""
+          }
         ],
         fns: {
           namedItem: (instanceName) => {
@@ -143,12 +149,12 @@ async function navigatorPlugin(page) {
             const fn = function(name) {
               if (!arguments.length) {
                 throw new TypeError(
-                  `Failed to execute 'namedItem' on '${instanceName}': 1 argument required, but only 0 present.`,
+                  `Failed to execute 'namedItem' on '${instanceName}': 1 argument required, but only 0 present.`
                 )
               }
               return this[name] || null
             }
-            mockedFns.push({ ref: fn, name: 'namedItem' })
+            mockedFns.push({ ref: fn, name: "namedItem" })
             return fn
           },
           item: (instanceName) => {
@@ -156,12 +162,12 @@ async function navigatorPlugin(page) {
             const fn = function(index) {
               if (!arguments.length) {
                 throw new TypeError(
-                  `Failed to execute 'namedItem' on '${instanceName}': 1 argument required, but only 0 present.`,
+                  `Failed to execute 'namedItem' on '${instanceName}': 1 argument required, but only 0 present.`
                 )
               }
               return this[index] || null
             }
-            mockedFns.push({ ref: fn, name: 'item' })
+            mockedFns.push({ ref: fn, name: "item" })
             return fn
           },
           refresh: (instanceName) => {
@@ -169,39 +175,42 @@ async function navigatorPlugin(page) {
             const fn = function() {
               return undefined
             }
-            mockedFns.push({ ref: fn, name: 'refresh' })
+            mockedFns.push({ ref: fn, name: "refresh" })
             return fn
-          },
-        },
+          }
+        }
       }
       // Poor mans _.pluck
-      const getSubset = (keys, obj) => keys.reduce((a, c) => ({ ...a, [c]: obj[c] }), {})
+      const getSubset = (keys, obj) =>
+        keys.reduce((a, c) => ({ ...a, [c]: obj[c] }), {})
 
       function generateMimeTypeArray() {
         const arr: any = fakeData.mimeTypes
-          .map((obj) => getSubset(['type', 'suffixes', 'description'], obj))
+          .map((obj) => getSubset(["type", "suffixes", "description"], obj))
           .map((obj) => Object.setPrototypeOf(obj, MimeType.prototype))
         arr.forEach((obj) => {
           arr[obj.type] = obj
         })
 
         // Mock functions
-        arr.namedItem = fakeData.fns.namedItem('MimeTypeArray')
-        arr.item = fakeData.fns.item('MimeTypeArray')
+        arr.namedItem = fakeData.fns.namedItem("MimeTypeArray")
+        arr.item = fakeData.fns.item("MimeTypeArray")
 
         return Object.setPrototypeOf(arr, MimeTypeArray.prototype)
       }
 
       const mimeTypeArray = generateMimeTypeArray()
-      Object.defineProperty(navigator, 'mimeTypes', {
-        get: () => mimeTypeArray,
+      Object.defineProperty(navigator, "mimeTypes", {
+        get: () => mimeTypeArray
       })
 
       function generatePluginArray() {
         const arr: any = fakeData.plugins
-          .map((obj) => getSubset(['name', 'filename', 'description'], obj))
+          .map((obj) => getSubset(["name", "filename", "description"], obj))
           .map((obj) => {
-            const mimes = fakeData.mimeTypes.filter((m) => m.__pluginName === obj.name)
+            const mimes = fakeData.mimeTypes.filter(
+              (m) => m.__pluginName === obj.name
+            )
             // Add mimetypes
             mimes.forEach((mime, index) => {
               navigator.mimeTypes[mime.type].enabledPlugin = obj
@@ -213,8 +222,8 @@ async function navigatorPlugin(page) {
           })
           .map((obj) => {
             // Mock functions
-            obj.namedItem = fakeData.fns.namedItem('Plugin')
-            obj.item = fakeData.fns.item('Plugin')
+            obj.namedItem = fakeData.fns.namedItem("Plugin")
+            obj.item = fakeData.fns.item("Plugin")
             return obj
           })
           .map((obj) => Object.setPrototypeOf(obj, Plugin.prototype))
@@ -223,16 +232,16 @@ async function navigatorPlugin(page) {
         })
 
         // Mock functions
-        arr.namedItem = fakeData.fns.namedItem('PluginArray')
-        arr.item = fakeData.fns.item('PluginArray')
-        arr.refresh = fakeData.fns.refresh('PluginArray')
+        arr.namedItem = fakeData.fns.namedItem("PluginArray")
+        arr.item = fakeData.fns.item("PluginArray")
+        arr.refresh = fakeData.fns.refresh("PluginArray")
 
         return Object.setPrototypeOf(arr, PluginArray.prototype)
       }
 
       const pluginArray = generatePluginArray()
-      Object.defineProperty(navigator, 'plugins', {
-        get: () => pluginArray,
+      Object.defineProperty(navigator, "plugins", {
+        get: () => pluginArray
       })
 
       // Make mockedFns toString() representation resemble a native function
@@ -265,11 +274,11 @@ async function webGlVendor(page) {
       WebGLRenderingContext.prototype.getParameter = function(parameter) {
         // UNMASKED_VENDOR_WEBGL
         if (parameter === 37445) {
-          return 'Intel Inc.'
+          return "Intel Inc."
         }
         // UNMASKED_RENDERER_WEBGL
         if (parameter === 37446) {
-          return 'Intel Iris OpenGL Engine'
+          return "Intel Iris OpenGL Engine"
         }
         return getParameter(parameter)
       }
@@ -291,11 +300,9 @@ async function outerWindow(page) {
 }
 
 export default async function pageStealth(page) {
-  let ua = (await page.browser().userAgent())
-    .replace('HeadlessChrome/', 'Chrome/')
-    .replace(/\(([^)]+)\)/, '(Windows NT 10.0; Win64; x64)')
-
-  await page.setUserAgent(ua)
+  await page.setUserAgent(
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
+  )
 
   await runtimeStealth(page)
   await consoleDebug(page)
@@ -303,5 +310,6 @@ export default async function pageStealth(page) {
   await navigatorPermissions(page)
   await navigatorWebDriver(page)
   await webGlVendor(page)
+  await navigatorPlugin(page)
   await outerWindow(page)
 }

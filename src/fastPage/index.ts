@@ -39,10 +39,19 @@ async function browser(instanceName): Promise<Browser> {
       if (config[instanceName].browserHandle)
         return config[instanceName].browserHandle
 
-      const args = [
+      let args = [
         `--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`,
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
         "--disable-web-security",
-        "--disable-features=site-per-process"
+        "--disable-features=site-per-process",
+        "--ignore-certificate-errors",
+        "--enable-features=NetworkService",
+        "--allow-running-insecure-content",
+        "--enable-automation",
+        "--disable-background-timer-throttling",
+        "--disable-backgrounding-occluded-windows",
+        "--disable-renderer-backgrounding"
       ]
 
       if (config[instanceName].proxy) {

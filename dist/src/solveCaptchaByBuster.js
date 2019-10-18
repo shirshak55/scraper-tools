@@ -3,62 +3,65 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// this requires you to install buster extension
 const delay_1 = __importDefault(require("delay"));
 const consoleMessage_1 = __importDefault(require("./consoleMessage"));
-async function default_1(page) {
-    let captchaFrame = null;
-    let tries = 0;
-    let bCaptchaFrame = null;
-    consoleMessage_1.default.info("Buster", "Start solving captcha");
-    while (true) {
-        captchaFrame = page
-            .frames()
-            .find((f) => f.url().includes("https://www.google.com/recaptcha/api2/anchor"));
-        if (captchaFrame) {
-            break;
-        }
-        if (tries > 20) {
-            throw "cant find captcha frame";
-            return;
-        }
-        await delay_1.default(100);
-    }
-    console.log("Got captcha frame", captchaFrame.url());
+const waitForFrames_1 = __importDefault(require("./waitForFrames"));
+async function getCaptchaFrame(page) {
+    return await waitForFrames_1.default(page, "https://www.google.com/recaptcha/api2/anchor");
+}
+async function getBusterCaptchaFrame(page) {
+    return await waitForFrames_1.default(page, "https://www.google.com/recaptcha/api2/bframe");
+}
+async function solver(page) {
     consoleMessage_1.default.success("Buster", "Clicking on captcha btn");
-    let captchaBtn = await captchaFrame.waitForSelector("#recaptcha-anchor > div.recaptcha-checkbox-border", { visible: true });
-    captchaBtn.click();
-    console.log(page.frames().map((v) => v.url()));
+    let captchaFrame = await getCaptchaFrame(page);
+    await (await captchaFrame.waitForSelector("#recaptcha-anchor > div.recaptcha-checkbox-border", { visible: true })).click();
     consoleMessage_1.default.success("Buster", "Waiting for buster frames");
-    while (true) {
-        bCaptchaFrame = page
-            .frames()
-            .find((f) => f.url().includes("https://www.google.com/recaptcha/api2/bframe"));
-        if (bCaptchaFrame) {
-            break;
-        }
-        if (tries > 200) {
-            throw "cant find buster captcha frame";
-            return;
-        }
-        await delay_1.default(100);
-    }
+    let bCaptchaFrame = await getBusterCaptchaFrame(page);
     consoleMessage_1.default.success("Buster", "Clicking on buster solver icon");
     while (true) {
-        const recaptchaSolveButton = await bCaptchaFrame.waitForSelector("#solver-button", {
-            visible: true
-        });
-        await recaptchaSolveButton.click();
         try {
-            await bCaptchaFrame.waitForSelector("#solver-button", {
+            const recaptchaSolveButton = await bCaptchaFrame.waitForSelector("#solver-button", {
                 visible: true,
                 timeout: 1000
             });
+            await recaptchaSolveButton.click();
         }
         catch (e) {
             break;
         }
     }
+    try {
+        const recaptchaReload = await bCaptchaFrame.waitForSelector("#reset-button", {
+            visible: true,
+            timeout: 500
+        });
+        await recaptchaReload.click();
+    }
+    catch (e) { }
+}
+async function default_1(page) {
+    while (true) {
+        console.log("ssss");
+        await solver(page);
+        console.log("get captcha frame");
+        // Checks if captcha was really solved
+        try {
+            let captchaFrame = await getCaptchaFrame(page);
+            let captchaClasses = await captchaFrame.evaluate(() => {
+                if (document.querySelector(".recaptcha-checkbox")) {
+                    return document.querySelector(".recaptcha-checkbox").className;
+                }
+                return false;
+            });
+            if (captchaClasses.includes("recaptcha-checkbox-checked")) {
+                break;
+            }
+        }
+        catch (e) { }
+        await delay_1.default(1000);
+    }
+    // Check For Reload
     consoleMessage_1.default.success("Buster", "Captcha should be solved");
 }
 exports.default = default_1;

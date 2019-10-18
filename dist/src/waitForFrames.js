@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const delay_1 = __importDefault(require("delay"));
-async function waitForFrame(page, frameName) {
+async function waitForFrame(page, frameUrl) {
     while (true) {
-        let f = page.frames().find((f) => f.url().indexOf(frameName) > 0);
+        let f = page.frames().find((f) => f.url().includes(frameUrl));
         if (f) {
             return f;
         }

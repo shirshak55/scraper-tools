@@ -1,8 +1,8 @@
-import delay from 'delay'
+import delay from "delay"
 
-export default async function waitForFrame(page, frameName) {
+export default async function waitForFrame(page, frameUrl) {
   while (true) {
-    let f = page.frames().find((f) => f.url().indexOf(frameName) > 0)
+    let f = page.frames().find((f) => f.url().includes(frameUrl))
     if (f) {
       return f
     }

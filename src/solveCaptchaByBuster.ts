@@ -1,77 +1,85 @@
-// this requires you to install buster extension
 import delay from "delay"
 import consoleMessage from "./consoleMessage"
+import waitForFrames from "./waitForFrames"
 
-export default async function(page) {
-  let captchaFrame = null
-  let tries = 0
-  let bCaptchaFrame = null
+async function getCaptchaFrame(page) {
+  return await waitForFrames(
+    page,
+    "https://www.google.com/recaptcha/api2/anchor"
+  )
+}
 
-  consoleMessage.info("Buster", "Start solving captcha")
-  while (true) {
-    captchaFrame = page
-      .frames()
-      .find((f: any) =>
-        f.url().includes("https://www.google.com/recaptcha/api2/anchor")
-      )
-    if (captchaFrame) {
-      break
-    }
+async function getBusterCaptchaFrame(page) {
+  return await waitForFrames(
+    page,
+    "https://www.google.com/recaptcha/api2/bframe"
+  )
+}
 
-    if (tries > 20) {
-      throw "cant find captcha frame"
-      return
-    }
-    await delay(100)
-  }
-  console.log("Got captcha frame", captchaFrame.url())
-
+async function solver(page) {
   consoleMessage.success("Buster", "Clicking on captcha btn")
-  let captchaBtn = await captchaFrame.waitForSelector(
+
+  let captchaFrame = await getCaptchaFrame(page)
+  await (await captchaFrame.waitForSelector(
     "#recaptcha-anchor > div.recaptcha-checkbox-border",
     { visible: true }
-  )
-
-  captchaBtn.click()
-
-  console.log(page.frames().map((v) => v.url()))
+  )).click()
 
   consoleMessage.success("Buster", "Waiting for buster frames")
-  while (true) {
-    bCaptchaFrame = page
-      .frames()
-      .find((f: any) =>
-        f.url().includes("https://www.google.com/recaptcha/api2/bframe")
-      )
-    if (bCaptchaFrame) {
-      break
-    }
-
-    if (tries > 200) {
-      throw "cant find buster captcha frame"
-      return
-    }
-    await delay(100)
-  }
-
+  let bCaptchaFrame = await getBusterCaptchaFrame(page)
   consoleMessage.success("Buster", "Clicking on buster solver icon")
-  while (true) {
-    const recaptchaSolveButton = await bCaptchaFrame.waitForSelector(
-      "#solver-button",
-      {
-        visible: true
-      }
-    )
-    await recaptchaSolveButton.click()
 
+  while (true) {
     try {
-      await bCaptchaFrame.waitForSelector("#solver-button", {
-        visible: true,
-        timeout: 1000
-      })
+      const recaptchaSolveButton = await bCaptchaFrame.waitForSelector(
+        "#solver-button",
+        {
+          visible: true,
+          timeout: 1000
+        }
+      )
+      await recaptchaSolveButton.click()
     } catch (e) {
       break
     }
   }
+
+  try {
+    const recaptchaReload = await bCaptchaFrame.waitForSelector(
+      "#reset-button",
+      {
+        visible: true,
+        timeout: 500
+      }
+    )
+    await recaptchaReload.click()
+  } catch (e) {}
+}
+
+export default async function(page) {
+  while (true) {
+    console.log("ssss")
+    await solver(page)
+
+    console.log("get captcha frame")
+
+    // Checks if captcha was really solved
+    try {
+      let captchaFrame = await getCaptchaFrame(page)
+      let captchaClasses = await captchaFrame.evaluate(() => {
+        if (document.querySelector(".recaptcha-checkbox")) {
+          return document.querySelector(".recaptcha-checkbox").className
+        }
+        return false
+      })
+      if (captchaClasses.includes("recaptcha-checkbox-checked")) {
+        break
+      }
+    } catch (e) {}
+    await delay(1000)
+  }
+
+  // Check For Reload
+
   consoleMessage.success("Buster", "Captcha should be solved")
 }
