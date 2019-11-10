@@ -22,10 +22,11 @@ let defaultConfig = {
     defaultNavigationTimeout: 30 * 1000,
     extensions: [],
     showPageError: false,
-    hooks: []
+    args: [],
+    hooks: [],
 };
 let config = {
-    default: { ...defaultConfig }
+    default: { ...defaultConfig },
 };
 async function loadHooks(hooks, name, ...args) {
     hooks
@@ -49,7 +50,8 @@ async function browser(instanceName) {
             "--enable-automation",
             "--disable-background-timer-throttling",
             "--disable-backgrounding-occluded-windows",
-            "--disable-renderer-backgrounding"
+            "--disable-renderer-backgrounding",
+            ...config[instanceName].args,
         ];
         if (config[instanceName].proxy) {
             args.push(`--proxy-server=${config[instanceName].proxy}`);
@@ -63,7 +65,7 @@ async function browser(instanceName) {
             args,
             ignoreDefaultArgs: ["--enable-automation"],
             defaultViewport: null,
-            ignoreHTTPSErrors: true
+            ignoreHTTPSErrors: true,
         };
         launchOptions.executablePath = chrome_paths_1.default.chrome;
         config[instanceName].browserHandle = await puppeteer_core_1.default.launch(launchOptions);
@@ -80,7 +82,7 @@ async function makePageFaster(page, instanceName) {
     await page.setBypassCSP(true);
     await pageStealth_1.default(page);
     await page.addScriptTag({
-        content: `${functionToInject_1.default.waitForElement} ${functionToInject_1.default.waitForElementToBeRemoved} ${functionToInject_1.default.delay}`
+        content: `${functionToInject_1.default.waitForElement} ${functionToInject_1.default.waitForElementToBeRemoved} ${functionToInject_1.default.delay}`,
     });
     if (instanceConfig.showPageError === true) {
         page.on("error", (err) => {
@@ -107,7 +109,7 @@ async function makePageFaster(page, instanceName) {
     }
     await session.send("Page.enable");
     await session.send("Page.setWebLifecycleState", {
-        state: "active"
+        state: "active",
     });
     return page;
 }
@@ -195,7 +197,10 @@ exports.default = (instanceName = "default") => {
         },
         addHook(name, action) {
             config[instanceName].hooks.push({ name, action });
-        }
+        },
+        addArg(arg) {
+            config[instanceName].args.push(arg);
+        },
     };
 };
 //# sourceMappingURL=index.js.map

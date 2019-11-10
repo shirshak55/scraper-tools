@@ -21,11 +21,12 @@ let defaultConfig = {
   defaultNavigationTimeout: 30 * 1000,
   extensions: [],
   showPageError: false,
-  hooks: []
+  args: [],
+  hooks: [],
 }
 
 let config = {
-  default: { ...defaultConfig }
+  default: { ...defaultConfig },
 }
 
 async function loadHooks(hooks, name, ...args) {
@@ -52,7 +53,8 @@ async function browser(instanceName): Promise<Browser> {
         "--enable-automation",
         "--disable-background-timer-throttling",
         "--disable-backgrounding-occluded-windows",
-        "--disable-renderer-backgrounding"
+        "--disable-renderer-backgrounding",
+        ...config[instanceName].args,
       ]
 
       if (config[instanceName].proxy) {
@@ -62,9 +64,9 @@ async function browser(instanceName): Promise<Browser> {
       if (config[instanceName].extensions.length > 0) {
         args.push(
           `--disable-extensions-except=${config[instanceName].extensions.join(
-            ","
+            ",",
           )}`,
-          `--load-extension=${config[instanceName].extensions.join(",")}`
+          `--load-extension=${config[instanceName].extensions.join(",")}`,
         )
       }
 
@@ -74,7 +76,7 @@ async function browser(instanceName): Promise<Browser> {
         args,
         ignoreDefaultArgs: ["--enable-automation"],
         defaultViewport: null,
-        ignoreHTTPSErrors: true
+        ignoreHTTPSErrors: true,
       }
 
       launchOptions.executablePath = chromePaths.chrome
@@ -83,7 +85,7 @@ async function browser(instanceName): Promise<Browser> {
       return config[instanceName].browserHandle
     })
     .catch((err) =>
-      console.log("Error on starting new page: Lock Error ->", err)
+      console.log("Error on starting new page: Lock Error ->", err),
     )
 }
 
@@ -91,7 +93,7 @@ async function makePageFaster(page, instanceName): Promise<Page> {
   let instanceConfig = config[instanceName]
   await loadHooks(instanceConfig["hooks"], "make_page_faster", page)
   await page.setDefaultNavigationTimeout(
-    instanceConfig.defaultNavigationTimeout
+    instanceConfig.defaultNavigationTimeout,
   )
   await page.setDefaultTimeout(instanceConfig.defaultNavigationTimeout)
 
@@ -101,7 +103,7 @@ async function makePageFaster(page, instanceName): Promise<Page> {
   await pageStealth(page)
 
   await page.addScriptTag({
-    content: `${functionsToInject.waitForElement} ${functionsToInject.waitForElementToBeRemoved} ${functionsToInject.delay}`
+    content: `${functionsToInject.waitForElement} ${functionsToInject.waitForElementToBeRemoved} ${functionsToInject.delay}`,
   })
 
   if (instanceConfig.showPageError === true) {
@@ -133,7 +135,7 @@ async function makePageFaster(page, instanceName): Promise<Page> {
 
   await session.send("Page.enable")
   await session.send("Page.setWebLifecycleState", {
-    state: "active"
+    state: "active",
   })
 
   return page
@@ -171,7 +173,7 @@ export default (instanceName = "default") => {
           return "closed"
         })
         .catch((err) =>
-          console.log("Error on closing browser: Lock Error ->", err)
+          console.log("Error on closing browser: Lock Error ->", err),
         )
     },
     setProxy: (value: string) => {
@@ -226,6 +228,9 @@ export default (instanceName = "default") => {
     },
     addHook(name, action) {
       config[instanceName].hooks.push({ name, action })
-    }
+    },
+    addArg(arg) {
+      config[instanceName].args.push(arg)
+    },
   }
 }
