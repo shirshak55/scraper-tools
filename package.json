@@ -8,8 +8,8 @@
   },
   "dependencies": {
     "@types/inquirer": "^6.5.0",
-    "@types/node": "^12.12.9",
-    "@types/puppeteer": "^1.20.2",
+    "@types/node": "^12.12.14",
+    "@types/puppeteer": "^2.0.0",
     "async-lock": "^1.2.2",
     "chalk": "^3.0.0",
     "cheerio": "^1.0.0-rc.2",
@@ -27,7 +27,7 @@
     "lodash": "^4.17.15",
     "meow": "^5.0.0",
     "node-ssh": "^6.0.0",
-    "nodemon": "^1.19.4",
+    "nodemon": "^2.0.1",
     "p-limit": "^2.2.1",
     "p-retry": "^4.2.0",
     "p-wait-for": "^3.1.0",
@@ -38,11 +38,11 @@
     "request-promise": "^4.2.5",
     "right-pad": "^1.0.1",
     "sanitize-filename": "^1.6.3",
-    "ssh2-sftp-client": "^4.2.3",
+    "ssh2-sftp-client": "^4.3.0",
     "toml": "^3.0.0",
-    "ts-node": "^8.5.2",
+    "ts-node": "^8.5.4",
     "typescript": "^3.7.2",
-    "xlsx": "^0.15.2"
+    "xlsx": "^0.15.3"
   },
   "husky": {
     "hooks": {
