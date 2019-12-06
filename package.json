@@ -41,7 +41,7 @@
     "ssh2-sftp-client": "^4.3.0",
     "toml": "^3.0.0",
     "ts-node": "^8.5.4",
-    "typescript": "^3.7.2",
+    "typescript": "^3.7.3",
     "xlsx": "^0.15.3"
   },
   "husky": {
