@@ -1,6 +1,6 @@
 {
   "name": "scrapper-tools",
-  "version": "1.0.149",
+  "version": "1.0.150",
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
@@ -38,11 +38,11 @@
     "xlsx": "^0.15.4"
   },
   "devDependencies": {
-    "nodemon": "^2.0.2",
-    "typescript": "^3.7.4",
-    "ts-node": "^8.5.4",
+    "@types/inquirer": "^6.5.0",
     "@types/node": "^13.1.4",
     "@types/puppeteer": "^2.0.0",
-    "@types/inquirer": "^6.5.0"
+    "nodemon": "^2.0.2",
+    "ts-node": "^8.5.4",
+    "typescript": "^3.7.4"
   }
 }
