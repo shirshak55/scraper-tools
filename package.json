@@ -7,27 +7,23 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@types/inquirer": "^6.5.0",
-    "@types/node": "^12.12.14",
-    "@types/puppeteer": "^2.0.0",
     "async-lock": "^1.2.2",
     "chalk": "^3.0.0",
     "cheerio": "^1.0.0-rc.2",
     "chrome-paths": "^1.0.1",
     "configstore": "^5.0.0",
-    "csv-parse": "^4.8.2",
+    "csv-parse": "^4.8.3",
     "csvtojson": "^2.0.10",
     "date-format": "^3.0.0",
     "delay": "^4.3.0",
     "fs-extra": "^8.1.0",
-    "inquirer": "^7.0.0",
+    "inquirer": "^7.0.2",
     "is-email": "^1.0.0",
     "json2csv": "^4.5.4",
     "lodash": "^4.17.15",
-    "meow": "^5.0.0",
-    "node-ssh": "^6.0.0",
-    "nodemon": "^2.0.1",
-    "p-limit": "^2.2.1",
+    "meow": "^6.0.0",
+    "node-ssh": "^7.0.0",
+    "p-limit": "^2.2.2",
     "p-retry": "^4.2.0",
     "p-wait-for": "^3.1.0",
     "pending-xhr-puppeteer": "^2.1.0",
@@ -37,10 +33,16 @@
     "request-promise": "^4.2.5",
     "right-pad": "^1.0.1",
     "sanitize-filename": "^1.6.3",
-    "ssh2-sftp-client": "^4.3.0",
+    "ssh2-sftp-client": "^4.3.1",
     "toml": "^3.0.0",
+    "xlsx": "^0.15.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2",
+    "typescript": "^3.7.4",
     "ts-node": "^8.5.4",
-    "typescript": "^3.7.3",
-    "xlsx": "^0.15.3"
+    "@types/node": "^13.1.4",
+    "@types/puppeteer": "^2.0.0",
+    "@types/inquirer": "^6.5.0"
   }
 }

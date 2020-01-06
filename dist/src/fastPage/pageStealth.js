@@ -305,10 +305,20 @@ async function navigatorPlugin(page) {
 }
 async function navigatorWebDriver(page) {
     await page.evaluateOnNewDocument(() => {
-        const newProto = navigator.__proto__;
-        delete newProto.webdriver;
-        navigator.__proto__ = newProto;
+        Object.defineProperty(window, "navigator", {
+            value: new Proxy(navigator, {
+                has: (target, key) => (key === "webdriver" ? false : key in target),
+                get: (target, key, receiver) => (key === "webdriver" ? undefined : target[key]),
+            }),
+        });
     });
+}
+async function navigorVendor(page) {
+    await page.evaluateOnNewDocument((v) => {
+        Object.defineProperty(navigator, "vendor", {
+            get: () => v,
+        });
+    }, "Google Inc.");
 }
 async function webGlVendor(page) {
     await page.evaluateOnNewDocument(() => {
@@ -552,6 +562,7 @@ async function pageStealth(page) {
     await navigatorLanguages(page);
     await navigatorPermissions(page);
     await navigatorWebDriver(page);
+    await navigorVendor(page);
     await webGlVendor(page);
     await navigatorPlugin(page);
     await conssoleDebugStealth(page);
