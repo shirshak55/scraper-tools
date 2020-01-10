@@ -20,7 +20,6 @@ import consoleMessage from "./consoleMessage"
 import createDirectories from "./createDirectories"
 import csvToJson from "./csvToJson"
 import csvToXlsxConverter from "./csvToXlsxConverter"
-import downloader from "./downloader"
 import errorLogger from "./errorLogger"
 import exists from "./exists"
 import fastPage from "./fastPage"
@@ -55,7 +54,6 @@ export {
   rightPad,
   consoleMessage,
   createDirectories,
-  downloader,
   errorLogger,
   fastPage,
   delay,
