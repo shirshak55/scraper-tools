@@ -1,7 +1,8 @@
 {
   "name": "scrapper-tools",
-  "version": "1.0.154",
-  "main": "src/index.ts",
+  "version": "1.0.155",
+  "main": "dist/index.js",
+  "types": "src/index.ts",
   "license": "MIT",
   "scripts": {
     "build": "tsc"
