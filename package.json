@@ -1,12 +1,15 @@
 {
   "name": "scrapper-tools",
-  "version": "1.0.153",
+  "version": "1.0.154",
   "main": "src/index.ts",
   "license": "MIT",
   "scripts": {
     "build": "tsc"
   },
   "dependencies": {
+    "@types/async-lock": "^1.1.1",
+    "@types/lodash": "^4.14.149",
+    "@types/puppeteer-core": "^2.0.0",
     "async-lock": "^1.2.2",
     "chalk": "^3.0.0",
     "cheerio": "^1.0.0-rc.2",
