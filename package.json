@@ -17,7 +17,7 @@
     "date-format": "^3.0.0",
     "delay": "^4.3.0",
     "fs-extra": "^8.1.0",
-    "inquirer": "^7.0.2",
+    "inquirer": "^7.0.3",
     "is-email": "^1.0.0",
     "json2csv": "^4.5.4",
     "lodash": "^4.17.15",
@@ -39,10 +39,10 @@
   },
   "devDependencies": {
     "@types/inquirer": "^6.5.0",
-    "@types/node": "^13.1.4",
+    "@types/node": "^13.1.6",
     "@types/puppeteer": "^2.0.0",
     "nodemon": "^2.0.2",
-    "ts-node": "^8.5.4",
+    "ts-node": "^8.6.0",
     "typescript": "^3.7.4"
   }
 }
