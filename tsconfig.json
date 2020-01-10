@@ -5,7 +5,6 @@
     "outDir": "dist",
     "rootDir": "./src",
     "sourceMap": true,
-    "jsx": "react",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
