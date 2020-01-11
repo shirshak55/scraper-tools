@@ -1,5 +1,4 @@
 "use strict";
-/// Useful Functions to eject on puppetter so that we can use these functions in evaluate
 Object.defineProperty(exports, "__esModule", { value: true });
 function waitForElement(selector) {
     return new Promise(function (resolve, reject) {
@@ -49,7 +48,6 @@ function triggerInputChange(node, value = '') {
         window.HTMLSelectElement,
         window.HTMLTextAreaElement,
     ];
-    // only process the change on elements we know have a value setter in their constructor
     if (inputTypes.indexOf(node.__proto__.constructor) > -1) {
         const setValue = Object.getOwnPropertyDescriptor(node.__proto__, 'value')
             .set;

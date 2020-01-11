@@ -71,16 +71,14 @@ const getChromeRuntimeMock = (window) => {
 };
 async function runtimeStealth(page) {
     await page.evaluateOnNewDocument((args) => {
-        // Rematerialize serialized functions
         if (args && args.fns) {
             for (const fn of Object.keys(args.fns)) {
-                eval(`var ${fn} =  ${args.fns[fn]}`); // eslint-disable-line
+                eval(`var ${fn} =  ${args.fns[fn]}`);
             }
         }
         ;
         window.chrome = getChromeRuntimeMock(window);
     }, {
-        // Serialize functions
         fns: {
             getChromeRuntimeMock: `${getChromeRuntimeMock.toString()}`,
         },
@@ -95,7 +93,6 @@ async function consoleDebug(page) {
 }
 async function navigatorLanguages(page) {
     await page.evaluateOnNewDocument(() => {
-        // Overwrite the `plugins` property to use a custom getter.
         Object.defineProperty(navigator, "languages", {
             get: () => ["en-US", "en"],
         });
@@ -103,17 +100,14 @@ async function navigatorLanguages(page) {
 }
 async function navigatorPermissions(page) {
     await page.evaluateOnNewDocument(() => {
-        const originalQuery = (window.navigator.permissions.query(
-        // eslint-disable-next-line
-        window.navigator).permissions.__proto__.query = (parameters) => parameters.name === "notifications"
-            ? Promise.resolve({ state: Notification.permission }) //eslint-disable-line
-            : originalQuery(parameters));
-        // Inspired by: https://github.com/ikarienator/phantomjs_hide_and_seek/blob/master/5.spoofFunctionBind.js
+        const originalQuery = window.navigator.permissions.query;
+        window.navigator.permissions.__proto__.query = (parameters) => parameters.name === "notifications"
+            ? Promise.resolve({ state: Notification.permission })
+            : originalQuery(parameters);
         const oldCall = Function.prototype.call;
         function call() {
             return oldCall.apply(this, arguments);
         }
-        // eslint-disable-next-line
         Function.prototype.call = call;
         const nativeToStringFunctionString = Error.toString().replace(/Error/g, "toString");
         const oldToString = Function.prototype.toString;
@@ -126,21 +120,17 @@ async function navigatorPermissions(page) {
             }
             return oldCall.call(oldToString, this);
         }
-        // eslint-disable-next-line
         Function.prototype.toString = functionToString;
     });
 }
 async function navigatorPlugin(page) {
     await page.evaluateOnNewDocument(() => {
         function mockPluginsAndMimeTypes() {
-            /* global MimeType MimeTypeArray PluginArray */
-            // Disguise custom functions as being native
             const makeFnsNative = (fns = []) => {
                 const oldCall = Function.prototype.call;
                 function call() {
                     return oldCall.apply(this, arguments);
                 }
-                // eslint-disable-next-line
                 Function.prototype.call = call;
                 const nativeToStringFunctionString = Error.toString().replace(/Error/g, "toString");
                 const oldToString = Function.prototype.toString;
@@ -155,7 +145,6 @@ async function navigatorPlugin(page) {
                     }
                     return oldCall.call(oldToString, this);
                 }
-                // eslint-disable-next-line
                 Function.prototype.toString = functionToString;
             };
             const mockedFns = [];
@@ -206,7 +195,6 @@ async function navigatorPlugin(page) {
                 ],
                 fns: {
                     namedItem: (instanceName) => {
-                        // Returns the Plugin/MimeType with the specified name.
                         const fn = function (name) {
                             if (!arguments.length) {
                                 throw new TypeError(`Failed to execute 'namedItem' on '${instanceName}': 1 argument required, but only 0 present.`);
@@ -217,7 +205,6 @@ async function navigatorPlugin(page) {
                         return fn;
                     },
                     item: (instanceName) => {
-                        // Returns the Plugin/MimeType at the specified index into the array.
                         const fn = function (index) {
                             if (!arguments.length) {
                                 throw new TypeError(`Failed to execute 'namedItem' on '${instanceName}': 1 argument required, but only 0 present.`);
@@ -228,7 +215,6 @@ async function navigatorPlugin(page) {
                         return fn;
                     },
                     refresh: (instanceName) => {
-                        // Refreshes all plugins on the current page, optionally reloading documents.
                         const fn = function () {
                             return undefined;
                         };
@@ -237,7 +223,6 @@ async function navigatorPlugin(page) {
                     },
                 },
             };
-            // Poor mans _.pluck
             const getSubset = (keys, obj) => keys.reduce((a, c) => ({ ...a, [c]: obj[c] }), {});
             function generateMimeTypeArray() {
                 const arr = fakeData.mimeTypes
@@ -246,7 +231,6 @@ async function navigatorPlugin(page) {
                 arr.forEach((obj) => {
                     arr[obj.type] = obj;
                 });
-                // Mock functions
                 arr.namedItem = fakeData.fns.namedItem("MimeTypeArray");
                 arr.item = fakeData.fns.item("MimeTypeArray");
                 return Object.setPrototypeOf(arr, MimeTypeArray.prototype);
@@ -260,7 +244,6 @@ async function navigatorPlugin(page) {
                     .map((obj) => getSubset(["name", "filename", "description"], obj))
                     .map((obj) => {
                     const mimes = fakeData.mimeTypes.filter((m) => m.__pluginName === obj.name);
-                    // Add mimetypes
                     mimes.forEach((mime, index) => {
                         navigator.mimeTypes[mime.type].enabledPlugin = obj;
                         obj[mime.type] = navigator.mimeTypes[mime.type];
@@ -270,7 +253,6 @@ async function navigatorPlugin(page) {
                     return obj;
                 })
                     .map((obj) => {
-                    // Mock functions
                     obj.namedItem = fakeData.fns.namedItem("Plugin");
                     obj.item = fakeData.fns.item("Plugin");
                     return obj;
@@ -279,7 +261,6 @@ async function navigatorPlugin(page) {
                 arr.forEach((obj) => {
                     arr[obj.name] = obj;
                 });
-                // Mock functions
                 arr.namedItem = fakeData.fns.namedItem("PluginArray");
                 arr.item = fakeData.fns.item("PluginArray");
                 arr.refresh = fakeData.fns.refresh("PluginArray");
@@ -289,14 +270,13 @@ async function navigatorPlugin(page) {
             Object.defineProperty(navigator, "plugins", {
                 get: () => pluginArray,
             });
-            // Make mockedFns toString() representation resemble a native function
             makeFnsNative(mockedFns);
         }
         try {
             const isPluginArray = navigator.plugins instanceof PluginArray;
             const hasPlugins = isPluginArray && navigator.plugins.length > 0;
             if (isPluginArray && hasPlugins) {
-                return; // nothing to do here
+                return;
             }
             mockPluginsAndMimeTypes();
         }
@@ -323,7 +303,6 @@ async function navigorVendor(page) {
 async function webGlVendor(page) {
     await page.evaluateOnNewDocument(() => {
         try {
-            // Remove traces of our Proxy ;-)
             var stripErrorStack = (stack) => stack
                 .split("\n")
                 .filter((line) => !line.includes(`at Object.apply`))
@@ -331,11 +310,10 @@ async function webGlVendor(page) {
                 .join("\n");
             const getParameterProxyHandler = {
                 get(target, key) {
-                    // There's a slight difference in toString: Our version does not return a named function by default
                     if (key === "toString") {
                         const dummyFn = function toString() {
-                            return target.toString(); // `function getParameter() { [native code] }`
-                        }.bind(Function.prototype.toString); // eslint-disable-line
+                            return target.toString();
+                        }.bind(Function.prototype.toString);
                         return dummyFn;
                     }
                     try {
@@ -348,11 +326,9 @@ async function webGlVendor(page) {
                 },
                 apply: function (target, thisArg, args) {
                     const param = (args || [])[0];
-                    // UNMASKED_VENDOR_WEBGL
                     if (param === 37445) {
                         return "Intel Inc.";
                     }
-                    // UNMASKED_RENDERER_WEBGL
                     if (param === 37446) {
                         return "Intel Iris OpenGL Engine";
                     }
@@ -366,7 +342,6 @@ async function webGlVendor(page) {
                 },
             };
             const proxy = new Proxy(WebGLRenderingContext.prototype.getParameter, getParameterProxyHandler);
-            // To find out the original values here: Object.getOwnPropertyDescriptors(WebGLRenderingContext.prototype.getParameter)
             Object.defineProperty(WebGLRenderingContext.prototype, "getParameter", {
                 configurable: true,
                 enumerable: false,
@@ -383,10 +358,9 @@ async function outerWindow(page) {
     await page.evaluateOnNewDocument(() => {
         try {
             if (window.outerWidth && window.outerHeight) {
-                return; // nothing to do here
+                return;
             }
-            const windowFrame = 85 // probably OS and WM dependent
-            ;
+            const windowFrame = 85;
             window.outerWidth = window.innerWidth;
             window.outerHeight = window.innerHeight + windowFrame;
         }
@@ -403,19 +377,12 @@ async function conssoleDebugStealth(page) {
 async function iframeStealth(page) {
     await page.evaluateOnNewDocument(() => {
         try {
-            // Adds a contentWindow proxy to the provided iframe element
             const addContentWindowProxy = (iframe) => {
                 const contentWindowProxy = {
                     get(target, key) {
-                        // Now to the interesting part:
-                        // We actually make this thing behave like a regular iframe window,
-                        // by intercepting calls to e.g. `.self` and redirect it to the correct thing. :)
-                        // That makes it possible for these assertions to be correct:
-                        // iframe.contentWindow.self === window.top // must be false
                         if (key === "self") {
                             return this;
                         }
-                        // iframe.contentWindow.frameElement === iframe // must be true
                         if (key === "frameElement") {
                             return iframe;
                         }
@@ -429,21 +396,17 @@ async function iframeStealth(page) {
                             return proxy;
                         },
                         set(newValue) {
-                            return newValue; // contentWindow is immutable
+                            return newValue;
                         },
                         enumerable: true,
                         configurable: false,
                     });
                 }
             };
-            // Handles iframe element creation, augments `srcdoc` property so we can intercept further
             const handleIframeCreation = (target, thisArg, args) => {
                 const iframe = target.apply(thisArg, args);
-                // We need to keep the originals around
                 const _iframe = iframe;
                 const _srcdoc = _iframe.srcdoc;
-                // Add hook for the srcdoc property
-                // We need to be very surgical here to not break other iframes by accident
                 Object.defineProperty(iframe, "srcdoc", {
                     configurable: true,
                     get: function () {
@@ -451,7 +414,6 @@ async function iframeStealth(page) {
                     },
                     set: function (newValue) {
                         addContentWindowProxy(this);
-                        // Reset property, the hook is only needed once
                         Object.defineProperty(iframe, "srcdoc", {
                             configurable: false,
                             writable: false,
@@ -462,18 +424,14 @@ async function iframeStealth(page) {
                 });
                 return iframe;
             };
-            // Adds a hook to intercept iframe creation events
             const addIframeCreationSniffer = () => {
-                /* global document */
                 const createElement = {
-                    // Make toString() native
                     get(target, key) {
                         return Reflect.get(target, key);
                     },
                     apply: function (target, thisArg, args) {
                         const isIframe = args && args.length && `${args[0]}`.toLowerCase() === "iframe";
                         if (!isIframe) {
-                            // Everything as usual
                             return target.apply(thisArg, args);
                         }
                         else {
@@ -481,30 +439,17 @@ async function iframeStealth(page) {
                         }
                     },
                 };
-                // All this just due to iframes with srcdoc bug
                 document.createElement = new Proxy(document.createElement, createElement);
             };
-            // Let's go
             addIframeCreationSniffer();
         }
         catch (err) {
-            // console.warn(err)
         }
     });
 }
 async function mediaCodecStealth(page) {
     await page.evaluateOnNewDocument(() => {
         try {
-            /**
-             * Input might look funky, we need to normalize it so e.g. whitespace isn't an issue for our spoofing.
-             *
-             * @example
-             * video/webm; codecs="vp8, vorbis"
-             * video/mp4; codecs="avc1.42E01E"
-             * audio/x-m4a;
-             * audio/ogg; codecs="vorbis"
-             * @param {String} arg
-             */
             const parseInput = (arg) => {
                 const [mime, codecStr] = arg.trim().split(";");
                 let codecs = [];
@@ -520,33 +465,26 @@ async function mediaCodecStealth(page) {
                 }
                 return { mime, codecStr, codecs };
             };
-            /* global HTMLMediaElement */
             const canPlayType = {
-                // Make toString() native
                 get(target, key) {
                     return Reflect.get(target, key);
                 },
-                // Intercept certain requests
                 apply: function (target, ctx, args) {
                     if (!args || !args.length) {
                         return target.apply(ctx, args);
                     }
                     const { mime, codecs } = parseInput(args[0]);
-                    // This specific mp4 codec is missing in Chromium
                     if (mime === "video/mp4") {
                         if (codecs.includes("avc1.42E01E")) {
                             return "probably";
                         }
                     }
-                    // This mimetype is only supported if no codecs are specified
                     if (mime === "audio/x-m4a" && !codecs.length) {
                         return "maybe";
                     }
-                    // This mimetype is only supported if no codecs are specified
                     if (mime === "audio/aac" && !codecs.length) {
                         return "probably";
                     }
-                    // Everything else as usual
                     return target.apply(ctx, args);
                 },
             };

@@ -29,9 +29,7 @@ let config = {
     default: { ...defaultConfig },
 };
 async function loadHooks(hooks, name, ...args) {
-    hooks
-        .filter((v) => v.name === name)
-        .forEach(async (v) => await v.action(...args));
+    hooks.filter((v) => v.name === name).forEach(async (v) => await v.action(...args));
 }
 async function browser(instanceName) {
     return await lock
@@ -92,9 +90,7 @@ async function makePageFaster(page, instanceName) {
             consoleMessage_1.default.error("Page Error occurred: ", pageerr);
         });
     }
-    if (instanceConfig.blockCSS ||
-        instanceConfig.blockFonts ||
-        instanceConfig.blockImages) {
+    if (instanceConfig.blockCSS || instanceConfig.blockFonts || instanceConfig.blockImages) {
         await page.setRequestInterception(true);
         page.on("request", (request) => {
             if ((instanceConfig.blockImages && request.resourceType() === "image") ||

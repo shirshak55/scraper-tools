@@ -5,8 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const consoleMessage_1 = __importDefault(require("./consoleMessage"));
 const node_ssh_1 = __importDefault(require("node-ssh"));
-/// # Allows you to upload Via SSH
-/// @Todo Lock
 exports.default = (() => {
     let handler;
     return {

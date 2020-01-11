@@ -7,8 +7,6 @@ const ssh2_sftp_client_1 = __importDefault(require("ssh2-sftp-client"));
 const consoleMessage_1 = __importDefault(require("./consoleMessage"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-/// # Allows you to upload Via SSH
-/// @Todo Lock
 exports.default = (() => {
     let sftpHandler;
     return {

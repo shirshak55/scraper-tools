@@ -45,7 +45,6 @@ async function default_1(page) {
         console.log("ssss");
         await solver(page);
         console.log("get captcha frame");
-        // Checks if captcha was really solved
         try {
             let captchaFrame = await getCaptchaFrame(page);
             let captchaClasses = await captchaFrame.evaluate(() => {
@@ -61,7 +60,6 @@ async function default_1(page) {
         catch (e) { }
         await delay_1.default(1000);
     }
-    // Check For Reload
     consoleMessage_1.default.success("Buster", "Captcha should be solved");
 }
 exports.default = default_1;

@@ -18,6 +18,11 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
+"@types/async-lock@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@types/async-lock/-/async-lock-1.1.1.tgz#81f218213bebcc5f740efe9648272c774a2e4b4b"
+  integrity sha512-TU1X8jmAU2BjwKryBFV/GDezz7Ge0xu9ZuYC7dy6wKj4hnL0JcxeseCOr/G2JkGylff6hdUBrR+Ee5ApAQeU5g==
+
 "@types/bluebird@^3.5.26":
   version "3.5.29"
   resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.29.tgz#7cd933c902c4fc83046517a1bef973886d00bdb6"
@@ -35,6 +40,11 @@
   dependencies:
     "@types/through" "*"
     rxjs "^6.4.0"
+
+"@types/lodash@^4.14.149":
+  version "4.14.149"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.149.tgz#1342d63d948c6062838fbf961012f74d4e638440"
+  integrity sha512-ijGqzZt/b7BfzcK9vTrS6MFljQRPn5BFWOx8oE0GYxribu6uV+aA9zZuXI1zc/etK9E8nrgdoF2+LgUw7+9tJQ==
 
 "@types/minimist@^1.2.0":
   version "1.2.0"
@@ -63,7 +73,14 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
   integrity sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==
 
-"@types/puppeteer@^2.0.0":
+"@types/puppeteer-core@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/puppeteer-core/-/puppeteer-core-2.0.0.tgz#3b7fbbac53d56b566f5ef096116e1d60d504aa45"
+  integrity sha512-JvoEb7KgEkUet009ZDrtpUER3hheXoHgQByuYpJZ5WWT7LWwMH+0NTqGQXGgoOKzs+G5NA1T4DZwXK79Bhnejw==
+  dependencies:
+    "@types/puppeteer" "*"
+
+"@types/puppeteer@*", "@types/puppeteer@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/puppeteer/-/puppeteer-2.0.0.tgz#82c04f93367e2d3396e371a71be1167332148838"
   integrity sha512-QPHXIcaPcijMbvizoM7PRL97Rm+aM8J2DmgTz2tt79b15PqbyeaCppYonvPLHQ/Q5ea92BUHDpv4bsqtiTy8kQ==
