@@ -1,5 +1,5 @@
-import fs from 'fs'
+import fs from "fs";
 
-export default (filename): string => {
-    return fs.readFileSync(filename).toString()
-}
+export default (filename: string): string => {
+  return fs.readFileSync(filename).toString();
+};

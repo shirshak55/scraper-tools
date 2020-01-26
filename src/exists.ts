@@ -1,12 +1,14 @@
-const { promisify } = require('util')
-const fs = require('fs')
-const stat = promisify(fs.stat)
+import { PathLike } from "fs";
+import { promisify } from "util";
+import fs from "fs";
 
-export default async function(filePath): Promise<boolean> {
+const stat = promisify(fs.stat);
+
+export default async function(filePath: PathLike): Promise<boolean> {
   try {
-    await stat(filePath)
-    return true
+    await stat(filePath);
+    return true;
   } catch (err) {
-    return false
+    return false;
   }
 }

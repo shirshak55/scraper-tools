@@ -1,4 +1,4 @@
-const getChromeRuntimeMock = (window) => {
+const getChromeRuntimeMock = (window: any) => {
   const installer: any = { install() {} }
   return {
     app: {
@@ -6,13 +6,13 @@ const getChromeRuntimeMock = (window) => {
       InstallState: {
         DISABLED: "disabled",
         INSTALLED: "installed",
-        NOT_INSTALLED: "not_installed",
+        NOT_INSTALLED: "not_installed"
       },
       RunningState: {
         CANNOT_RUN: "cannot_run",
         READY_TO_RUN: "ready_to_run",
-        RUNNING: "running",
-      },
+        RUNNING: "running"
+      }
     },
     csi() {},
     loadTimes() {},
@@ -21,33 +21,33 @@ const getChromeRuntimeMock = (window) => {
       onDownloadProgress: {},
       install(url: any, onSuccess: any, onFailure: any) {
         installer.install(url, onSuccess, onFailure)
-      },
+      }
     },
     runtime: {
       OnInstalledReason: {
         CHROME_UPDATE: "chrome_update",
         INSTALL: "install",
         SHARED_MODULE_UPDATE: "shared_module_update",
-        UPDATE: "update",
+        UPDATE: "update"
       },
       OnRestartRequiredReason: {
         APP_UPDATE: "app_update",
         OS_UPDATE: "os_update",
-        PERIODIC: "periodic",
+        PERIODIC: "periodic"
       },
       PlatformArch: {
         ARM: "arm",
         MIPS: "mips",
         MIPS64: "mips64",
         X86_32: "x86-32",
-        X86_64: "x86-64",
+        X86_64: "x86-64"
       },
       PlatformNaclArch: {
         ARM: "arm",
         MIPS: "mips",
         MIPS64: "mips64",
         X86_32: "x86-32",
-        X86_64: "x86-64",
+        X86_64: "x86-64"
       },
       PlatformOs: {
         ANDROID: "android",
@@ -55,22 +55,22 @@ const getChromeRuntimeMock = (window) => {
         LINUX: "linux",
         MAC: "mac",
         OPENBSD: "openbsd",
-        WIN: "win",
+        WIN: "win"
       },
       RequestUpdateCheckStatus: {
         NO_UPDATE: "no_update",
         THROTTLED: "throttled",
-        UPDATE_AVAILABLE: "update_available",
+        UPDATE_AVAILABLE: "update_available"
       },
       connect: function() {}.bind(function() {}), // eslint-disable-line
-      sendMessage: function() {}.bind(function() {}), // eslint-disable-line
-    },
+      sendMessage: function() {}.bind(function() {}) // eslint-disable-line
+    }
   }
 }
 
-async function runtimeStealth(page) {
+async function runtimeStealth(page: any) {
   await page.evaluateOnNewDocument(
-    (args) => {
+    (args: any) => {
       // Rematerialize serialized functions
       if (args && args.fns) {
         for (const fn of Object.keys(args.fns)) {
@@ -83,13 +83,13 @@ async function runtimeStealth(page) {
     {
       // Serialize functions
       fns: {
-        getChromeRuntimeMock: `${getChromeRuntimeMock.toString()}`,
-      },
-    },
+        getChromeRuntimeMock: `${getChromeRuntimeMock.toString()}`
+      }
+    }
   )
 }
 
-async function consoleDebug(page) {
+async function consoleDebug(page: any) {
   await page.evaluateOnNewDocument(() => {
     window.console.debug = () => {
       return null
@@ -97,16 +97,16 @@ async function consoleDebug(page) {
   })
 }
 
-async function navigatorLanguages(page) {
+async function navigatorLanguages(page: any) {
   await page.evaluateOnNewDocument(() => {
     // Overwrite the `plugins` property to use a custom getter.
     Object.defineProperty(navigator, "languages", {
-      get: () => ["en-US", "en"],
+      get: () => ["en-US", "en"]
     })
   })
 }
 
-async function navigatorPermissions(page) {
+async function navigatorPermissions(page: any) {
   await page.evaluateOnNewDocument(() => {
     const originalQuery = window.navigator.permissions.query
     // @ts-ignore
@@ -116,13 +116,13 @@ async function navigatorPermissions(page) {
         : originalQuery(parameters)
 
     const oldCall = Function.prototype.call
-    function call() {
+    function call(this: any) {
       return oldCall.apply(this, arguments)
     }
     Function.prototype.call = call
     const nativeToStringFunctionString = Error.toString().replace(/Error/g, "toString")
     const oldToString = Function.prototype.toString
-    function functionToString() {
+    function functionToString(this: any) {
       if (this === window.navigator.permissions.query) {
         return "function query() { [native code] }"
       }
@@ -135,15 +135,15 @@ async function navigatorPermissions(page) {
   })
 }
 
-async function navigatorPlugin(page) {
+async function navigatorPlugin(page: any) {
   await page.evaluateOnNewDocument(() => {
     function mockPluginsAndMimeTypes() {
       /* global MimeType MimeTypeArray PluginArray */
 
       // Disguise custom functions as being native
-      const makeFnsNative = (fns = []) => {
+      const makeFnsNative = (fns: any = []) => {
         const oldCall = Function.prototype.call
-        function call() {
+        function call(this: any) {
           return oldCall.apply(this, arguments)
         }
         // eslint-disable-next-line
@@ -152,7 +152,7 @@ async function navigatorPlugin(page) {
         const nativeToStringFunctionString = Error.toString().replace(/Error/g, "toString")
         const oldToString = Function.prototype.toString
 
-        function functionToString() {
+        function functionToString(this: any) {
           for (const fn of fns) {
             if (this === fn.ref) {
               return `function ${fn.name}() { [native code] }`
@@ -168,7 +168,7 @@ async function navigatorPlugin(page) {
         Function.prototype.toString = functionToString
       }
 
-      const mockedFns = []
+      const mockedFns: any = []
 
       const fakeData = {
         mimeTypes: [
@@ -176,52 +176,52 @@ async function navigatorPlugin(page) {
             type: "application/pdf",
             suffixes: "pdf",
             description: "",
-            __pluginName: "Chrome PDF Viewer",
+            __pluginName: "Chrome PDF Viewer"
           },
           {
             type: "application/x-google-chrome-pdf",
             suffixes: "pdf",
             description: "Portable Document Format",
-            __pluginName: "Chrome PDF Plugin",
+            __pluginName: "Chrome PDF Plugin"
           },
           {
             type: "application/x-nacl",
             suffixes: "",
             description: "Native Client Executable",
             enabledPlugin: Plugin,
-            __pluginName: "Native Client",
+            __pluginName: "Native Client"
           },
           {
             type: "application/x-pnacl",
             suffixes: "",
             description: "Portable Native Client Executable",
-            __pluginName: "Native Client",
-          },
+            __pluginName: "Native Client"
+          }
         ],
         plugins: [
           {
             name: "Chrome PDF Plugin",
             filename: "internal-pdf-viewer",
-            description: "Portable Document Format",
+            description: "Portable Document Format"
           },
           {
             name: "Chrome PDF Viewer",
             filename: "mhjfbmdgcfjbbpaeojofohoefgiehjai",
-            description: "",
+            description: ""
           },
           {
             name: "Native Client",
             filename: "internal-nacl-plugin",
-            description: "",
-          },
+            description: ""
+          }
         ],
         fns: {
-          namedItem: (instanceName) => {
+          namedItem: (instanceName: any) => {
             // Returns the Plugin/MimeType with the specified name.
-            const fn = function(name) {
+            const fn = function(this: any, name: any) {
               if (!arguments.length) {
                 throw new TypeError(
-                  `Failed to execute 'namedItem' on '${instanceName}': 1 argument required, but only 0 present.`,
+                  `Failed to execute 'namedItem' on '${instanceName}': 1 argument required, but only 0 present.`
                 )
               }
               return this[name] || null
@@ -229,37 +229,39 @@ async function navigatorPlugin(page) {
             mockedFns.push({ ref: fn, name: "namedItem" })
             return fn
           },
-          item: (instanceName) => {
+          item: (instanceName: any) => {
             // Returns the Plugin/MimeType at the specified index into the array.
-            const fn = function(index) {
+            const fn = function(this: { ref: (index: any) => any; name: string }, index: any) {
               if (!arguments.length) {
                 throw new TypeError(
-                  `Failed to execute 'namedItem' on '${instanceName}': 1 argument required, but only 0 present.`,
+                  `Failed to execute 'namedItem' on '${instanceName}': 1 argument required, but only 0 present.`
                 )
               }
-              return this[index] || null
+
+              return (this as any)[index] || null
             }
             mockedFns.push({ ref: fn, name: "item" })
             return fn
           },
-          refresh: (instanceName) => {
+          refresh: (instanceName: any) => {
             // Refreshes all plugins on the current page, optionally reloading documents.
             const fn = function() {
               return undefined
             }
             mockedFns.push({ ref: fn, name: "refresh" })
             return fn
-          },
-        },
+          }
+        }
       }
       // Poor mans _.pluck
-      const getSubset = (keys, obj) => keys.reduce((a, c) => ({ ...a, [c]: obj[c] }), {})
+      const getSubset = (keys: any, obj: any) =>
+        keys.reduce((a: any, c: any) => ({ ...a, [c]: obj[c] }), {})
 
       function generateMimeTypeArray() {
         const arr: any = fakeData.mimeTypes
           .map((obj) => getSubset(["type", "suffixes", "description"], obj))
           .map((obj) => Object.setPrototypeOf(obj, MimeType.prototype))
-        arr.forEach((obj) => {
+        arr.forEach((obj: any) => {
           arr[obj.type] = obj
         })
 
@@ -272,7 +274,7 @@ async function navigatorPlugin(page) {
 
       const mimeTypeArray = generateMimeTypeArray()
       Object.defineProperty(navigator, "mimeTypes", {
-        get: () => mimeTypeArray,
+        get: () => mimeTypeArray
       })
 
       function generatePluginArray() {
@@ -281,8 +283,8 @@ async function navigatorPlugin(page) {
           .map((obj) => {
             const mimes = fakeData.mimeTypes.filter((m) => m.__pluginName === obj.name)
             // Add mimetypes
-            mimes.forEach((mime, index) => {
-              navigator.mimeTypes[mime.type].enabledPlugin = obj
+            mimes.forEach((mime: any, index: any) => {
+              ;(navigator.mimeTypes[mime.type] as any).enabledPlugin = obj
               obj[mime.type] = navigator.mimeTypes[mime.type]
               obj[index] = navigator.mimeTypes[mime.type]
             })
@@ -296,7 +298,7 @@ async function navigatorPlugin(page) {
             return obj
           })
           .map((obj) => Object.setPrototypeOf(obj, Plugin.prototype))
-        arr.forEach((obj) => {
+        arr.forEach((obj: any) => {
           arr[obj.name] = obj
         })
 
@@ -310,7 +312,7 @@ async function navigatorPlugin(page) {
 
       const pluginArray = generatePluginArray()
       Object.defineProperty(navigator, "plugins", {
-        get: () => pluginArray,
+        get: () => pluginArray
       })
 
       // Make mockedFns toString() representation resemble a native function
@@ -327,38 +329,38 @@ async function navigatorPlugin(page) {
   })
 }
 
-async function navigatorWebDriver(page) {
+async function navigatorWebDriver(page: any) {
   await page.evaluateOnNewDocument(() => {
     Object.defineProperty(window, "navigator", {
       value: new Proxy(navigator, {
         has: (target, key) => (key === "webdriver" ? false : key in target),
-        get: (target, key, receiver) => (key === "webdriver" ? undefined : target[key]),
-      }),
+        get: (target: any, key, receiver) => (key === "webdriver" ? undefined : target[key])
+      })
     })
   })
 }
 
-async function navigorVendor(page) {
-  await page.evaluateOnNewDocument((v) => {
+async function navigorVendor(page: any) {
+  await page.evaluateOnNewDocument((v: any) => {
     Object.defineProperty(navigator, "vendor", {
-      get: () => v,
+      get: () => v
     })
   }, "Google Inc.")
 }
 
-async function webGlVendor(page) {
+async function webGlVendor(page: any) {
   await page.evaluateOnNewDocument(() => {
     try {
       // Remove traces of our Proxy ;-)
-      var stripErrorStack = (stack) =>
+      var stripErrorStack = (stack: any) =>
         stack
           .split("\n")
-          .filter((line) => !line.includes(`at Object.apply`))
-          .filter((line) => !line.includes(`at Object.get`))
+          .filter((line: any) => !line.includes(`at Object.apply`))
+          .filter((line: any) => !line.includes(`at Object.get`))
           .join("\n")
 
       const getParameterProxyHandler = {
-        get(target, key) {
+        get(target: any, key: any) {
           // There's a slight difference in toString: Our version does not return a named function by default
           if (key === "toString") {
             const dummyFn = function toString() {
@@ -373,7 +375,7 @@ async function webGlVendor(page) {
             throw err
           }
         },
-        apply: function(target, thisArg, args) {
+        apply: function(target: any, thisArg: any, args: any) {
           const param = (args || [])[0]
           // UNMASKED_VENDOR_WEBGL
           if (param === 37445) {
@@ -389,19 +391,19 @@ async function webGlVendor(page) {
             err.stack = stripErrorStack(err.stack)
             throw err
           }
-        },
+        }
       }
 
       const proxy = new Proxy(
         WebGLRenderingContext.prototype.getParameter,
-        getParameterProxyHandler,
+        getParameterProxyHandler
       )
       // To find out the original values here: Object.getOwnPropertyDescriptors(WebGLRenderingContext.prototype.getParameter)
       Object.defineProperty(WebGLRenderingContext.prototype, "getParameter", {
         configurable: true,
         enumerable: false,
         writable: false,
-        value: proxy,
+        value: proxy
       })
     } catch (err) {
       console.warn(err)
@@ -409,7 +411,7 @@ async function webGlVendor(page) {
   })
 }
 
-async function outerWindow(page) {
+async function outerWindow(page: any) {
   await page.evaluateOnNewDocument(() => {
     try {
       if (window.outerWidth && window.outerHeight) {
@@ -422,7 +424,7 @@ async function outerWindow(page) {
   })
 }
 
-async function conssoleDebugStealth(page) {
+async function conssoleDebugStealth(page: any) {
   await page.evaluateOnNewDocument(() => {
     window.console.debug = () => {
       return null
@@ -430,13 +432,13 @@ async function conssoleDebugStealth(page) {
   })
 }
 
-async function iframeStealth(page) {
+async function iframeStealth(page: any) {
   await page.evaluateOnNewDocument(() => {
     try {
       // Adds a contentWindow proxy to the provided iframe element
-      const addContentWindowProxy = (iframe) => {
+      const addContentWindowProxy = (iframe: any) => {
         const contentWindowProxy = {
-          get(target, key) {
+          get(target: any, key: any) {
             // Now to the interesting part:
             // We actually make this thing behave like a regular iframe window,
             // by intercepting calls to e.g. `.self` and redirect it to the correct thing. :)
@@ -450,7 +452,7 @@ async function iframeStealth(page) {
               return iframe
             }
             return Reflect.get(target, key)
-          },
+          }
         }
 
         if (!iframe.contentWindow) {
@@ -463,13 +465,13 @@ async function iframeStealth(page) {
               return newValue // contentWindow is immutable
             },
             enumerable: true,
-            configurable: false,
+            configurable: false
           })
         }
       }
 
       // Handles iframe element creation, augments `srcdoc` property so we can intercept further
-      const handleIframeCreation = (target, thisArg, args) => {
+      const handleIframeCreation = (target: any, thisArg: any, args: any) => {
         const iframe = target.apply(thisArg, args)
 
         // We need to keep the originals around
@@ -489,10 +491,10 @@ async function iframeStealth(page) {
             Object.defineProperty(iframe, "srcdoc", {
               configurable: false,
               writable: false,
-              value: _srcdoc,
+              value: _srcdoc
             })
             _iframe.srcdoc = newValue
-          },
+          }
         })
         return iframe
       }
@@ -502,10 +504,10 @@ async function iframeStealth(page) {
         /* global document */
         const createElement = {
           // Make toString() native
-          get(target, key) {
+          get(target: any, key: any) {
             return Reflect.get(target, key)
           },
-          apply: function(target, thisArg, args) {
+          apply: function(target: any, thisArg: any, args: any) {
             const isIframe = args && args.length && `${args[0]}`.toLowerCase() === "iframe"
             if (!isIframe) {
               // Everything as usual
@@ -513,7 +515,7 @@ async function iframeStealth(page) {
             } else {
               return handleIframeCreation(target, thisArg, args)
             }
-          },
+          }
         }
         // All this just due to iframes with srcdoc bug
         document.createElement = new Proxy(document.createElement, createElement)
@@ -527,7 +529,7 @@ async function iframeStealth(page) {
   })
 }
 
-async function mediaCodecStealth(page) {
+async function mediaCodecStealth(page: any) {
   await page.evaluateOnNewDocument(() => {
     try {
       /**
@@ -540,7 +542,7 @@ async function mediaCodecStealth(page) {
        * audio/ogg; codecs="vorbis"
        * @param {String} arg
        */
-      const parseInput = (arg) => {
+      const parseInput = (arg: any) => {
         const [mime, codecStr] = arg.trim().split(";")
         let codecs = []
         if (codecStr && codecStr.includes('codecs="')) {
@@ -550,8 +552,8 @@ async function mediaCodecStealth(page) {
             .replace(`"`, "")
             .trim()
             .split(",")
-            .filter((x) => !!x)
-            .map((x) => x.trim())
+            .filter((x: any) => !!x)
+            .map((x: any) => x.trim())
         }
         return { mime, codecStr, codecs }
       }
@@ -559,11 +561,11 @@ async function mediaCodecStealth(page) {
       /* global HTMLMediaElement */
       const canPlayType = {
         // Make toString() native
-        get(target, key) {
+        get(target: any, key: any) {
           return Reflect.get(target, key)
         },
         // Intercept certain requests
-        apply: function(target, ctx, args) {
+        apply: function(target: any, ctx: any, args: any) {
           if (!args || !args.length) {
             return target.apply(ctx, args)
           }
@@ -585,19 +587,19 @@ async function mediaCodecStealth(page) {
           }
           // Everything else as usual
           return target.apply(ctx, args)
-        },
+        }
       }
       HTMLMediaElement.prototype.canPlayType = new Proxy(
         HTMLMediaElement.prototype.canPlayType,
-        canPlayType,
+        canPlayType
       )
     } catch (err) {}
   })
 }
 
-export default async function pageStealth(page) {
+export default async function pageStealth(page: any) {
   await page.setUserAgent(
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
   )
 
   await runtimeStealth(page)

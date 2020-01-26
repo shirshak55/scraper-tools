@@ -7,4 +7,4 @@ const fs_1 = __importDefault(require("fs"));
 exports.default = (filename) => {
     return fs_1.default.readFileSync(filename).toString();
 };
-//# sourceMappingURL=readFileSync.js.map
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicmVhZEZpbGVTeW5jLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vc3JjL3JlYWRGaWxlU3luYy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7OztBQUFBLDRDQUFvQjtBQUVwQixrQkFBZSxDQUFDLFFBQWdCLEVBQVUsRUFBRTtJQUMxQyxPQUFPLFlBQUUsQ0FBQyxZQUFZLENBQUMsUUFBUSxDQUFDLENBQUMsUUFBUSxFQUFFLENBQUM7QUFDOUMsQ0FBQyxDQUFDIn0=

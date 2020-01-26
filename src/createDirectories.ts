@@ -1,6 +1,6 @@
-import fsExtra from 'fs-extra'
+import fsExtra from "fs-extra";
 
-export default (name): string => {
-    fsExtra.ensureDirSync(name)
-    return name
-}
+export default (name: string): string => {
+  fsExtra.ensureDirSync(name);
+  return name;
+};

@@ -9,9 +9,7 @@ import meow from "meow"
 import pLimit from "p-limit"
 import pRetry from "p-retry"
 import pWaitFor from "p-wait-for"
-import { PendingXHR } from "pending-xhr-puppeteer"
 import requestPromise from "request-promise"
-import rightPad from "right-pad"
 import sanitizeFilename from "sanitize-filename"
 import toml from "toml"
 import browserRequest, { jsonBrowserRequest } from "./browserRequest"
@@ -31,10 +29,6 @@ import randomNumberRange from "./randomNumberRange"
 import readFileSync from "./readFileSync"
 import request from "./request"
 import scrollToBottom from "./scrollToBot"
-import sftp from "./sftp"
-import solveCaptchaByBuster from "./solveCaptchaByBuster"
-import solveNoCaptchaRecaptcha from "./solveNoCaptchaRecaptchaByBuster"
-import ssh from "./ssh"
 import waitForFrames from "./waitForFrames"
 import writeFileSync from "./writeFileSync"
 import xlsxReader from "./xlsxReader"
@@ -48,10 +42,8 @@ export {
   pWaitFor,
   pLimit,
   sanitizeFilename,
-  PendingXHR,
   configstore,
   chunks,
-  rightPad,
   consoleMessage,
   createDirectories,
   errorLogger,
@@ -70,15 +62,11 @@ export {
   request,
   xlsxReader,
   dateFormat,
-  sftp,
-  ssh,
   waitForFrames,
   csvToJson,
   jsonToCsv,
   requestPromise,
   toml,
   parseToml,
-  scrollToBottom,
-  solveCaptchaByBuster,
-  solveNoCaptchaRecaptcha,
+  scrollToBottom
 }

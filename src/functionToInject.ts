@@ -1,6 +1,6 @@
 /// Useful Functions to eject on puppetter so that we can use these functions in evaluate
 
-function waitForElement(selector) {
+function waitForElement(selector: string) {
   return new Promise(function(resolve, reject) {
     let node
     const element = document.querySelector(selector)
@@ -20,7 +20,7 @@ function waitForElement(selector) {
   })
 }
 
-function waitForElementToBeRemoved(selector) {
+function waitForElementToBeRemoved(selector: any) {
   return new Promise(function(resolve, reject) {
     let node
     const element = document.querySelector(selector)
@@ -40,35 +40,35 @@ function waitForElementToBeRemoved(selector) {
   })
 }
 
-const consoleLogError = (e) => console.log('Error:::', e)
-
-function flatten(arr) {
-  return arr.reduce(function(flat, toFlatten) {
+function flatten(arr: any) {
+  return arr.reduce(function(flat: any, toFlatten: any) {
     return flat.concat(
-      Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten,
+      Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten
     )
   }, [])
 }
 
-function triggerInputChange(node, value = '') {
+function triggerInputChange(node: any, value = "") {
   const inputTypes = [
     (window as any).HTMLInputElement,
     (window as any).HTMLSelectElement,
-    (window as any).HTMLTextAreaElement,
+    (window as any).HTMLTextAreaElement
   ]
   // only process the change on elements we know have a value setter in their constructor
   if (inputTypes.indexOf(node.__proto__.constructor) > -1) {
-    const setValue = Object.getOwnPropertyDescriptor(node.__proto__, 'value')
-      .set
-    const event = new Event('input', { bubbles: true })
+    const setValue: any = (Object.getOwnPropertyDescriptor(
+      node.__proto__,
+      "value"
+    ) as any).set
+    const event = new Event("input", { bubbles: true })
 
     setValue.call(node, value)
     node.dispatchEvent(event)
   }
 }
 
-function delay(time) {
-  return new Promise((resolve) => {
+function delay(time: number) {
+  return new Promise(resolve => {
     setTimeout(() => {
       resolve()
     }, time)
@@ -78,5 +78,5 @@ function delay(time) {
 export default {
   waitForElement,
   waitForElementToBeRemoved,
-  delay,
+  delay
 }

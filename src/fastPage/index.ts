@@ -22,18 +22,22 @@ let defaultConfig = {
   extensions: [],
   showPageError: false,
   args: [],
-  hooks: [],
+  hooks: []
 }
 
-let config = {
-  default: { ...defaultConfig },
+interface Config {
+  [name: string]: any
 }
 
-async function loadHooks(hooks, name, ...args): Promise<void> {
-  hooks.filter((v) => v.name === name).forEach(async (v) => await v.action(...args))
+let config: Config = {
+  default: { ...defaultConfig }
 }
 
-async function browser(instanceName): Promise<Browser> {
+async function loadHooks(hooks: any, name: string, ...args: any): Promise<void> {
+  hooks.filter((v: any) => v.name === name).forEach(async (v: any) => await v.action(...args))
+}
+
+async function browser(instanceName: string): Promise<Browser> {
   return await lock
     .acquire("instance_" + instanceName, async function() {
       if (config[instanceName].browserHandle) return config[instanceName].browserHandle
@@ -51,7 +55,7 @@ async function browser(instanceName): Promise<Browser> {
         "--disable-background-timer-throttling",
         "--disable-backgrounding-occluded-windows",
         "--disable-renderer-backgrounding",
-        ...config[instanceName].args,
+        ...config[instanceName].args
       ]
 
       if (config[instanceName].proxy) {
@@ -61,7 +65,7 @@ async function browser(instanceName): Promise<Browser> {
       if (config[instanceName].extensions.length > 0) {
         args.push(
           `--disable-extensions-except=${config[instanceName].extensions.join(",")}`,
-          `--load-extension=${config[instanceName].extensions.join(",")}`,
+          `--load-extension=${config[instanceName].extensions.join(",")}`
         )
       }
 
@@ -71,7 +75,7 @@ async function browser(instanceName): Promise<Browser> {
         args,
         ignoreDefaultArgs: ["--enable-automation"],
         defaultViewport: null,
-        ignoreHTTPSErrors: true,
+        ignoreHTTPSErrors: true
       }
 
       launchOptions.executablePath = chromePaths.chrome
@@ -82,8 +86,8 @@ async function browser(instanceName): Promise<Browser> {
     .catch((err) => console.log("Error on starting new page: Lock Error ->", err))
 }
 
-async function makePageFaster(page, instanceName): Promise<Page> {
-  let instanceConfig = config[instanceName]
+async function makePageFaster(page: Page, instanceName: string): Promise<Page> {
+  let instanceConfig: typeof defaultConfig = config[instanceName]
   await loadHooks(instanceConfig["hooks"], "make_page_faster", page)
   await page.setDefaultNavigationTimeout(instanceConfig.defaultNavigationTimeout)
   await page.setDefaultTimeout(instanceConfig.defaultNavigationTimeout)
@@ -94,20 +98,20 @@ async function makePageFaster(page, instanceName): Promise<Page> {
   await pageStealth(page)
 
   await page.addScriptTag({
-    content: `${functionsToInject.waitForElement} ${functionsToInject.waitForElementToBeRemoved} ${functionsToInject.delay}`,
+    content: `${functionsToInject.waitForElement} ${functionsToInject.waitForElementToBeRemoved} ${functionsToInject.delay}`
   })
 
   if (instanceConfig.showPageError === true) {
-    page.on("error", (err) => {
+    page.on("error", (err: any) => {
       consoleMessage.error("Error happen at the page: ", err)
     })
-    page.on("pageerror", (pageerr) => {
+    page.on("pageerror", (pageerr: any) => {
       consoleMessage.error("Page Error occurred: ", pageerr)
     })
   }
   if (instanceConfig.blockCSS || instanceConfig.blockFonts || instanceConfig.blockImages) {
     await page.setRequestInterception(true)
-    page.on("request", (request) => {
+    page.on("request", (request: any) => {
       if (
         (instanceConfig.blockImages && request.resourceType() === "image") ||
         (instanceConfig.blockFonts && request.resourceType() === "font") ||
@@ -122,7 +126,7 @@ async function makePageFaster(page, instanceName): Promise<Page> {
 
   await session.send("Page.enable")
   await session.send("Page.setWebLifecycleState", {
-    state: "active",
+    state: "active"
   })
 
   return page
@@ -218,19 +222,19 @@ export default (instanceName = "default") => {
       config[instanceName].blockCSS = value
     },
 
-    getConfig(instanceName = null) {
+    getConfig(instanceName: string = "default") {
       if (instanceName === null) {
         return config
       }
-      return config[instanceName]
+      return config.instanceName
     },
 
-    addHook(name, action) {
+    addHook(name: string, action: Function) {
       config[instanceName].hooks.push({ name, action })
     },
 
-    addArg(arg) {
+    addArg(arg: any) {
       config[instanceName].args.push(arg)
-    },
+    }
   }
 }

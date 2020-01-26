@@ -1,10 +1,10 @@
-import fs from 'fs'
-import consoleMessage from './consoleMessage'
+import fs from "fs";
+import consoleMessage from "./consoleMessage";
 
-export default (fileName, content) => {
+export default (fileName: string, content: string | Buffer) => {
   try {
-    fs.writeFileSync(fileName, content)
+    fs.writeFileSync(fileName, content);
   } catch (e) {
-    consoleMessage.error('Error while writing file:::', e)
+    consoleMessage.error("Error while writing file:::", e);
   }
-}
+};

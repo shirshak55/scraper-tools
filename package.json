@@ -5,12 +5,10 @@
   "types": "src/index.ts",
   "license": "MIT",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "watch": "tsc --watch"
   },
   "dependencies": {
-    "@types/async-lock": "^1.1.1",
-    "@types/lodash": "^4.14.149",
-    "@types/puppeteer-core": "^2.0.0",
     "async-lock": "^1.2.2",
     "chalk": "^3.0.0",
     "cheerio": "^1.0.0-rc.2",
@@ -30,23 +28,24 @@
     "p-limit": "^2.2.2",
     "p-retry": "^4.2.0",
     "p-wait-for": "^3.1.0",
-    "pending-xhr-puppeteer": "^2.1.0",
-    "promise-mysql": "^4.1.1",
     "puppeteer-core": "^2.0.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
-    "right-pad": "^1.0.1",
     "sanitize-filename": "^1.6.3",
-    "ssh2-sftp-client": "^4.3.1",
     "toml": "^3.0.0",
     "xlsx": "^0.15.4"
   },
   "devDependencies": {
+    "@types/async-lock": "^1.1.1",
+    "@types/cheerio": "^0.22.15",
+    "@types/fs-extra": "^8.0.1",
     "@types/inquirer": "^6.5.0",
+    "@types/lodash": "^4.14.149",
     "@types/node": "^13.1.6",
     "@types/puppeteer": "^2.0.0",
-    "nodemon": "^2.0.2",
-    "ts-node": "^8.6.0",
+    "@types/puppeteer-core": "^2.0.0",
+    "@types/request": "^2.48.4",
+    "@types/request-promise": "^4.1.45",
     "typescript": "^3.7.4"
   }
 }
