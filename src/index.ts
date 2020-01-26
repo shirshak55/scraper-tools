@@ -1,4 +1,3 @@
-import "./module"
 import asyncLock from "async-lock"
 import chalk from "chalk"
 import configstore from "configstore"
