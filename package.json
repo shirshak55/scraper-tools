@@ -5,10 +5,18 @@
   "types": "src/index.ts",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "watch": "tsc --watch"
   },
   "dependencies": {
+    "@types/async-lock": "^1.1.1",
+    "@types/cheerio": "^0.22.15",
+    "@types/fs-extra": "^8.0.1",
+    "@types/inquirer": "^6.5.0",
+    "@types/lodash": "^4.14.149",
+    "@types/node": "^13.1.6",
+    "@types/puppeteer-core": "^2.0.0",
+    "@types/request": "^2.48.4",
     "async-lock": "^1.2.2",
     "chalk": "^3.0.0",
     "cheerio": "^1.0.0-rc.2",
@@ -36,16 +44,6 @@
     "xlsx": "^0.15.4"
   },
   "devDependencies": {
-    "@types/async-lock": "^1.1.1",
-    "@types/cheerio": "^0.22.15",
-    "@types/fs-extra": "^8.0.1",
-    "@types/inquirer": "^6.5.0",
-    "@types/lodash": "^4.14.149",
-    "@types/node": "^13.1.6",
-    "@types/puppeteer": "^2.0.0",
-    "@types/puppeteer-core": "^2.0.0",
-    "@types/request": "^2.48.4",
-    "@types/request-promise": "^4.1.45",
     "typescript": "^3.7.4"
   }
 }

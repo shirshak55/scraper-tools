@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer-core"
 import chromePaths from "chrome-paths"
-import { Page, Browser } from "puppeteer"
+import { Page, Browser } from "puppeteer-core"
 import AsyncLock from "async-lock"
 import _ from "lodash"
 import consoleMessage from "../consoleMessage"
@@ -83,7 +83,7 @@ async function browser(instanceName: string): Promise<Browser> {
       config[instanceName].browserHandle = await puppeteer.launch(launchOptions)
       return config[instanceName].browserHandle
     })
-    .catch((err) => console.log("Error on starting new page: Lock Error ->", err))
+    .catch((err: any) => console.log("Error on starting new page: Lock Error ->", err))
 }
 
 async function makePageFaster(page: Page, instanceName: string): Promise<Page> {
@@ -165,7 +165,7 @@ export default (instanceName = "default") => {
           config[instanceName].browserHandle = null
           return "closed"
         })
-        .catch((err) => console.log("Error on closing browser: Lock Error ->", err))
+        .catch((err: any) => console.log("Error on closing browser: Lock Error ->", err))
     },
 
     setProxy: (value: string) => {

@@ -6,7 +6,6 @@
     "inlineSourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "skipLibCheck": true,
     "moduleResolution": "node",
     "removeComments": true,
     "noImplicitAny": true,
@@ -23,5 +22,5 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true
   },
-  "files": ["./src/module.d.ts", "./src/index.ts"]
+  "files": ["./src/index.ts"]
 }
