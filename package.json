@@ -1,6 +1,6 @@
 {
   "name": "scrapper-tools",
-  "version": "1.0.156",
+  "version": "1.0.158",
   "main": "dist/index.js",
   "types": "src/index.ts",
   "license": "MIT",
