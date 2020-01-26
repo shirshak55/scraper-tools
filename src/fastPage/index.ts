@@ -185,7 +185,7 @@ export default (instanceName = "default") => {
         throw "Browser not support."
       }
 
-      config[instanceName].proxy = name
+      config[instanceName].defaultBrowser = name
     },
 
     setShowPageError: (value: boolean) => {
