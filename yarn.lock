@@ -598,10 +598,10 @@ edge-launcher@1.2.2:
   resolved "https://registry.yarnpkg.com/edge-launcher/-/edge-launcher-1.2.2.tgz#eb40aafbd067a6ea76efffab0647bcd5509b37b2"
   integrity sha1-60Cq+9Bnpup27/+rBke81VCbN7I=
 
-edge-paths@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/edge-paths/-/edge-paths-1.0.3.tgz#e1279c796bcdcc17fa0f656bcfe5b632ef120b47"
-  integrity sha512-FpWpnvJPM3aHMcwIIMClb2UFZku3zkBrP1pRRoR3s+I0xnk/SPcDkB4gXz3HsMz32jCWnymhGo9iabbNFGw40Q==
+edge-paths@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/edge-paths/-/edge-paths-1.0.4.tgz#75b1116311e7c450de422f3734173163ad294025"
+  integrity sha512-gMSP8vD0RQX06CjnqZyKXxrqAasYPhF2fW1M2nc8+vXcARuT19wfwTZoltpavv4G2lYLNxJCKLEUSJhoDVGU0w==
   dependencies:
     karma-edge-launcher "^0.4.2"
 
