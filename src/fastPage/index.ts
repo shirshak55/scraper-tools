@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer-core"
 import chromePaths from "chrome-paths"
+import edgePaths from "edge-paths"
 import { Page, Browser } from "puppeteer-core"
 import AsyncLock from "async-lock"
 import _ from "lodash"
@@ -11,6 +12,7 @@ let lock = new AsyncLock()
 
 let defaultConfig = {
   browserHandle: null,
+  defaultBrowser: "chrome",
   proxy: null,
   headless: false,
   userDataDir: null,
@@ -78,7 +80,12 @@ async function browser(instanceName: string): Promise<Browser> {
         ignoreHTTPSErrors: true
       }
 
-      launchOptions.executablePath = chromePaths.chrome
+      if (config[instanceName].defaultBrowser === "chrome") {
+        launchOptions.executablePath = chromePaths.chrome
+      }
+      if (config[instanceName].defaultBrowser === "edge") {
+        launchOptions.executablePath = edgePaths.edge
+      }
 
       config[instanceName].browserHandle = await puppeteer.launch(launchOptions)
       return config[instanceName].browserHandle
@@ -171,6 +178,14 @@ export default (instanceName = "default") => {
     setProxy: (value: string) => {
       consoleMessage.info("Fast Page", "Setting proxy to ", value)
       config[instanceName].proxy = value
+    },
+
+    setDefaultBrowser: (name: "chrome" | "edge") => {
+      if (name !== "chrome" && name !== "edge") {
+        throw "Browser not support."
+      }
+
+      config[instanceName].proxy = name
     },
 
     setShowPageError: (value: boolean) => {

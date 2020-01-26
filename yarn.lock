@@ -593,6 +593,18 @@ ecc-jsbn@~0.1.1:
     jsbn "~0.1.0"
     safer-buffer "^2.1.0"
 
+edge-launcher@1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/edge-launcher/-/edge-launcher-1.2.2.tgz#eb40aafbd067a6ea76efffab0647bcd5509b37b2"
+  integrity sha1-60Cq+9Bnpup27/+rBke81VCbN7I=
+
+edge-paths@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/edge-paths/-/edge-paths-1.0.3.tgz#e1279c796bcdcc17fa0f656bcfe5b632ef120b47"
+  integrity sha512-FpWpnvJPM3aHMcwIIMClb2UFZku3zkBrP1pRRoR3s+I0xnk/SPcDkB4gXz3HsMz32jCWnymhGo9iabbNFGw40Q==
+  dependencies:
+    karma-edge-launcher "^0.4.2"
+
 emoji-regex@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-8.0.0.tgz#e818fd69ce5ccfcb404594f842963bf53164cc37"
@@ -1015,6 +1027,13 @@ karma-chrome-launcher@^2.2.0:
   dependencies:
     fs-access "^1.0.0"
     which "^1.2.1"
+
+karma-edge-launcher@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/karma-edge-launcher/-/karma-edge-launcher-0.4.2.tgz#3d9529b09b13c909c5f3ceee12d00e7f9a989b3d"
+  integrity sha512-YAJZb1fmRcxNhMIWYsjLuxwODBjh2cSHgTW/jkVmdpGguJjLbs9ZgIK/tEJsMQcBLUkO+yO4LBbqYxqgGW2HIw==
+  dependencies:
+    edge-launcher "1.2.2"
 
 lines-and-columns@^1.1.6:
   version "1.1.6"
