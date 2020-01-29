@@ -1,3 +1,4 @@
+import "./types"
 import asyncLock from "async-lock"
 import chalk from "chalk"
 import configstore from "configstore"

@@ -1,6 +1,5 @@
 import puppeteer from "puppeteer-core"
 import chromePaths from "chrome-paths"
-import edgePaths from "edge-paths"
 import { Page, Browser } from "puppeteer-core"
 import AsyncLock from "async-lock"
 import _ from "lodash"
@@ -84,7 +83,7 @@ async function browser(instanceName: string): Promise<Browser> {
         launchOptions.executablePath = chromePaths.chrome
       }
       if (config[instanceName].defaultBrowser === "edge") {
-        launchOptions.executablePath = edgePaths.edge
+        throw "Edge not supported yet"
       }
 
       config[instanceName].browserHandle = await puppeteer.launch(launchOptions)

@@ -3,6 +3,7 @@
   "version": "1.0.164",
   "main": "dist/index.js",
   "types": "src/index.ts",
+  "description": "Modern way to scrape modern websites",
   "license": "MIT",
   "scripts": {
     "build": "rm -rf dist && tsc",
@@ -26,7 +27,6 @@
     "csvtojson": "^2.0.10",
     "date-format": "^3.0.0",
     "delay": "^4.3.0",
-    "edge-paths": "^1.0.4",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.3",
     "is-email": "^1.0.0",
