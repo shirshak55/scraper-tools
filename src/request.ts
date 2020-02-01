@@ -1,61 +1,61 @@
-import requestPromise from "request-promise";
-import pRetry from "p-retry";
-import consoleMessage from "./consoleMessage";
-import request from "request";
+import requestPromise from "request-promise"
+import pRetry from "p-retry"
+import consoleMessage from "./consoleMessage"
+import request from "request"
 
 export default (() => {
-  let proxies: Array<string> = [];
-  let currentIndex = 0;
+  let proxies: Array<string> = []
+  let currentIndex = 0
 
-  let cookie = "";
-  let retries = 5;
-  let timeout = 5 * 1000;
-  let userAgent: string | null = null;
+  let cookie = ""
+  let retries = 5
+  let timeout = 5 * 1000
+  let userAgent: string | null = null
 
   return {
     getOriginalRequestPromise: () => {
-      return requestPromise;
+      return requestPromise
     },
     getOriginalRequest: () => {
-      return request;
+      return request
     },
     setProxy: (pxy: Array<string>) => {
-      consoleMessage.success("Request Module", `Setting Proxies to`, pxy);
-      currentIndex = 0;
-      proxies = pxy;
+      consoleMessage.success("Request Module", `Setting Proxies to`, pxy)
+      currentIndex = 0
+      proxies = pxy
     },
 
     setCookie: (c: string) => {
-      consoleMessage.success("Request Module", `Setting Cookie to ${c}`);
-      cookie = c;
+      consoleMessage.success("Request Module", `Setting Cookie to ${c}`)
+      cookie = c
     },
 
     setRetries: (t: number) => {
-      consoleMessage.success("Request Module", `Setting retries to ${t}`);
-      retries = parseInt(t as any, 10);
+      consoleMessage.success("Request Module", `Setting retries to ${t}`)
+      retries = parseInt(t as any, 10)
     },
 
     setTimeout: (t: number) => {
-      consoleMessage.success("Request Module", `Setting Timeout to ${t}`);
-      timeout = parseInt(t as any, 10) * 1000;
+      consoleMessage.success("Request Module", `Setting Timeout to ${t}`)
+      timeout = parseInt(t as any, 10) * 1000
     },
 
     setUserAgent: (
       value: string = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36`
     ) => {
-      userAgent = value;
+      userAgent = value
     },
 
-    make: async (url: string) => {
-      let pxy: string | null = "";
+    make: async (url: string, headers: any, others: any = {}) => {
+      let pxy: string | null = ""
 
       if (proxies.length === 0) {
-        pxy = null;
+        pxy = null
       } else {
-        pxy = proxies[currentIndex++ % proxies.length];
+        pxy = proxies[currentIndex++ % proxies.length]
       }
 
-      const run = async (headers: any = null) => {
+      const run = async (headers: any = {}, others = {}) => {
         return await requestPromise({
           proxy: pxy,
           jar: true,
@@ -70,22 +70,23 @@ export default (() => {
             "accept-language": "en-US,en;q=0.9",
             ...headers
           },
-          timeout
-        });
-      };
+          timeout,
+          ...others
+        })
+      }
       try {
-        return await pRetry(run, {
+        return await pRetry(() => run(headers, others), {
           retries,
           onFailedAttempt: (error: any) => {
             consoleMessage.warning(
               "Request Module",
               `Attempt ${error.attemptNumber} failed. There are ${error.retriesLeft} attempts left. Proxy: ${pxy} Url: ${error.options.uri} Error Message: ${error.message} `
-            );
+            )
           }
-        });
+        })
       } catch (e) {
-        consoleMessage.error("Request Module", e);
+        consoleMessage.error("Request Module", e)
       }
     }
-  };
-})();
+  }
+})()
