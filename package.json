@@ -1,6 +1,6 @@
 {
   "name": "scrapper-tools",
-  "version": "1.0.169",
+  "version": "1.0.170",
   "main": "dist/index.js",
   "types": "src/index.ts",
   "description": "Modern way to scrape modern websites",
