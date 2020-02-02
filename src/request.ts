@@ -81,7 +81,7 @@ export default (() => {
           })
           return response
         } catch (e) {
-          if (e.statusCode >= 400) {
+          if (e && e.statusCode && e.statusCode >= 400) {
             throw new pRetry.AbortError(e)
           }
           throw e
@@ -93,21 +93,13 @@ export default (() => {
           onFailedAttempt: (error: any) => {
             warning(
               "Request Module",
-              `Attempt ${error?.attemptNumber}.${
-                error?.retriesLeft
-              } attempts left Proxy: ${pxy} Url: ${error?.options?.uri}.Status Code ${
-                error.message.statusCode
-              } Resp ${error?.message?.error?.toString()}`
+              `Attempt ${error?.attemptNumber}.${error?.retriesLeft} attempts left Proxy: ${pxy} Url: ${error?.options?.uri}. Status Code ${error.message.statusCode}`
             )
           }
         })
       } catch (e) {
-        error("Request Module unrecoverable error:::", e?.statusCode, e?.error?.toString())
-        throw {
-          message: "Request Module unrecoverable error:::",
-          statusCode: e?.statusCode,
-          html: e?.error?.toString()
-        }
+        error("Request Module unrecoverable error:::", e?.statusCode)
+        throw e
       }
     }
   }
