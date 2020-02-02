@@ -2,6 +2,10 @@ import requestPromise from "request-promise"
 import pRetry from "p-retry"
 import consoleMessage from "./consoleMessage"
 import request from "request"
+import debug from "debug"
+
+let error = debug("scrapper_tools:request:error")
+let warning = debug("scrapper_tools:request:warning")
 
 export default (() => {
   let proxies: Array<string> = []
@@ -46,7 +50,7 @@ export default (() => {
       userAgent = value
     },
 
-    make: async (url: string, headers: any, others: any = {}) => {
+    make: async (url: string, headers: any = {}, others: any = {}) => {
       let pxy: string | null = ""
 
       if (proxies.length === 0) {
@@ -56,7 +60,7 @@ export default (() => {
       }
 
       const run = async (headers: any = {}, others = {}) => {
-        return await requestPromise({
+        let response = await requestPromise({
           proxy: pxy,
           jar: true,
           strictSSL: false,
@@ -73,19 +77,25 @@ export default (() => {
           timeout,
           ...others
         })
+
+        if (response.status === 404) {
+          throw new pRetry.AbortError(response.statusText)
+        }
+
+        return response
       }
       try {
         return await pRetry(() => run(headers, others), {
           retries,
           onFailedAttempt: (error: any) => {
-            consoleMessage.warning(
+            warning(
               "Request Module",
-              `Attempt ${error.attemptNumber} failed. There are ${error.retriesLeft} attempts left. Proxy: ${pxy} Url: ${error.options.uri} Error Message: ${error.message} `
+              `Attempt ${error.attemptNumber}.${error.retriesLeft} attempts left Proxy: ${pxy} Url: ${error.options.uri} Error Message: ${error.message}`
             )
           }
         })
       } catch (e) {
-        consoleMessage.error("Request Module", e)
+        error("Request Module", e)
       }
     }
   }

@@ -3,10 +3,12 @@ import chromePaths from "chrome-paths"
 import { Page, Browser } from "puppeteer-core"
 import AsyncLock from "async-lock"
 import _ from "lodash"
-import consoleMessage from "../consoleMessage"
 import pageStealth from "./pageStealth"
 import functionsToInject from "../functionToInject"
+import debug from "debug"
 
+let error = debug("scrapper_tools:fastpage:error")
+let info = debug("scrapper_tools:fastpage:info")
 let lock = new AsyncLock()
 
 let defaultConfig = {
@@ -89,7 +91,7 @@ async function browser(instanceName: string): Promise<Browser> {
       config[instanceName].browserHandle = await puppeteer.launch(launchOptions)
       return config[instanceName].browserHandle
     })
-    .catch((err: any) => console.log("Error on starting new page: Lock Error ->", err))
+    .catch((err: any) => error("Error on starting new page: Lock Error ->", err))
 }
 
 async function makePageFaster(page: Page, instanceName: string): Promise<Page> {
@@ -109,10 +111,10 @@ async function makePageFaster(page: Page, instanceName: string): Promise<Page> {
 
   if (instanceConfig.showPageError === true) {
     page.on("error", (err: any) => {
-      consoleMessage.error("Error happen at the page: ", err)
+      error("Error happen at the page: ", err)
     })
     page.on("pageerror", (pageerr: any) => {
-      consoleMessage.error("Page Error occurred: ", pageerr)
+      error("Page Error occurred: ", pageerr)
     })
   }
   if (instanceConfig.blockCSS || instanceConfig.blockFonts || instanceConfig.blockImages) {
@@ -153,7 +155,7 @@ export default (instanceName = "default") => {
     },
 
     newPage: async (): Promise<Page> => {
-      consoleMessage.info("Fast Page", "Launching new page ")
+      info("Fast Page", "Launching new page ")
       let brow = await browser(instanceName)
       let page = await brow.newPage()
       await makePageFaster(page, instanceName)
@@ -161,7 +163,7 @@ export default (instanceName = "default") => {
     },
 
     closeBrowser: async () => {
-      consoleMessage.info("Fast Page", "Requesting to close browser ")
+      info("Fast Page", "Requesting to close browser ")
       return await lock
         .acquire("instance_close_" + instanceName, async function() {
           if (config[instanceName].browserHandle) {
@@ -175,7 +177,7 @@ export default (instanceName = "default") => {
     },
 
     setProxy: (value: string) => {
-      consoleMessage.info("Fast Page", "Setting proxy to ", value)
+      info("Fast Page", "Setting proxy to ", value)
       config[instanceName].proxy = value
     },
 
@@ -188,27 +190,27 @@ export default (instanceName = "default") => {
     },
 
     setShowPageError: (value: boolean) => {
-      consoleMessage.info("Fast Page", "Setting show page error to ", value)
+      info("Fast Page", "Setting show page error to ", value)
       config[instanceName].showPageError = value
     },
 
     setHeadless: (value: boolean = false) => {
-      consoleMessage.info("Fast Page", "Setting headless to ", value)
+      info("Fast Page", "Setting headless to ", value)
       config[instanceName].headless = value
     },
 
     setUserDataDir: (value: string) => {
-      consoleMessage.info("Fast Page", "Storing chrome cache in  ", value)
+      info("Fast Page", "Storing chrome cache in  ", value)
       config[instanceName].userDataDir = value
     },
 
     setWindowSizeArg: (value: { width: number; height: number }) => {
-      consoleMessage.info("Fast Page", "Setting window size to ", value)
+      info("Fast Page", "Setting window size to ", value)
       config[instanceName].windowSize = value
     },
 
     set2captchaToken: (value: string) => {
-      consoleMessage.info("Fast Page", "Setting 2captcha token to ", value)
+      info("Fast Page", "Setting 2captcha token to ", value)
       config[instanceName].twoCaptchaToken = value
     },
 
@@ -217,22 +219,22 @@ export default (instanceName = "default") => {
     },
 
     setDefaultNavigationTimeout: (value: number) => {
-      consoleMessage.info("Fast Page", "Default navigation timeout", value)
+      info("Fast Page", "Default navigation timeout", value)
       config[instanceName].defaultNavigationTimeout = value
     },
 
     blockImages: (value: boolean = true) => {
-      consoleMessage.info("Fast Page", "Block Image", value)
+      info("Fast Page", "Block Image", value)
       config[instanceName].blockImages = value
     },
 
     blockFonts: (value: boolean = true) => {
-      consoleMessage.info("Fast Page", "Block Font", value)
+      info("Fast Page", "Block Font", value)
       config[instanceName].blockFonts = value
     },
 
     blockCSS: (value: boolean = true) => {
-      consoleMessage.info("Fast Page", "Block CSS", value)
+      info("Fast Page", "Block CSS", value)
       config[instanceName].blockCSS = value
     },
 
