@@ -6,6 +6,7 @@ import debug from "debug"
 
 let error = debug("scrapper_tools:request:error")
 let warning = debug("scrapper_tools:request:warning")
+let success = debug("scrapper_tools:request:success")
 
 export default (() => {
   let proxies: Array<string> = []
@@ -24,23 +25,23 @@ export default (() => {
       return request
     },
     setProxy: (pxy: Array<string>) => {
-      consoleMessage.success("Request Module", `Setting Proxies to`, pxy)
+      success("Request Module", `Setting Proxies to`, pxy)
       currentIndex = 0
       proxies = pxy
     },
 
     setCookie: (c: string) => {
-      consoleMessage.success("Request Module", `Setting Cookie to ${c}`)
+      success("Request Module", `Setting Cookie to ${c}`)
       cookie = c
     },
 
     setRetries: (t: number) => {
-      consoleMessage.success("Request Module", `Setting retries to ${t}`)
+      success("Request Module", `Setting retries to ${t}`)
       retries = parseInt(t as any, 10)
     },
 
     setTimeout: (t: number) => {
-      consoleMessage.success("Request Module", `Setting Timeout to ${t}`)
+      success("Request Module", `Setting Timeout to ${t}`)
       timeout = parseInt(t as any, 10) * 1000
     },
 
