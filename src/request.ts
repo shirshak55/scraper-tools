@@ -61,29 +61,31 @@ export default (() => {
       }
 
       const run = async (headers: any = {}, others = {}) => {
-        let response = await requestPromise({
-          proxy: pxy,
-          jar: true,
-          strictSSL: false,
-          uri: url,
-          encoding: null,
-          gzip: true,
-          headers: {
-            cookie,
-            "user-agent": userAgent,
-            "content-type": "application/json",
-            "accept-language": "en-US,en;q=0.9",
-            ...headers
-          },
-          timeout,
-          ...others
-        })
-
-        if (response.status === 404) {
-          throw new pRetry.AbortError(response.statusText)
+        try {
+          let response = await requestPromise({
+            proxy: pxy,
+            jar: true,
+            strictSSL: false,
+            uri: url,
+            encoding: null,
+            gzip: true,
+            headers: {
+              cookie,
+              "user-agent": userAgent,
+              "content-type": "application/json",
+              "accept-language": "en-US,en;q=0.9",
+              ...headers
+            },
+            timeout,
+            ...others
+          })
+          return response
+        } catch (e) {
+          if (e.statusCode >= 400) {
+            throw new pRetry.AbortError(e)
+          }
+          throw e
         }
-
-        return response
       }
       try {
         return await pRetry(() => run(headers, others), {
@@ -91,12 +93,21 @@ export default (() => {
           onFailedAttempt: (error: any) => {
             warning(
               "Request Module",
-              `Attempt ${error.attemptNumber}.${error.retriesLeft} attempts left Proxy: ${pxy} Url: ${error.options.uri} Error Message: ${error.message}`
+              `Attempt ${error?.attemptNumber}.${
+                error?.retriesLeft
+              } attempts left Proxy: ${pxy} Url: ${error?.options?.uri}.Status Code ${
+                error.message.statusCode
+              } Resp ${error?.message?.error?.toString()}`
             )
           }
         })
       } catch (e) {
-        error("Request Module", e)
+        error("Request Module unrecoverable error:::", e?.statusCode, e?.error?.toString())
+        throw {
+          message: "Request Module unrecoverable error:::",
+          statusCode: e?.statusCode,
+          html: e?.error?.toString()
+        }
       }
     }
   }
