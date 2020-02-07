@@ -12,7 +12,6 @@ export default (() => {
   let proxies: Array<string> = []
   let currentIndex = 0
 
-  let cookie = ""
   let retries = 5
   let timeout = 5 * 1000
   let userAgent: string | null = null
@@ -28,11 +27,6 @@ export default (() => {
       success("Request Module", `Setting Proxies to`, pxy)
       currentIndex = 0
       proxies = pxy
-    },
-
-    setCookie: (c: string) => {
-      success("Request Module", `Setting Cookie to ${c}`)
-      cookie = c
     },
 
     setRetries: (t: number) => {
@@ -51,7 +45,7 @@ export default (() => {
       userAgent = value
     },
 
-    make: async (url: string, headers: any = {}, others: any = {}) => {
+    make: async (url: string, passHeaders: any = {}, others: any = {}) => {
       let pxy: string | null = ""
 
       if (proxies.length === 0) {
@@ -60,7 +54,7 @@ export default (() => {
         pxy = proxies[currentIndex++ % proxies.length]
       }
 
-      const run = async (headers: any = {}, others = {}) => {
+      const run = async (url: string, passHeaders: any = {}, others: any = {}) => {
         try {
           let response = await requestPromise({
             proxy: pxy,
@@ -70,11 +64,10 @@ export default (() => {
             encoding: null,
             gzip: true,
             headers: {
-              cookie,
               "user-agent": userAgent,
               "content-type": "application/json",
               "accept-language": "en-US,en;q=0.9",
-              ...headers
+              ...passHeaders
             },
             timeout,
             ...others
@@ -87,8 +80,9 @@ export default (() => {
           throw e
         }
       }
+
       try {
-        return await pRetry(() => run(headers, others), {
+        return await pRetry(() => run(url, passHeaders, others), {
           retries,
           onFailedAttempt: (error: any) => {
             warning(
