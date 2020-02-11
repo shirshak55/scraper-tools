@@ -24,6 +24,8 @@ let defaultConfig = {
   defaultNavigationTimeout: 30 * 1000,
   extensions: [],
   showPageError: false,
+  userAgent:
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36",
   args: [],
   hooks: []
 }
@@ -103,6 +105,7 @@ async function makePageFaster(page: Page, instanceName: string): Promise<Page> {
   const session = await page.target().createCDPSession()
   await page.setBypassCSP(true)
 
+  await page.setUserAgent(instanceConfig.userAgent)
   await pageStealth(page)
 
   await page.addScriptTag({
@@ -202,6 +205,11 @@ export default (instanceName = "default") => {
     setUserDataDir: (value: string) => {
       info("Fast Page", "Storing chrome cache in  ", value)
       config[instanceName].userDataDir = value
+    },
+
+    setUserAgent: (value: string) => {
+      info("Fast Page", "Setting user agent in  ", value)
+      config[instanceName].userAgent = value
     },
 
     setWindowSizeArg: (value: { width: number; height: number }) => {
