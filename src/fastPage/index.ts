@@ -49,9 +49,7 @@ async function browser(instanceName: string): Promise<Browser> {
 
       let args = [
         `--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`,
-        "--disable-web-security",
         "--disable-features=site-per-process",
-        "--ignore-certificate-errors",
         "--enable-features=NetworkService",
         "--allow-running-insecure-content",
         "--enable-automation",
