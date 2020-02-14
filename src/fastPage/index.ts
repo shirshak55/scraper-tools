@@ -50,7 +50,6 @@ async function browser(instanceName: string): Promise<Browser> {
       let args = [
         `--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`,
         "--no-sandbox",
-        "--disable-setuid-sandbox",
         "--disable-web-security",
         "--disable-features=site-per-process",
         "--ignore-certificate-errors",
@@ -62,6 +61,10 @@ async function browser(instanceName: string): Promise<Browser> {
         "--disable-renderer-backgrounding",
         ...config[instanceName].args
       ]
+
+      if (config[instanceName].userDataDir) {
+        args.push(`---user-data-dir=${config[instanceName].userDataDir}`)
+      }
 
       if (config[instanceName].proxy) {
         args.push(`--proxy-server=${config[instanceName].proxy}`)
