@@ -48,6 +48,7 @@ async function browser(instanceName: string): Promise<Browser> {
       if (config[instanceName].browserHandle) return config[instanceName].browserHandle
 
       let args = [
+        "--no-sandbox",
         `--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`,
         "--disable-features=site-per-process",
         "--enable-features=NetworkService",
