@@ -1,9 +1,9 @@
-import { Page } from "puppeteer";
-import _ from "lodash";
+import { Page } from "puppeteer"
+import _ from "lodash"
 
 export default async function browserRequest(page: Page, config: any = {}) {
   if (!config.url) {
-    throw "URL is not given. Please provide Url";
+    throw "URL is not given. Please provide Url"
   }
 
   let defaultCfg: any = {
@@ -12,37 +12,31 @@ export default async function browserRequest(page: Page, config: any = {}) {
     body: null,
     redirect: "follow",
     mode: "cors"
-  };
-
-  if (!config.method) {
-    defaultCfg.method = "GET";
   }
 
-  let fetchConfig = _.merge({}, defaultCfg, config);
+  if (!config.method) {
+    defaultCfg.method = "GET"
+  }
 
-  let evaluated = await page.evaluate(async fetchConfig => {
-    console.log(
-      "start--------------------------------------------------------------------------"
-    );
-    console.log("Sending Request to url", fetchConfig.url, fetchConfig);
+  let fetchConfig = _.merge({}, defaultCfg, config)
 
-    let res = await fetch(fetchConfig.url, fetchConfig);
-    let toRet = res.text();
-    console.log(toRet);
-    console.log(
-      "end--------------------------------------------------------------------------"
-    );
-    return toRet;
-  }, fetchConfig);
-  return evaluated;
+  let evaluated = await page.evaluate(async (fetchConfig) => {
+    console.log("start--------------------------------------------------------------------------")
+    console.log("Sending Request to url", fetchConfig.url, fetchConfig)
+    let res = await fetch(fetchConfig.url, fetchConfig)
+    let toRet = await res.text()
+    console.log("end--------------------------------------------------------------------------")
+    return toRet
+  }, fetchConfig)
+  return evaluated
 }
 
 export async function jsonBrowserRequest(a: Page, b: any) {
   if (!b.headers) {
-    b.headers = {};
+    b.headers = {}
   }
 
-  b.headers["content-type"] = "application/json;charset=UTF-8";
+  b.headers["content-type"] = "application/json;charset=UTF-8"
 
-  return browserRequest(a, b);
+  return browserRequest(a, b)
 }
