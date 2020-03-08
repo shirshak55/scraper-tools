@@ -41,7 +41,6 @@ let concurrentRequestId = 0
 export async function concurrentBrowserRequest(page: Page, concurrency: number, config: any = {}) {
   concurrentRequestId = (concurrentRequestId + 1) % concurrency
 
-  console.log(concurrentRequestId)
   return await lock.acquire(
     "singleBrowserRequest" + concurrentRequestId,
     async function singleBrowserRequestLock() {
