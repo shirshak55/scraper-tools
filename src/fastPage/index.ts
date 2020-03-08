@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer-core"
+import puppeteer, { CDPSession } from "puppeteer-core"
 import chromePaths from "chrome-paths"
 import { Page, Browser } from "puppeteer-core"
 import AsyncLock from "async-lock"
@@ -97,7 +97,10 @@ async function browser(instanceName: string): Promise<Browser> {
     .catch((err: any) => error("Error on starting new page: Lock Error ->", err))
 }
 
-async function makePageFaster(page: Page, instanceName: string): Promise<Page> {
+async function makePageFaster(
+  page: Page,
+  instanceName: string
+): Promise<{ session: CDPSession; page: Page }> {
   let instanceConfig: typeof defaultConfig = config[instanceName]
   await loadHooks(instanceConfig["hooks"], "make_page_faster", page)
   await page.setDefaultNavigationTimeout(instanceConfig.defaultNavigationTimeout)
@@ -141,7 +144,7 @@ async function makePageFaster(page: Page, instanceName: string): Promise<Page> {
     state: "active"
   })
 
-  return page
+  return { session, page }
 }
 
 export default (instanceName = "default") => {
@@ -161,9 +164,15 @@ export default (instanceName = "default") => {
     newPage: async (): Promise<Page> => {
       info("Fast Page", "Launching new page ")
       let brow = await browser(instanceName)
-      let page = await brow.newPage()
-      await makePageFaster(page, instanceName)
+      let { page } = await makePageFaster(await brow.newPage(), instanceName)
       return page
+    },
+
+    newPage1: async (): Promise<{ session: CDPSession; page: Page }> => {
+      info("Fast Page", "Launching new page with session ")
+      let brow = await browser(instanceName)
+      let { page, session } = await makePageFaster(await brow.newPage(), instanceName)
+      return { page, session }
     },
 
     closeBrowser: async () => {
