@@ -1,12 +1,10 @@
-import fs from 'fs-extra'
-import csv from 'csv-parse/lib/sync'
-import xlsx from 'xlsx'
+import fs from "fs-extra"
+import csv from "csv-parse/lib/sync"
+import xlsx from "xlsx"
 
-export default function convertCsvToXlsx(source: string, destination: string) {
-  if (typeof source !== 'string' || typeof destination !== 'string') {
-    throw new Error(
-      `"source" and "destination" arguments must be of type string.`,
-    )
+export function convertCsvToXlsx(source: string, destination: string) {
+  if (typeof source !== "string" || typeof destination !== "string") {
+    throw new Error(`"source" and "destination" arguments must be of type string.`)
   }
 
   // source exists
@@ -15,14 +13,14 @@ export default function convertCsvToXlsx(source: string, destination: string) {
   }
 
   // read source
-  const csvFile = fs.readFileSync(source, 'UTF-8')
+  const csvFile = fs.readFileSync(source, "UTF-8")
 
   // csv parser options
   const csvOptions = {
     columns: true,
-    delimiter: ',',
+    delimiter: ",",
     ltrim: true,
-    rtrim: true,
+    rtrim: true
   }
 
   // get records

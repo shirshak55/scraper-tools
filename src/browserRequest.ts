@@ -1,7 +1,10 @@
 import { Page } from "puppeteer"
 import _ from "lodash"
+import AsyncLock from "async-lock"
 
-export default async function browserRequest(page: Page, config: any = {}) {
+let lock = new AsyncLock({ maxPending: 5000 })
+
+export async function browserRequest(page: Page, config: any = {}) {
   if (!config.url) {
     throw "URL is not given. Please provide Url"
   }
@@ -21,14 +24,30 @@ export default async function browserRequest(page: Page, config: any = {}) {
   let fetchConfig = _.merge({}, defaultCfg, config)
 
   let evaluated = await page.evaluate(async (fetchConfig) => {
-    console.log("start--------------------------------------------------------------------------")
-    console.log("Sending Request to url", fetchConfig.url, fetchConfig)
     let res = await fetch(fetchConfig.url, fetchConfig)
     let toRet = await res.text()
-    console.log("end--------------------------------------------------------------------------")
     return toRet
   }, fetchConfig)
   return evaluated
+}
+
+export async function singleBrowserRequest(page: Page, config: any = {}) {
+  return await lock.acquire("singleBrowserRequest", async function singleBrowserRequestLock() {
+    return await browserRequest(page, config)
+  })
+}
+
+let concurrentRequestId = 0
+export async function concurrentRequest(page: Page, concurrency: number, config: any = {}) {
+  concurrentRequestId = (concurrentRequestId + 1) % concurrency
+
+  console.log(concurrentRequestId)
+  return await lock.acquire(
+    "singleBrowserRequest" + concurrentRequestId,
+    async function singleBrowserRequestLock() {
+      return await browserRequest(page, config)
+    }
+  )
 }
 
 export async function jsonBrowserRequest(a: Page, b: any) {

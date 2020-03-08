@@ -42,9 +42,7 @@ function waitForElementToBeRemoved(selector: any) {
 
 function flatten(arr: any) {
   return arr.reduce(function(flat: any, toFlatten: any) {
-    return flat.concat(
-      Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten
-    )
+    return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten)
   }, [])
 }
 
@@ -56,10 +54,7 @@ function triggerInputChange(node: any, value = "") {
   ]
   // only process the change on elements we know have a value setter in their constructor
   if (inputTypes.indexOf(node.__proto__.constructor) > -1) {
-    const setValue: any = (Object.getOwnPropertyDescriptor(
-      node.__proto__,
-      "value"
-    ) as any).set
+    const setValue: any = (Object.getOwnPropertyDescriptor(node.__proto__, "value") as any).set
     const event = new Event("input", { bubbles: true })
 
     setValue.call(node, value)
@@ -68,7 +63,7 @@ function triggerInputChange(node: any, value = "") {
 }
 
 function delay(time: number) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       resolve()
     }, time)

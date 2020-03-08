@@ -1,14 +1,12 @@
 import requestPromise from "request-promise"
 import pRetry from "p-retry"
-import consoleMessage from "./consoleMessage"
-import request from "request"
 import debug from "debug"
 
 let error = debug("scrapper_tools:request:error")
 let warning = debug("scrapper_tools:request:warning")
 let success = debug("scrapper_tools:request:success")
 
-export default (() => {
+export const request = (() => {
   let proxies: Array<string> = []
   let currentIndex = 0
 
@@ -17,12 +15,6 @@ export default (() => {
   let userAgent: string | null = null
 
   return {
-    getOriginalRequestPromise: () => {
-      return requestPromise
-    },
-    getOriginalRequest: () => {
-      return request
-    },
     setProxy: (pxy: Array<string>) => {
       success("Request Module", `Setting Proxies to`, pxy)
       currentIndex = 0

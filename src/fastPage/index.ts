@@ -16,6 +16,7 @@ let defaultConfig = {
   defaultBrowser: "chrome",
   proxy: null,
   headless: false,
+  devtools: false,
   userDataDir: null,
   windowSize: { width: 595, height: 842 },
   blockFonts: false,
@@ -92,6 +93,8 @@ async function browser(instanceName: string): Promise<Browser> {
         throw "Edge not supported yet"
       }
 
+      launchOptions.devtools = config[instanceName].devtools
+
       config[instanceName].browserHandle = await puppeteer.launch(launchOptions)
       return config[instanceName].browserHandle
     })
@@ -148,7 +151,7 @@ async function makePageFaster(
   return { session, page }
 }
 
-export default (instanceName = "default") => {
+export function fastPage(instanceName = "default") {
   return {
     init: async (useCurrentDefaultConfig = true) => {
       if (useCurrentDefaultConfig) {
@@ -211,6 +214,11 @@ export default (instanceName = "default") => {
     setHeadless: (value: boolean = false) => {
       info("Fast Page", "Setting headless to ", value)
       config[instanceName].headless = value
+    },
+
+    setDevtools: (value: boolean = true) => {
+      info("Fast Page", "Setting devtools to ", value)
+      config[instanceName].devtools = value
     },
 
     setUserDataDir: (value: string) => {
