@@ -38,7 +38,7 @@ export async function singleBrowserRequest(page: Page, config: any = {}) {
 }
 
 let concurrentRequestId = 0
-export async function concurrentRequest(page: Page, concurrency: number, config: any = {}) {
+export async function concurrentBrowserRequest(page: Page, concurrency: number, config: any = {}) {
   concurrentRequestId = (concurrentRequestId + 1) % concurrency
 
   console.log(concurrentRequestId)
