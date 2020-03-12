@@ -101,7 +101,7 @@ async function browser(instanceName: string): Promise<Browser> {
     .catch((err: any) => error("Error on starting new page: Lock Error ->", err))
 }
 
-async function makePageFaster(
+export async function makePageFaster(
   page: Page,
   instanceName: string
 ): Promise<{ session: CDPSession; page: Page }> {
