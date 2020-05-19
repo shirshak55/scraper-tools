@@ -13,14 +13,14 @@ export function convertCsvToXlsx(source: string, destination: string) {
   }
 
   // read source
-  const csvFile = fs.readFileSync(source, "UTF-8")
+  const csvFile = fs.readFileSync(source, "utf-8")
 
   // csv parser options
   const csvOptions = {
     columns: true,
     delimiter: ",",
     ltrim: true,
-    rtrim: true
+    rtrim: true,
   }
 
   // get records
