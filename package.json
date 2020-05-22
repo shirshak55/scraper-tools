@@ -44,6 +44,7 @@
     "xlsx": "^0.16.1"
   },
   "devDependencies": {
+    "@types/request-promise": "^4.1.46",
     "typescript": "^3.9.2"
   }
 }
