@@ -19,6 +19,7 @@
     "@types/node": "^14.0.1",
     "@types/puppeteer-core": "^2.0.0",
     "@types/request": "^2.48.5",
+    "@types/request-promise": "^4.1.46",
     "async-lock": "^1.2.4",
     "chalk": "^4.0.0",
     "cheerio": "^1.0.0-rc.2",
@@ -29,7 +30,6 @@
     "delay": "^4.3.0",
     "fs-extra": "^9.0.0",
     "inquirer": "~7.1.0",
-    "is-email": "^1.0.0",
     "json2csv": "^5.0.1",
     "lodash": "^4.17.15",
     "meow": "^7.0.1",
@@ -44,7 +44,6 @@
     "xlsx": "^0.16.1"
   },
   "devDependencies": {
-    "@types/request-promise": "^4.1.46",
     "typescript": "^3.9.2"
   }
 }
