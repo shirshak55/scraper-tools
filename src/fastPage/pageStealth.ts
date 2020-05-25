@@ -6,13 +6,13 @@ const getChromeRuntimeMock = (window: any) => {
       InstallState: {
         DISABLED: "disabled",
         INSTALLED: "installed",
-        NOT_INSTALLED: "not_installed"
+        NOT_INSTALLED: "not_installed",
       },
       RunningState: {
         CANNOT_RUN: "cannot_run",
         READY_TO_RUN: "ready_to_run",
-        RUNNING: "running"
-      }
+        RUNNING: "running",
+      },
     },
     csi() {},
     loadTimes() {},
@@ -21,33 +21,33 @@ const getChromeRuntimeMock = (window: any) => {
       onDownloadProgress: {},
       install(url: any, onSuccess: any, onFailure: any) {
         installer.install(url, onSuccess, onFailure)
-      }
+      },
     },
     runtime: {
       OnInstalledReason: {
         CHROME_UPDATE: "chrome_update",
         INSTALL: "install",
         SHARED_MODULE_UPDATE: "shared_module_update",
-        UPDATE: "update"
+        UPDATE: "update",
       },
       OnRestartRequiredReason: {
         APP_UPDATE: "app_update",
         OS_UPDATE: "os_update",
-        PERIODIC: "periodic"
+        PERIODIC: "periodic",
       },
       PlatformArch: {
         ARM: "arm",
         MIPS: "mips",
         MIPS64: "mips64",
         X86_32: "x86-32",
-        X86_64: "x86-64"
+        X86_64: "x86-64",
       },
       PlatformNaclArch: {
         ARM: "arm",
         MIPS: "mips",
         MIPS64: "mips64",
         X86_32: "x86-32",
-        X86_64: "x86-64"
+        X86_64: "x86-64",
       },
       PlatformOs: {
         ANDROID: "android",
@@ -55,16 +55,16 @@ const getChromeRuntimeMock = (window: any) => {
         LINUX: "linux",
         MAC: "mac",
         OPENBSD: "openbsd",
-        WIN: "win"
+        WIN: "win",
       },
       RequestUpdateCheckStatus: {
         NO_UPDATE: "no_update",
         THROTTLED: "throttled",
-        UPDATE_AVAILABLE: "update_available"
+        UPDATE_AVAILABLE: "update_available",
       },
-      connect: function() {}.bind(function() {}), // eslint-disable-line
-      sendMessage: function() {}.bind(function() {}) // eslint-disable-line
-    }
+      connect: function () {}.bind(function () {}), // eslint-disable-line
+      sendMessage: function () {}.bind(function () {}), // eslint-disable-line
+    },
   }
 }
 
@@ -83,8 +83,8 @@ async function runtimeStealth(page: any) {
     {
       // Serialize functions
       fns: {
-        getChromeRuntimeMock: `${getChromeRuntimeMock.toString()}`
-      }
+        getChromeRuntimeMock: `${getChromeRuntimeMock.toString()}`,
+      },
     }
   )
 }
@@ -101,7 +101,7 @@ async function navigatorLanguages(page: any) {
   await page.evaluateOnNewDocument(() => {
     // Overwrite the `plugins` property to use a custom getter.
     Object.defineProperty(navigator, "languages", {
-      get: () => ["en-US", "en"]
+      get: () => ["en-US", "en"],
     })
   })
 }
@@ -137,6 +137,30 @@ async function navigatorPermissions(page: any) {
 
 async function navigatorPlugin(page: any) {
   await page.evaluateOnNewDocument(() => {
+    let batteryObj = {
+      charging: true,
+      chargingTime: 0,
+      dischargingTime: Infinity,
+      level: 1,
+      onchargingchange: null,
+      onchargingtimechange: null,
+      ondischargingtimechange: null,
+      onlevelchange: null,
+    }
+
+    for (let vv of ["battery", "getBattery"]) {
+      Object.defineProperty(navigator, vv, {
+        get: () => {
+          return Promise.resolve(batteryObj)
+        },
+      })
+      Object.defineProperty(Navigator, vv, {
+        get: () => {
+          return Promise.resolve(batteryObj)
+        },
+      })
+    }
+
     function mockPluginsAndMimeTypes() {
       /* global MimeType MimeTypeArray PluginArray */
 
@@ -176,49 +200,49 @@ async function navigatorPlugin(page: any) {
             type: "application/pdf",
             suffixes: "pdf",
             description: "",
-            __pluginName: "Chrome PDF Viewer"
+            __pluginName: "Chrome PDF Viewer",
           },
           {
             type: "application/x-google-chrome-pdf",
             suffixes: "pdf",
             description: "Portable Document Format",
-            __pluginName: "Chrome PDF Plugin"
+            __pluginName: "Chrome PDF Plugin",
           },
           {
             type: "application/x-nacl",
             suffixes: "",
             description: "Native Client Executable",
             enabledPlugin: Plugin,
-            __pluginName: "Native Client"
+            __pluginName: "Native Client",
           },
           {
             type: "application/x-pnacl",
             suffixes: "",
             description: "Portable Native Client Executable",
-            __pluginName: "Native Client"
-          }
+            __pluginName: "Native Client",
+          },
         ],
         plugins: [
           {
             name: "Chrome PDF Plugin",
             filename: "internal-pdf-viewer",
-            description: "Portable Document Format"
+            description: "Portable Document Format",
           },
           {
             name: "Chrome PDF Viewer",
             filename: "mhjfbmdgcfjbbpaeojofohoefgiehjai",
-            description: ""
+            description: "",
           },
           {
             name: "Native Client",
             filename: "internal-nacl-plugin",
-            description: ""
-          }
+            description: "",
+          },
         ],
         fns: {
           namedItem: (instanceName: any) => {
             // Returns the Plugin/MimeType with the specified name.
-            const fn = function(this: any, name: any) {
+            const fn = function (this: any, name: any) {
               if (!arguments.length) {
                 throw new TypeError(
                   `Failed to execute 'namedItem' on '${instanceName}': 1 argument required, but only 0 present.`
@@ -231,7 +255,7 @@ async function navigatorPlugin(page: any) {
           },
           item: (instanceName: any) => {
             // Returns the Plugin/MimeType at the specified index into the array.
-            const fn = function(this: { ref: (index: any) => any; name: string }, index: any) {
+            const fn = function (this: { ref: (index: any) => any; name: string }, index: any) {
               if (!arguments.length) {
                 throw new TypeError(
                   `Failed to execute 'namedItem' on '${instanceName}': 1 argument required, but only 0 present.`
@@ -245,13 +269,13 @@ async function navigatorPlugin(page: any) {
           },
           refresh: (instanceName: any) => {
             // Refreshes all plugins on the current page, optionally reloading documents.
-            const fn = function() {
+            const fn = function () {
               return undefined
             }
             mockedFns.push({ ref: fn, name: "refresh" })
             return fn
-          }
-        }
+          },
+        },
       }
       // Poor mans _.pluck
       const getSubset = (keys: any, obj: any) =>
@@ -274,7 +298,7 @@ async function navigatorPlugin(page: any) {
 
       const mimeTypeArray = generateMimeTypeArray()
       Object.defineProperty(navigator, "mimeTypes", {
-        get: () => mimeTypeArray
+        get: () => mimeTypeArray,
       })
 
       function generatePluginArray() {
@@ -312,7 +336,7 @@ async function navigatorPlugin(page: any) {
 
       const pluginArray = generatePluginArray()
       Object.defineProperty(navigator, "plugins", {
-        get: () => pluginArray
+        get: () => pluginArray,
       })
 
       // Make mockedFns toString() representation resemble a native function
@@ -334,8 +358,8 @@ async function navigatorWebDriver(page: any) {
     Object.defineProperty(window, "navigator", {
       value: new Proxy(navigator, {
         has: (target, key) => (key === "webdriver" ? false : key in target),
-        get: (target: any, key, receiver) => (key === "webdriver" ? undefined : target[key])
-      })
+        get: (target: any, key, receiver) => (key === "webdriver" ? undefined : target[key]),
+      }),
     })
   })
 }
@@ -343,7 +367,7 @@ async function navigatorWebDriver(page: any) {
 async function navigorVendor(page: any) {
   await page.evaluateOnNewDocument((v: any) => {
     Object.defineProperty(navigator, "vendor", {
-      get: () => v
+      get: () => v,
     })
   }, "Google Inc.")
 }
@@ -375,7 +399,7 @@ async function webGlVendor(page: any) {
             throw err
           }
         },
-        apply: function(target: any, thisArg: any, args: any) {
+        apply: function (target: any, thisArg: any, args: any) {
           const param = (args || [])[0]
           // UNMASKED_VENDOR_WEBGL
           if (param === 37445) {
@@ -391,7 +415,7 @@ async function webGlVendor(page: any) {
             err.stack = stripErrorStack(err.stack)
             throw err
           }
-        }
+        },
       }
 
       const proxy = new Proxy(
@@ -403,7 +427,7 @@ async function webGlVendor(page: any) {
         configurable: true,
         enumerable: false,
         writable: false,
-        value: proxy
+        value: proxy,
       })
     } catch (err) {
       console.warn(err)
@@ -452,7 +476,7 @@ async function iframeStealth(page: any) {
               return iframe
             }
             return Reflect.get(target, key)
-          }
+          },
         }
 
         if (!iframe.contentWindow) {
@@ -465,7 +489,7 @@ async function iframeStealth(page: any) {
               return newValue // contentWindow is immutable
             },
             enumerable: true,
-            configurable: false
+            configurable: false,
           })
         }
       }
@@ -482,19 +506,19 @@ async function iframeStealth(page: any) {
         // We need to be very surgical here to not break other iframes by accident
         Object.defineProperty(iframe, "srcdoc", {
           configurable: true, // Important, so we can reset this later
-          get: function() {
+          get: function () {
             return _iframe.srcdoc
           },
-          set: function(newValue) {
+          set: function (newValue) {
             addContentWindowProxy(this)
             // Reset property, the hook is only needed once
             Object.defineProperty(iframe, "srcdoc", {
               configurable: false,
               writable: false,
-              value: _srcdoc
+              value: _srcdoc,
             })
             _iframe.srcdoc = newValue
-          }
+          },
         })
         return iframe
       }
@@ -507,7 +531,7 @@ async function iframeStealth(page: any) {
           get(target: any, key: any) {
             return Reflect.get(target, key)
           },
-          apply: function(target: any, thisArg: any, args: any) {
+          apply: function (target: any, thisArg: any, args: any) {
             const isIframe = args && args.length && `${args[0]}`.toLowerCase() === "iframe"
             if (!isIframe) {
               // Everything as usual
@@ -515,7 +539,7 @@ async function iframeStealth(page: any) {
             } else {
               return handleIframeCreation(target, thisArg, args)
             }
-          }
+          },
         }
         // All this just due to iframes with srcdoc bug
         document.createElement = new Proxy(document.createElement, createElement)
@@ -565,7 +589,7 @@ async function mediaCodecStealth(page: any) {
           return Reflect.get(target, key)
         },
         // Intercept certain requests
-        apply: function(target: any, ctx: any, args: any) {
+        apply: function (target: any, ctx: any, args: any) {
           if (!args || !args.length) {
             return target.apply(ctx, args)
           }
@@ -587,7 +611,7 @@ async function mediaCodecStealth(page: any) {
           }
           // Everything else as usual
           return target.apply(ctx, args)
-        }
+        },
       }
       HTMLMediaElement.prototype.canPlayType = new Proxy(
         HTMLMediaElement.prototype.canPlayType,
