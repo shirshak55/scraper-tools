@@ -28,7 +28,7 @@ let defaultConfig = {
   userAgent:
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36",
   args: [],
-  hooks: []
+  hooks: [],
 }
 
 interface Config {
@@ -36,7 +36,7 @@ interface Config {
 }
 
 let config: Config = {
-  default: { ...defaultConfig }
+  default: { ...defaultConfig },
 }
 
 async function loadHooks(hooks: any, name: string, ...args: any): Promise<void> {
@@ -45,7 +45,7 @@ async function loadHooks(hooks: any, name: string, ...args: any): Promise<void> 
 
 async function browser(instanceName: string): Promise<Browser> {
   return await lock
-    .acquire("instance_" + instanceName, async function() {
+    .acquire("instance_" + instanceName, async function () {
       if (config[instanceName].browserHandle) return config[instanceName].browserHandle
 
       let args = [
@@ -59,7 +59,7 @@ async function browser(instanceName: string): Promise<Browser> {
         "--disable-backgrounding-occluded-windows",
         "--disable-renderer-backgrounding",
         "--disable-web-security",
-        ...config[instanceName].args
+        ...config[instanceName].args,
       ]
 
       if (config[instanceName].userDataDir) {
@@ -83,7 +83,7 @@ async function browser(instanceName: string): Promise<Browser> {
         args,
         ignoreDefaultArgs: ["--enable-automation"],
         defaultViewport: null,
-        ignoreHTTPSErrors: true
+        ignoreHTTPSErrors: true,
       }
 
       if (config[instanceName].defaultBrowser === "chrome") {
@@ -117,7 +117,7 @@ export async function makePageFaster(
   await pageStealth(page)
 
   await page.addScriptTag({
-    content: `${functionsToInject.waitForElement} ${functionsToInject.waitForElementToBeRemoved} ${functionsToInject.delay}`
+    content: `${functionsToInject.waitForElement} ${functionsToInject.waitForElementToBeRemoved} ${functionsToInject.delay}`,
   })
 
   if (instanceConfig.showPageError === true) {
@@ -145,21 +145,23 @@ export async function makePageFaster(
 
   await session.send("Page.enable")
   await session.send("Page.setWebLifecycleState", {
-    state: "active"
+    state: "active",
   })
 
   return { session, page }
 }
 
 export function fastPage(instanceName = "default") {
+  async function init(useCurrentDefaultConfig = true) {
+    if (useCurrentDefaultConfig) {
+      config[instanceName] = { ...config.default }
+    } else {
+      config[instanceName] = { ...defaultConfig }
+    }
+  }
+
   return {
-    init: async (useCurrentDefaultConfig = true) => {
-      if (useCurrentDefaultConfig) {
-        config[instanceName] = { ...config.default }
-      } else {
-        config[instanceName] = { ...defaultConfig }
-      }
-    },
+    init: init,
 
     getBrowserHandle: async (): Promise<Browser> => {
       return await browser(instanceName)
@@ -167,6 +169,11 @@ export function fastPage(instanceName = "default") {
 
     newPage: async (): Promise<Page> => {
       info("Fast Page", "Launching new page ")
+      if (!config[instanceName]) {
+        info("Fast Page", "Using default config")
+        await init()
+      }
+
       let brow = await browser(instanceName)
       let { page } = await makePageFaster(await brow.newPage(), instanceName)
       return page
@@ -182,7 +189,7 @@ export function fastPage(instanceName = "default") {
     closeBrowser: async () => {
       info("Fast Page", "Requesting to close browser ")
       return await lock
-        .acquire("instance_close_" + instanceName, async function() {
+        .acquire("instance_close_" + instanceName, async function () {
           if (config[instanceName].browserHandle) {
             let bHandle = await browser(instanceName)
             await bHandle.close()
@@ -278,6 +285,6 @@ export function fastPage(instanceName = "default") {
 
     addArg(arg: any) {
       config[instanceName].args.push(arg)
-    }
+    },
   }
 }
