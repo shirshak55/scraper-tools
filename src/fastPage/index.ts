@@ -98,7 +98,10 @@ async function browser(instanceName: string): Promise<Browser> {
       config[instanceName].browserHandle = await puppeteer.launch(launchOptions)
       return config[instanceName].browserHandle
     })
-    .catch((err: any) => error("Error on starting new page: Lock Error ->", err))
+    .catch((err: any) => {
+      error("Error on starting new page: Lock Error ->", err)
+      throw err
+    })
 }
 
 export async function makePageFaster(
