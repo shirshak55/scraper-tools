@@ -1,4 +1,4 @@
-import { Page } from "puppeteer"
+import { Page } from "puppeteer-core"
 import _ from "lodash"
 import AsyncLock from "async-lock"
 
@@ -14,7 +14,7 @@ export async function browserRequest(page: Page, config: any = {}) {
     headers: {},
     body: null,
     redirect: "follow",
-    mode: "cors"
+    mode: "cors",
   }
 
   if (!config.method) {
