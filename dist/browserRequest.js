@@ -16,7 +16,7 @@ async function browserRequest(page, config = {}) {
         headers: {},
         body: null,
         redirect: "follow",
-        mode: "cors"
+        mode: "cors",
     };
     if (!config.method) {
         defaultCfg.method = "GET";
