@@ -1,4 +1,4 @@
-import { Page } from "puppeteer"
+import { Page } from "playwright"
 
 export async function scrollToBottom(page: Page) {
   await page.evaluate(async () => {

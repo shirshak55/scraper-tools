@@ -6,6 +6,7 @@ import meow from "meow"
 import pRetry from "p-retry"
 import sanitize from "sanitize-filename"
 import functionsToInject from "./functionToInject"
+import { Page, CDPSession } from "playwright"
 
 import asyncLock from "async-lock"
 import pLimit from "p-limit"
@@ -37,5 +38,7 @@ export {
   functionsToInject,
   asyncLock,
   pLimit,
-  requestPromise
+  requestPromise,
+  Page,
+  CDPSession,
 }

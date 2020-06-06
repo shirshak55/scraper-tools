@@ -1,4 +1,4 @@
-import { Page } from "puppeteer-core"
+import { Page } from "playwright"
 import _ from "lodash"
 import AsyncLock from "async-lock"
 

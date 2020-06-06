@@ -1,3 +1,5 @@
+import { Page } from "playwright"
+
 const getChromeRuntimeMock = (window: any) => {
   const installer: any = { install() {} }
   return {
@@ -68,8 +70,8 @@ const getChromeRuntimeMock = (window: any) => {
   }
 }
 
-async function runtimeStealth(page: any) {
-  await page.evaluateOnNewDocument(
+async function runtimeStealth(page: Page) {
+  await page.addInitScript(
     (args: any) => {
       // Rematerialize serialized functions
       if (args && args.fns) {
@@ -89,16 +91,16 @@ async function runtimeStealth(page: any) {
   )
 }
 
-async function consoleDebug(page: any) {
-  await page.evaluateOnNewDocument(() => {
+async function consoleDebug(page: Page) {
+  await page.addInitScript(() => {
     window.console.debug = () => {
       return null
     }
   })
 }
 
-async function navigatorLanguages(page: any) {
-  await page.evaluateOnNewDocument(() => {
+async function navigatorLanguages(page: Page) {
+  await page.addInitScript(() => {
     // Overwrite the `plugins` property to use a custom getter.
     Object.defineProperty(navigator, "languages", {
       get: () => ["en-US", "en"],
@@ -106,8 +108,8 @@ async function navigatorLanguages(page: any) {
   })
 }
 
-async function navigatorPermissions(page: any) {
-  await page.evaluateOnNewDocument(() => {
+async function navigatorPermissions(page: Page) {
+  await page.addInitScript(() => {
     const originalQuery = window.navigator.permissions.query
     // @ts-ignore
     window.navigator.permissions.__proto__.query = (parameters) =>
@@ -135,8 +137,8 @@ async function navigatorPermissions(page: any) {
   })
 }
 
-async function navigatorPlugin(page: any) {
-  await page.evaluateOnNewDocument(() => {
+async function navigatorPlugin(page: Page) {
+  await page.addInitScript(() => {
     let batteryObj = {
       charging: true,
       chargingTime: 0,
@@ -353,8 +355,8 @@ async function navigatorPlugin(page: any) {
   })
 }
 
-async function navigatorWebDriver(page: any) {
-  await page.evaluateOnNewDocument(() => {
+async function navigatorWebDriver(page: Page) {
+  await page.addInitScript(() => {
     Object.defineProperty(window, "navigator", {
       value: new Proxy(navigator, {
         has: (target, key) => (key === "webdriver" ? false : key in target),
@@ -364,16 +366,16 @@ async function navigatorWebDriver(page: any) {
   })
 }
 
-async function navigorVendor(page: any) {
-  await page.evaluateOnNewDocument((v: any) => {
+async function navigorVendor(page: Page) {
+  await page.addInitScript((v: any) => {
     Object.defineProperty(navigator, "vendor", {
       get: () => v,
     })
   }, "Google Inc.")
 }
 
-async function webGlVendor(page: any) {
-  await page.evaluateOnNewDocument(() => {
+async function webGlVendor(page: Page) {
+  await page.addInitScript(() => {
     try {
       // Remove traces of our Proxy ;-)
       var stripErrorStack = (stack: any) =>
@@ -435,8 +437,8 @@ async function webGlVendor(page: any) {
   })
 }
 
-async function outerWindow(page: any) {
-  await page.evaluateOnNewDocument(() => {
+async function outerWindow(page: Page) {
+  await page.addInitScript(() => {
     try {
       if (window.outerWidth && window.outerHeight) {
         return // nothing to do here
@@ -448,16 +450,16 @@ async function outerWindow(page: any) {
   })
 }
 
-async function conssoleDebugStealth(page: any) {
-  await page.evaluateOnNewDocument(() => {
+async function conssoleDebugStealth(page: Page) {
+  await page.addInitScript(() => {
     window.console.debug = () => {
       return null
     }
   })
 }
 
-async function iframeStealth(page: any) {
-  await page.evaluateOnNewDocument(() => {
+async function iframeStealth(page: Page) {
+  await page.addInitScript(() => {
     try {
       // Adds a contentWindow proxy to the provided iframe element
       const addContentWindowProxy = (iframe: any) => {
@@ -553,8 +555,8 @@ async function iframeStealth(page: any) {
   })
 }
 
-async function mediaCodecStealth(page: any) {
-  await page.evaluateOnNewDocument(() => {
+async function mediaCodecStealth(page: Page) {
+  await page.addInitScript(() => {
     try {
       /**
        * Input might look funky, we need to normalize it so e.g. whitespace isn't an issue for our spoofing.
@@ -621,7 +623,7 @@ async function mediaCodecStealth(page: any) {
   })
 }
 
-export default async function pageStealth(page: any) {
+export default async function pageStealth(page: Page) {
   await runtimeStealth(page)
   await consoleDebug(page)
   await navigatorLanguages(page)
