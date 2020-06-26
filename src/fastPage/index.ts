@@ -33,6 +33,7 @@ interface ConfigValue {
   userAgent: string
   args: Array<string>
   hooks: any
+  enableStealth: boolean
 }
 
 let defaultConfig: ConfigValue = {
@@ -46,6 +47,7 @@ let defaultConfig: ConfigValue = {
   blockFonts: false,
   blockImages: false,
   blockCSS: false,
+  enableStealth: true,
   defaultNavigationTimeout: 30 * 1000,
   extensions: [],
   showPageError: false,
@@ -136,15 +138,21 @@ async function browser(instanceName: string): Promise<Browser> {
 export async function makePageFaster(
   page: Page,
   instanceName: string
-): Promise<{ session: CDPSession; page: Page }> {
+): Promise<{ session: CDPSession | null; page: Page }> {
   let instanceConfig: typeof defaultConfig = config[instanceName]
   await loadHooks(instanceConfig["hooks"], "make_page_faster", page)
   page.setDefaultNavigationTimeout(instanceConfig.defaultNavigationTimeout)
   page.setDefaultTimeout(instanceConfig.defaultNavigationTimeout)
 
-  const session = await (page.context() as ChromiumBrowserContext).newCDPSession(page)
+  let session: null | CDPSession = null
 
-  await pageStealth(page)
+  if (instanceConfig.browser === "chromium") {
+    session = await (page.context() as ChromiumBrowserContext).newCDPSession(page)
+  }
+
+  if (instanceConfig.enableStealth === true) {
+    await pageStealth(page)
+  }
 
   await page.addScriptTag({
     content: `${functionsToInject.waitForElement} ${functionsToInject.waitForElementToBeRemoved} ${functionsToInject.delay}`,
@@ -173,9 +181,11 @@ export async function makePageFaster(
     })
   }
 
-  await session.send("Page.setWebLifecycleState", {
-    state: "active",
-  })
+  if (session) {
+    await session.send("Page.setWebLifecycleState", {
+      state: "active",
+    })
+  }
 
   return { session, page }
 }
@@ -208,7 +218,7 @@ export function fastPage(instanceName = "default") {
       return page
     },
 
-    newPage1: async (): Promise<{ session: CDPSession; page: Page }> => {
+    newPage1: async (): Promise<{ session: CDPSession | null; page: Page }> => {
       info("Fast Page", "Launching new page with session ")
       let brow = await browser(instanceName)
       let { page, session } = await makePageFaster(await brow.newPage(), instanceName)
@@ -270,6 +280,10 @@ export function fastPage(instanceName = "default") {
 
     setExtensionsPaths: (value: Array<string>) => {
       config[instanceName].extensions = value
+    },
+
+    setStealth: (value: boolean) => {
+      config[instanceName].enableStealth = value
     },
 
     setDefaultNavigationTimeout: (value: number) => {
