@@ -109,10 +109,11 @@ async function browser(instanceName: string): Promise<Browser> {
         )
       }
 
-      let launchOption: LaunchOptions = {
+      let launchOption: any = {
         headless: config[instanceName].headless,
         args,
         devtools: config[instanceName].devtools,
+        acceptDownloads: true,
       }
 
       if (config[instanceName].downloadDir) {
@@ -135,7 +136,11 @@ async function browser(instanceName: string): Promise<Browser> {
       if (config[instanceName].userDataDir) {
         config[instanceName].browserHandle = await playwright[
           config[instanceName].browser
-        ].launchPersistentContext(config[instanceName].userDataDir!, launchOption)
+        ].launchPersistentContext(config[instanceName].userDataDir!, {
+          acceptDownloads: true,
+          colorScheme: "dark",
+          ...launchOption,
+        })
       } else {
         let browser = await playwright[config[instanceName].browser].launch(launchOption)
         config[instanceName].browserHandle = await browser.newContext(contextOption)
