@@ -11,15 +11,23 @@ import playwright, {
 } from "playwright"
 import functionsToInject from "../functionToInject"
 import pageStealth from "./pageStealth"
+import { PathLike } from "fs-extra"
 
 let error = debug("scrapper_tools:fastpage:error")
 let info = debug("scrapper_tools:fastpage:info")
 let lock = new AsyncLock()
 
+interface BrowserTypeLaunchOptionsProxy {
+  server: string
+  bypass?: string
+  username?: string
+  password?: string
+}
+
 interface ConfigValue {
   browserHandle?: BrowserContext
   browser: "chromium" | "firefox" | "webkit"
-  proxy?: string
+  proxy?: BrowserTypeLaunchOptionsProxy
   headless: boolean
   devtools: boolean
   userDataDir?: string
@@ -34,6 +42,7 @@ interface ConfigValue {
   args: Array<string>
   hooks: any
   enableStealth: boolean
+  downloadDir: any | PathLike
 }
 
 let defaultConfig: ConfigValue = {
@@ -55,6 +64,7 @@ let defaultConfig: ConfigValue = {
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36",
   args: [],
   hooks: [],
+  downloadDir: null,
 }
 
 interface Config {
@@ -92,10 +102,6 @@ async function browser(instanceName: string): Promise<Browser> {
         args.push(`---user-data-dir=${config[instanceName].userDataDir}`)
       }
 
-      if (config[instanceName].proxy) {
-        args.push(`--proxy-server=${config[instanceName].proxy}`)
-      }
-
       if (config[instanceName].extensions.length > 0) {
         args.push(
           `--disable-extensions-except=${config[instanceName].extensions.join(",")}`,
@@ -107,6 +113,14 @@ async function browser(instanceName: string): Promise<Browser> {
         headless: config[instanceName].headless,
         args,
         devtools: config[instanceName].devtools,
+      }
+
+      if (config[instanceName].downloadDir) {
+        launchOption.downloadsPath = config[instanceName].downloadDir
+      }
+
+      if (config[instanceName].proxy) {
+        launchOption.proxy = config[instanceName].proxy
       }
 
       let contextOption: BrowserContextOptions = {
@@ -239,7 +253,7 @@ export function fastPage(instanceName = "default") {
         .catch((err: any) => console.log("Error on closing browser: Lock Error ->", err))
     },
 
-    setProxy: (value: string) => {
+    setProxy: (value: BrowserTypeLaunchOptionsProxy) => {
       info("Fast Page", "Setting proxy to ", value)
       config[instanceName].proxy = value
     },
@@ -289,6 +303,11 @@ export function fastPage(instanceName = "default") {
     setDefaultNavigationTimeout: (value: number) => {
       info("Fast Page", "Default navigation timeout", value)
       config[instanceName].defaultNavigationTimeout = value
+    },
+
+    setDownloadDir: (value: PathLike) => {
+      info("Fast Page", "Download timeout", value)
+      config[instanceName].downloadDir = value
     },
 
     blockImages: (value: boolean = true) => {
