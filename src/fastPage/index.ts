@@ -26,6 +26,7 @@ interface BrowserTypeLaunchOptionsProxy {
 
 interface ConfigValue {
   browserHandle?: BrowserContext
+  nonPersistantBrowserHandle?: any
   browser: "chromium" | "firefox" | "webkit"
   proxy?: BrowserTypeLaunchOptionsProxy
   headless: boolean
@@ -48,6 +49,7 @@ interface ConfigValue {
 let defaultConfig: ConfigValue = {
   browserHandle: undefined,
   browser: "chromium",
+  nonPersistantBrowserHandle: undefined,
   proxy: undefined,
   headless: false,
   devtools: false,
@@ -143,6 +145,7 @@ async function browser(instanceName: string): Promise<Browser> {
         })
       } else {
         let browser = await playwright[config[instanceName].browser].launch(launchOption)
+        config[instanceName].nonPersistantBrowserHandle = browser
         config[instanceName].browserHandle = await browser.newContext(contextOption)
       }
 
@@ -248,11 +251,14 @@ export function fastPage(instanceName = "default") {
       info("Fast Page", "Requesting to close browser ")
       return await lock
         .acquire("instance_close_" + instanceName, async function () {
-          if (config[instanceName].browserHandle) {
+          if (config[instanceName].nonPersistantBrowserHandle) {
+            config[instanceName].nonPersistantBrowserHandle.close()
+          } else if (config[instanceName].browserHandle) {
             let bHandle = await browser(instanceName)
             await bHandle.close()
           }
           config[instanceName].browserHandle = undefined
+          config[instanceName].nonPersistantBrowserHandle = undefined
           return "closed"
         })
         .catch((err: any) => console.log("Error on closing browser: Lock Error ->", err))
