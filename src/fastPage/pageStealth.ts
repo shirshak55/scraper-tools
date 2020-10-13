@@ -4,6 +4,8 @@ import { Page } from "../index"
 import { withUtilsInitScript } from "./withUtils"
 import utils from "./utils"
 
+declare var window: any
+
 export default async function pageStealth(page: Page) {
   await chrome_app(page)
   await chrome_csi(page)
@@ -24,8 +26,6 @@ export default async function pageStealth(page: Page) {
   await window_outerdimensions(page)
 }
 
-declare var window: any
-
 async function chrome_app(page: Page) {
   await withUtilsInitScript(page.context(), () => {
     if (!window.chrome) {
@@ -45,7 +45,7 @@ async function chrome_app(page: Page) {
     }
 
     const makeError = {
-      ErrorInInvocation: (fn) => {
+      ErrorInInvocation: (fn: any) => {
         const err = new TypeError(`Error in invocation of app.${fn}()`)
         return utils.stripErrorWithAnchor(err, `at ${fn} (eval at <anonymous>`)
       },
@@ -136,7 +136,7 @@ async function chrome_csi(page: Page) {
 }
 
 async function chrome_loadTimes(page: Page) {
-  function fun(utils) {
+  function fun(utils: any) {
     if (!window.chrome) {
       // Use the exact property descriptor found in headful Chrome
       // fetch it via `Object.getOwnPropertyDescriptor(window, 'chrome')`
@@ -206,7 +206,7 @@ async function chrome_loadTimes(page: Page) {
     const { timing } = window.performance
 
     // Truncate number to specific number of decimals, most of the `loadTimes` stuff has 3
-    function toFixed(num, fixed) {
+    function toFixed(num: any, fixed: any) {
       var re = new RegExp("^-?\\d+(?:.\\d{0," + (fixed || -1) + "})?")
       return num.toString().match(re)[0]
     }
@@ -250,7 +250,7 @@ async function chrome_loadTimes(page: Page) {
 }
 
 async function chrome_runtime(page: Page) {
-  function fun(utils: any, { opts, STATIC_DATA }) {
+  function fun(utils: any, { opts, STATIC_DATA }: { opts: any; STATIC_DATA: any }) {
     if (!window.chrome) {
       // Use the exact property descriptor found in headful Chrome
       // fetch it via `Object.getOwnPropertyDescriptor(window, 'chrome')`
@@ -283,7 +283,7 @@ async function chrome_runtime(page: Page) {
       sendMessage: null,
     }
 
-    const makeCustomRuntimeErrors = (preamble, method, extensionId) => ({
+    const makeCustomRuntimeErrors = (preamble: any, method: any, extensionId: any) => ({
       NoMatchingSignature: new TypeError(preamble + `No matching signature.`),
       MustSpecifyExtensionID: new TypeError(
         preamble +
@@ -294,11 +294,12 @@ async function chrome_runtime(page: Page) {
 
     // Valid Extension IDs are 32 characters in length and use the letter `a` to `p`:
     // https://source.chromium.org/chromium/chromium/src/+/master:components/crx_file/id_util.cc;drc=14a055ccb17e8c8d5d437fe080faba4c6f07beac;l=90
-    const isValidExtensionID = (str) => str.length === 32 && str.toLowerCase().match(/^[a-p]+$/)
+    const isValidExtensionID = (str: any) =>
+      str.length === 32 && str.toLowerCase().match(/^[a-p]+$/)
 
     /** Mock `chrome.runtime.sendMessage` */
     const sendMessageHandler = {
-      apply: function (target, ctx, args) {
+      apply: function (target: any, ctx: any, args: any) {
         const [extensionId, options, responseCallback] = args || []
 
         // Define custom errors
@@ -348,7 +349,7 @@ async function chrome_runtime(page: Page) {
      * @see https://developer.chrome.com/apps/runtime#method-connect
      */
     const connectHandler = {
-      apply: function (target, ctx, args) {
+      apply: function (target: any, ctx: any, args: any) {
         const [extensionId, connectInfo] = args || []
 
         // Define custom errors
@@ -382,7 +383,7 @@ async function chrome_runtime(page: Page) {
         }
 
         // There's another edge-case here: extensionId is optional so we might find a connectInfo object as first param, which we need to validate
-        const validateConnectInfo = (ci) => {
+        const validateConnectInfo = (ci: any) => {
           // More than a first param connectInfo as been provided
           if (args.length > 1) {
             throw Errors.NoMatchingSignature
@@ -397,7 +398,7 @@ async function chrome_runtime(page: Page) {
             if (!isExpected) {
               throw new TypeError(errorPreamble + `Unexpected property: '${k}'.`)
             }
-            const MismatchError = (propName, expected, found) =>
+            const MismatchError = (propName: any, expected: any, found: any) =>
               TypeError(
                 errorPreamble +
                   `Error at property '${propName}': Invalid type: expected ${expected}, found ${found}.`
@@ -449,7 +450,7 @@ async function chrome_runtime(page: Page) {
     }
   }
   await withUtilsInitScript(page.context(), fun, {
-    opts: this.opts,
+    opts: {},
     STATIC_DATA: JSON.parse(`{
       "OnInstalledReason": {
         "CHROME_UPDATE": "chrome_update",
@@ -498,9 +499,9 @@ async function iframe_contentWindow(page: Page) {
   function fun(utils: any) {
     try {
       // Adds a contentWindow proxy to the provided iframe element
-      const addContentWindowProxy = (iframe) => {
+      const addContentWindowProxy = (iframe: any) => {
         const contentWindowProxy = {
-          get(target, key) {
+          get(target: any, key: any) {
             // Now to the interesting part:
             // We actually make this thing behave like a regular iframe window,
             // by intercepting calls to e.g. `.self` and redirect it to the correct thing. :)
@@ -533,7 +534,7 @@ async function iframe_contentWindow(page: Page) {
       }
 
       // Handles iframe element creation, augments `srcdoc` property so we can intercept further
-      const handleIframeCreation = (target, thisArg, args) => {
+      const handleIframeCreation = (target: any, thisArg: any, args: any) => {
         const iframe = target.apply(thisArg, args)
 
         // We need to keep the originals around
@@ -566,10 +567,10 @@ async function iframe_contentWindow(page: Page) {
         /* global document */
         const createElement = {
           // Make toString() native
-          get(target, key) {
+          get(target: any, key: any) {
             return Reflect.get(target, key)
           },
-          apply: function (target, thisArg, args) {
+          apply: function (target: any, thisArg: any, args: any) {
             const isIframe = args && args.length && `${args[0]}`.toLowerCase() === "iframe"
             if (!isIframe) {
               // Everything as usual
@@ -604,7 +605,7 @@ async function media_codecs(page: Page) {
      * audio/ogg; codecs="vorbis"
      * @param {String} arg
      */
-    const parseInput = (arg) => {
+    const parseInput = (arg: any) => {
       const [mime, codecStr] = arg.trim().split(";")
       let codecs = []
       if (codecStr && codecStr.includes('codecs="')) {
@@ -614,8 +615,8 @@ async function media_codecs(page: Page) {
           .replace(`"`, "")
           .trim()
           .split(",")
-          .filter((x) => !!x)
-          .map((x) => x.trim())
+          .filter((x: any) => !!x)
+          .map((x: any) => x.trim())
       }
       return {
         mime,
@@ -626,7 +627,7 @@ async function media_codecs(page: Page) {
 
     const canPlayType = {
       // Intercept certain requests
-      apply: function (target, ctx, args) {
+      apply: function (target: any, ctx: any, args: any) {
         if (!args || !args.length) {
           return target.apply(ctx, args)
         }
@@ -669,7 +670,7 @@ async function navigator_language(page: Page) {
 async function navigator_permissions(page: Page) {
   function fun(utils: any) {
     const handler = {
-      apply: function (target, ctx, args) {
+      apply: function (target: any, ctx: any, args: any) {
         const param = (args || [])[0]
 
         if (param && param.name && param.name === "notifications") {
@@ -692,7 +693,7 @@ async function navigator_permissions(page: Page) {
 }
 
 async function navigor_plugins(page: Page) {
-  function fun(utils: any, { fns, data }) {
+  function fun(utils: any, { fns, data }: { fns: any; data: any }) {
     fns = utils.materializeFns(fns)
 
     // That means we're running headful
@@ -707,7 +708,7 @@ async function navigor_plugins(page: Page) {
     // Plugin and MimeType cross-reference each other, let's do that now
     // Note: We're looping through `data.plugins` here, not the generated `plugins`
     for (const pluginData of data.plugins) {
-      pluginData.__mimeTypes.forEach((type, index) => {
+      pluginData.__mimeTypes.forEach((type: any, index: any) => {
         plugins[pluginData.name][index] = mimeTypes[type]
 
         Object.defineProperty(plugins[pluginData.name], type, {
@@ -725,7 +726,7 @@ async function navigor_plugins(page: Page) {
       })
     }
 
-    const patchNavigator = (name, value) =>
+    const patchNavigator = (name: any, value: any) =>
       utils.replaceProperty(Object.getPrototypeOf(navigator), name, {
         get() {
           return value
@@ -736,7 +737,7 @@ async function navigor_plugins(page: Page) {
     patchNavigator("plugins", plugins)
   }
 
-  let generateMagicArray = (utils, fns) =>
+  let generateMagicArray = (utils: any, fns: any) =>
     function (
       dataArray = [],
       proto = MimeTypeArray.prototype,
@@ -744,7 +745,7 @@ async function navigor_plugins(page: Page) {
       itemMainProp = "type"
     ) {
       // Quick helper to set props with the same descriptors vanilla is using
-      const defineProp = (obj, prop, value) =>
+      const defineProp = (obj: any, prop: any, value: any) =>
         Object.defineProperty(obj, prop, {
           value,
           writable: false,
@@ -753,7 +754,7 @@ async function navigor_plugins(page: Page) {
         })
 
       // Loop over our fake data and construct items
-      const makeItem = (data) => {
+      const makeItem = (data: any) => {
         const item = {}
         for (const prop of Object.keys(data)) {
           if (prop.startsWith("__")) {
@@ -764,7 +765,7 @@ async function navigor_plugins(page: Page) {
         return patchItem(item, data)
       }
 
-      const patchItem = (item, data) => {
+      const patchItem = (item: any, data: any) => {
         let descriptor = Object.getOwnPropertyDescriptors(item)
 
         // Special case: Plugins have a magic length property which is not enumerable
@@ -799,7 +800,7 @@ async function navigor_plugins(page: Page) {
         })
       }
 
-      const magicArray = []
+      const magicArray: Array<any> = []
 
       // Loop through our fake data and use that to create convincing entities
       dataArray.forEach((data) => {
@@ -853,7 +854,7 @@ async function navigor_plugins(page: Page) {
           // My guess is that it has to do with the recent change of not allowing data enumeration and this being implemented weirdly
           // For that reason we just completely fake the available property names based on our data to match what regular Chrome is doing
           // Specific issues when not patching this: `length` property is available, direct `types` props (e.g. `obj['application/pdf']`) are missing
-          const keys = []
+          const keys: Array<any> = []
           const typeProps = magicArray.map((mt) => mt[itemMainProp])
           typeProps.forEach((_, i) => keys.push(`${i}`))
           typeProps.forEach((propName) => keys.push(propName))
@@ -870,10 +871,10 @@ async function navigor_plugins(page: Page) {
       return magicArrayObjProxy
     }
 
-  let generateFunctionMocks = (utils) => (proto, itemMainProp, dataArray) => ({
+  let generateFunctionMocks = (utils: any) => (proto: any, itemMainProp: any, dataArray: any) => ({
     /** Returns the MimeType object with the specified index. */
     item: utils.createProxy(proto.item, {
-      apply(target, ctx, args) {
+      apply(target: any, ctx: any, args: any) {
         if (!args.length) {
           throw new TypeError(
             `Failed to execute 'item' on '${
@@ -891,7 +892,7 @@ async function navigor_plugins(page: Page) {
     }),
     /** Returns the MimeType object with the specified name. */
     namedItem: utils.createProxy(proto.namedItem, {
-      apply(target, ctx, args) {
+      apply(target: any, ctx: any, args: any) {
         if (!args.length) {
           throw new TypeError(
             `Failed to execute 'namedItem' on '${
@@ -899,13 +900,13 @@ async function navigor_plugins(page: Page) {
             }': 1 argument required, but only 0 present.`
           )
         }
-        return dataArray.find((mt) => mt[itemMainProp] === args[0]) || null // Not `undefined`!
+        return dataArray.find((mt: any) => mt[itemMainProp] === args[0]) || null // Not `undefined`!
       },
     }),
     /** Does nothing and shall return nothing */
     refresh: proto.refresh
       ? utils.createProxy(proto.refresh, {
-          apply(target, ctx, args) {
+          apply(target: any, ctx: any, args: any) {
             return undefined
           },
         })
@@ -915,7 +916,7 @@ async function navigor_plugins(page: Page) {
   await withUtilsInitScript(page.context(), fun, utils, {
     // We pass some functions to evaluate to structure the code more nicely
     fns: utils.stringifyFns({
-      generateMimeTypeArray: (utils, fns) => (mimeTypesData) => {
+      generateMimeTypeArray: (utils: any, fns: any) => (mimeTypesData: any) => {
         return fns.generateMagicArray(utils, fns)(
           mimeTypesData,
           MimeTypeArray.prototype,
@@ -923,7 +924,7 @@ async function navigor_plugins(page: Page) {
           "type"
         )
       },
-      generatePluginArray: (utils, fns) => (pluginsData) => {
+      generatePluginArray: (utils: any, fns: any) => (pluginsData: any) => {
         return fns.generateMagicArray(utils, fns)(
           pluginsData,
           PluginArray.prototype,
@@ -1009,7 +1010,7 @@ async function source_url(page: Page) {
 async function webgl_vendor(page: Page) {
   function fun(utils: any) {
     const getParameterProxyHandler = {
-      apply: function (target, ctx, args) {
+      apply: function (target: any, ctx: any, args: any) {
         const param = (args || [])[0]
         // UNMASKED_VENDOR_WEBGL
         if (param === 37445) {
@@ -1023,7 +1024,7 @@ async function webgl_vendor(page: Page) {
       },
     }
 
-    const addProxy = (obj, propName) => {
+    const addProxy = (obj: any, propName: any) => {
       utils.replaceWithProxy(obj, propName, getParameterProxyHandler)
     }
     // For whatever weird reason loops don't play nice with Object.defineProperty, here's the next best thing:
