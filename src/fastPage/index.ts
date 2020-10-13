@@ -84,7 +84,9 @@ async function loadHooks(hooks: any, name: string, ...args: any): Promise<void> 
 async function browser(instanceName: string): Promise<Browser> {
   return await lock
     .acquire("instance_" + instanceName, async function () {
-      if (config[instanceName].browserHandle) return config[instanceName].browserHandle
+      if (config[instanceName].browserHandle) {
+        return config[instanceName].browserHandle
+      }
 
       let args: Array<string> = [
         "--no-sandbox",
@@ -126,15 +128,6 @@ async function browser(instanceName: string): Promise<Browser> {
         launchOption.proxy = config[instanceName].proxy
       }
 
-      let contextOption: BrowserContextOptions = {
-        ignoreHTTPSErrors: true,
-        acceptDownloads: true,
-        bypassCSP: true,
-        userAgent:
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36",
-        colorScheme: "dark",
-      }
-
       if (config[instanceName].userDataDir) {
         config[instanceName].browserHandle = await playwright[
           config[instanceName].browser
@@ -145,6 +138,16 @@ async function browser(instanceName: string): Promise<Browser> {
         })
       } else {
         let browser = await playwright[config[instanceName].browser].launch(launchOption)
+
+        let contextOption: BrowserContextOptions = {
+          ignoreHTTPSErrors: true,
+          acceptDownloads: true,
+          bypassCSP: true,
+          userAgent:
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36",
+          colorScheme: "dark",
+        }
+
         config[instanceName].nonPersistantBrowserHandle = browser
         config[instanceName].browserHandle = await browser.newContext(contextOption)
       }
@@ -236,6 +239,7 @@ export function fastPage(instanceName = "default") {
       }
 
       let brow = await browser(instanceName)
+
       let { page } = await makePageFaster(await brow.newPage(), instanceName)
       return page
     },
