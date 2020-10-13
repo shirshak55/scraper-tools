@@ -245,8 +245,10 @@ async function chrome_loadTimes(page: Page) {
         ...timingInfo,
       }
     }
+
+    utils.patchToString(window.chrome.loadTimes)
   }
-  await withUtilsInitScript(page.context(), fun, utils.patchToString(window.chrome.loadTimes))
+  await withUtilsInitScript(page.context(), fun, utils)
 }
 
 async function chrome_runtime(page: Page) {
