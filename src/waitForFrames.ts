@@ -1,5 +1,5 @@
 import delay from "delay"
-import { Page } from "puppeteer"
+import { Page } from "playwright"
 
 export async function waitForFrame(page: Page, frameUrl: string) {
   while (true) {

@@ -22,5 +22,5 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true
   },
-  "files": ["./src/index.ts"]
+  "files": ["./src/index.ts"],
 }

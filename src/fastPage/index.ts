@@ -1,27 +1,64 @@
-import puppeteer, { CDPSession } from "puppeteer-core"
-import chromePaths from "chrome-paths"
-import { Page, Browser } from "puppeteer-core"
 import AsyncLock from "async-lock"
-import _ from "lodash"
-import pageStealth from "./pageStealth"
-import functionsToInject from "../functionToInject"
 import debug from "debug"
+import playwright, {
+  Browser,
+  BrowserContext,
+  BrowserContextOptions,
+  CDPSession,
+  ChromiumBrowserContext,
+  LaunchOptions,
+  Page,
+} from "playwright"
+import functionsToInject from "../functionToInject"
+import pageStealth from "./pageStealth"
+import { PathLike } from "fs-extra"
 
 let error = debug("scrapper_tools:fastpage:error")
 let info = debug("scrapper_tools:fastpage:info")
 let lock = new AsyncLock()
 
-let defaultConfig = {
-  browserHandle: null,
-  defaultBrowser: "chrome",
-  proxy: null,
+interface BrowserTypeLaunchOptionsProxy {
+  server: string
+  bypass?: string
+  username?: string
+  password?: string
+}
+
+interface ConfigValue {
+  browserHandle?: BrowserContext
+  nonPersistantBrowserHandle?: any
+  browser: "chromium" | "firefox" | "webkit"
+  proxy?: BrowserTypeLaunchOptionsProxy
+  headless: boolean
+  devtools: boolean
+  userDataDir?: string
+  windowSize: { width: number; height: number }
+  blockFonts: boolean
+  blockImages: boolean
+  blockCSS: boolean
+  defaultNavigationTimeout: number
+  extensions: Array<String>
+  showPageError: boolean
+  userAgent: string
+  args: Array<string>
+  hooks: any
+  enableStealth: boolean
+  downloadDir: any | PathLike
+}
+
+let defaultConfig: ConfigValue = {
+  browserHandle: undefined,
+  browser: "chromium",
+  nonPersistantBrowserHandle: undefined,
+  proxy: undefined,
   headless: false,
   devtools: false,
-  userDataDir: null,
+  userDataDir: undefined,
   windowSize: { width: 595, height: 842 },
   blockFonts: false,
   blockImages: false,
   blockCSS: false,
+  enableStealth: true,
   defaultNavigationTimeout: 30 * 1000,
   extensions: [],
   showPageError: false,
@@ -29,10 +66,11 @@ let defaultConfig = {
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36",
   args: [],
   hooks: [],
+  downloadDir: null,
 }
 
 interface Config {
-  [name: string]: any
+  [name: string]: ConfigValue
 }
 
 let config: Config = {
@@ -48,7 +86,7 @@ async function browser(instanceName: string): Promise<Browser> {
     .acquire("instance_" + instanceName, async function () {
       if (config[instanceName].browserHandle) return config[instanceName].browserHandle
 
-      let args = [
+      let args: Array<string> = [
         "--no-sandbox",
         `--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`,
         "--disable-features=site-per-process",
@@ -66,10 +104,6 @@ async function browser(instanceName: string): Promise<Browser> {
         args.push(`---user-data-dir=${config[instanceName].userDataDir}`)
       }
 
-      if (config[instanceName].proxy) {
-        args.push(`--proxy-server=${config[instanceName].proxy}`)
-      }
-
       if (config[instanceName].extensions.length > 0) {
         args.push(
           `--disable-extensions-except=${config[instanceName].extensions.join(",")}`,
@@ -77,51 +111,77 @@ async function browser(instanceName: string): Promise<Browser> {
         )
       }
 
-      let launchOptions: any = {
-        userDataDir: config[instanceName].userDataDir,
+      let launchOption: any = {
         headless: config[instanceName].headless,
         args,
-        ignoreDefaultArgs: ["--enable-automation"],
-        defaultViewport: null,
+        devtools: config[instanceName].devtools,
+        acceptDownloads: true,
+      }
+
+      if (config[instanceName].downloadDir) {
+        launchOption.downloadsPath = config[instanceName].downloadDir
+      }
+
+      if (config[instanceName].proxy) {
+        launchOption.proxy = config[instanceName].proxy
+      }
+
+      let contextOption: BrowserContextOptions = {
         ignoreHTTPSErrors: true,
+        acceptDownloads: true,
+        bypassCSP: true,
+        userAgent:
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36",
+        colorScheme: "dark",
       }
 
-      if (config[instanceName].defaultBrowser === "chrome") {
-        launchOptions.executablePath = chromePaths.chrome
-      }
-      if (config[instanceName].defaultBrowser === "edge") {
-        throw "Edge not supported yet"
+      if (config[instanceName].userDataDir) {
+        config[instanceName].browserHandle = await playwright[
+          config[instanceName].browser
+        ].launchPersistentContext(config[instanceName].userDataDir!, {
+          acceptDownloads: true,
+          colorScheme: "dark",
+          ...launchOption,
+        })
+      } else {
+        let browser = await playwright[config[instanceName].browser].launch(launchOption)
+        config[instanceName].nonPersistantBrowserHandle = browser
+        config[instanceName].browserHandle = await browser.newContext(contextOption)
       }
 
-      launchOptions.devtools = config[instanceName].devtools
-
-      config[instanceName].browserHandle = await puppeteer.launch(launchOptions)
       return config[instanceName].browserHandle
     })
-    .catch((err: any) => error("Error on starting new page: Lock Error ->", err))
+    .catch((err: any) => {
+      error("Error on starting new page: Lock Error ->", err)
+      throw err
+    })
 }
 
 export async function makePageFaster(
   page: Page,
   instanceName: string
-): Promise<{ session: CDPSession; page: Page }> {
+): Promise<{ session: CDPSession | null; page: Page }> {
   let instanceConfig: typeof defaultConfig = config[instanceName]
   await loadHooks(instanceConfig["hooks"], "make_page_faster", page)
-  await page.setDefaultNavigationTimeout(instanceConfig.defaultNavigationTimeout)
-  await page.setDefaultTimeout(instanceConfig.defaultNavigationTimeout)
+  page.setDefaultNavigationTimeout(instanceConfig.defaultNavigationTimeout)
+  page.setDefaultTimeout(instanceConfig.defaultNavigationTimeout)
 
-  const session = await page.target().createCDPSession()
-  await page.setBypassCSP(true)
+  let session: null | CDPSession = null
 
-  await page.setUserAgent(instanceConfig.userAgent)
-  await pageStealth(page)
+  if (instanceConfig.browser === "chromium") {
+    session = await (page.context() as ChromiumBrowserContext).newCDPSession(page)
+  }
+
+  if (instanceConfig.enableStealth === true) {
+    await pageStealth(page)
+  }
 
   await page.addScriptTag({
     content: `${functionsToInject.waitForElement} ${functionsToInject.waitForElementToBeRemoved} ${functionsToInject.delay}`,
   })
 
   if (instanceConfig.showPageError === true) {
-    page.on("error", (err: any) => {
+    page.on("pageerror", (err: any) => {
       error("Error happen at the page: ", err)
     })
     page.on("pageerror", (pageerr: any) => {
@@ -129,7 +189,7 @@ export async function makePageFaster(
     })
   }
   if (instanceConfig.blockCSS || instanceConfig.blockFonts || instanceConfig.blockImages) {
-    await page.setRequestInterception(true)
+    // await page.setRequestInterception(true)
     page.on("request", (request: any) => {
       if (
         (instanceConfig.blockImages && request.resourceType() === "image") ||
@@ -143,10 +203,11 @@ export async function makePageFaster(
     })
   }
 
-  await session.send("Page.enable")
-  await session.send("Page.setWebLifecycleState", {
-    state: "active",
-  })
+  if (session) {
+    await session.send("Page.setWebLifecycleState", {
+      state: "active",
+    })
+  }
 
   return { session, page }
 }
@@ -179,7 +240,7 @@ export function fastPage(instanceName = "default") {
       return page
     },
 
-    newPage1: async (): Promise<{ session: CDPSession; page: Page }> => {
+    newPage1: async (): Promise<{ session: CDPSession | null; page: Page }> => {
       info("Fast Page", "Launching new page with session ")
       let brow = await browser(instanceName)
       let { page, session } = await makePageFaster(await brow.newPage(), instanceName)
@@ -190,27 +251,26 @@ export function fastPage(instanceName = "default") {
       info("Fast Page", "Requesting to close browser ")
       return await lock
         .acquire("instance_close_" + instanceName, async function () {
-          if (config[instanceName].browserHandle) {
+          if (config[instanceName].nonPersistantBrowserHandle) {
+            config[instanceName].nonPersistantBrowserHandle.close()
+          } else if (config[instanceName].browserHandle) {
             let bHandle = await browser(instanceName)
             await bHandle.close()
           }
-          config[instanceName].browserHandle = null
+          config[instanceName].browserHandle = undefined
+          config[instanceName].nonPersistantBrowserHandle = undefined
           return "closed"
         })
         .catch((err: any) => console.log("Error on closing browser: Lock Error ->", err))
     },
 
-    setProxy: (value: string) => {
+    setProxy: (value: BrowserTypeLaunchOptionsProxy) => {
       info("Fast Page", "Setting proxy to ", value)
       config[instanceName].proxy = value
     },
 
-    setDefaultBrowser: (name: "chrome" | "edge") => {
-      if (name !== "chrome" && name !== "edge") {
-        throw "Browser not support."
-      }
-
-      config[instanceName].defaultBrowser = name
+    setDefaultBrowser: (name: "chromium" | "firefox" | "webkit") => {
+      config[instanceName].browser = name
     },
 
     setShowPageError: (value: boolean) => {
@@ -243,18 +303,22 @@ export function fastPage(instanceName = "default") {
       config[instanceName].windowSize = value
     },
 
-    set2captchaToken: (value: string) => {
-      info("Fast Page", "Setting 2captcha token to ", value)
-      config[instanceName].twoCaptchaToken = value
-    },
-
     setExtensionsPaths: (value: Array<string>) => {
       config[instanceName].extensions = value
+    },
+
+    setStealth: (value: boolean) => {
+      config[instanceName].enableStealth = value
     },
 
     setDefaultNavigationTimeout: (value: number) => {
       info("Fast Page", "Default navigation timeout", value)
       config[instanceName].defaultNavigationTimeout = value
+    },
+
+    setDownloadDir: (value: PathLike) => {
+      info("Fast Page", "Download timeout", value)
+      config[instanceName].downloadDir = value
     },
 
     blockImages: (value: boolean = true) => {
