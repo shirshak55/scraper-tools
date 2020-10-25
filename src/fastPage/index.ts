@@ -90,7 +90,6 @@ async function browser(instanceName: string): Promise<Browser> {
 
       let args: Array<string> = [
         "--no-sandbox",
-        `--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`,
         "--disable-features=site-per-process",
         "--enable-features=NetworkService",
         "--allow-running-insecure-content",
@@ -101,6 +100,10 @@ async function browser(instanceName: string): Promise<Browser> {
         "--disable-web-security",
         ...config[instanceName].args,
       ]
+
+      if(config[instanceName].browser === "chromium"){
+        args.push(`--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`)
+      }
 
       if (config[instanceName].userDataDir) {
         args.push(`---user-data-dir=${config[instanceName].userDataDir}`)
