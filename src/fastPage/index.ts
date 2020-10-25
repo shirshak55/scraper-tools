@@ -88,32 +88,32 @@ async function browser(instanceName: string): Promise<Browser> {
         return config[instanceName].browserHandle
       }
 
-      let args: Array<string> = [
-        "--no-sandbox",
-        "--disable-features=site-per-process",
-        "--enable-features=NetworkService",
-        "--allow-running-insecure-content",
-        "--enable-automation",
-        "--disable-background-timer-throttling",
-        "--disable-backgrounding-occluded-windows",
-        "--disable-renderer-backgrounding",
-        "--disable-web-security",
-        ...config[instanceName].args,
-      ]
+      let args: Array<string> = [...config[instanceName].args]
 
-      if(config[instanceName].browser === "chromium"){
-        args.push(`--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`)
+      if (config[instanceName].browser === "chromium") {
+        args = args.concat([
+          "--no-sandbox",
+          "--disable-features=site-per-process",
+          "--enable-features=NetworkService",
+          "--allow-running-insecure-content",
+          "--enable-automation",
+          "--disable-background-timer-throttling",
+          "--disable-backgrounding-occluded-windows",
+          "--disable-renderer-backgrounding",
+          "--disable-web-security",
+          `--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`,
+        ])
+
+        if (config[instanceName].extensions.length > 0) {
+          args.push(
+            `--disable-extensions-except=${config[instanceName].extensions.join(",")}`,
+            `--load-extension=${config[instanceName].extensions.join(",")}`
+          )
+        }
       }
 
       if (config[instanceName].userDataDir) {
         args.push(`---user-data-dir=${config[instanceName].userDataDir}`)
-      }
-
-      if (config[instanceName].extensions.length > 0) {
-        args.push(
-          `--disable-extensions-except=${config[instanceName].extensions.join(",")}`,
-          `--load-extension=${config[instanceName].extensions.join(",")}`
-        )
       }
 
       let launchOption: any = {
