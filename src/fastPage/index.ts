@@ -347,7 +347,7 @@ export function fastPage(instanceName = "default") {
       if (instanceName === null) {
         return config
       }
-      return config.instanceName
+      return config[instanceName]
     },
 
     addHook(name: string, action: Function) {
