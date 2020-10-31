@@ -6,7 +6,6 @@ import playwright, {
   BrowserContextOptions,
   CDPSession,
   ChromiumBrowserContext,
-  LaunchOptions,
   Page,
 } from "playwright"
 import functionsToInject from "../functionToInject"
