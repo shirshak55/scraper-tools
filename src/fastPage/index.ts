@@ -92,10 +92,7 @@ async function browser(instanceName: string): Promise<Browser> {
       if (config[instanceName].browser === "chromium") {
         args = args.concat([
           "--no-sandbox",
-          "--disable-features=site-per-process",
-          "--enable-features=NetworkService",
           "--allow-running-insecure-content",
-          "--enable-automation",
           "--disable-background-timer-throttling",
           "--disable-backgrounding-occluded-windows",
           "--disable-renderer-backgrounding",
