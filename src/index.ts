@@ -5,7 +5,6 @@ import _ from "lodash"
 import meow from "meow"
 import pRetry from "p-retry"
 import sanitize from "sanitize-filename"
-import functionsToInject from "./functionToInject"
 import { Page, CDPSession } from "playwright"
 
 import asyncLock from "async-lock"
@@ -27,6 +26,7 @@ export * from "./xlsxReader"
 export * from "./waitForFrames"
 export * from "./browserRequest"
 export * from "./randomNumberRange"
+export * as functionToInject from "./functionToInject"
 
 export {
   delay,
@@ -35,7 +35,6 @@ export {
   pRetry,
   meow,
   sanitize,
-  functionsToInject,
   asyncLock,
   pLimit,
   requestPromise,

@@ -2,7 +2,7 @@ import { Page } from "playwright"
 
 export async function scrollToBottom(page: Page) {
   await page.evaluate(async () => {
-    await new Promise((resolve, reject) => {
+    await new Promise((resolve) => {
       var totalHeight = 0
       var distance = 100
       var timer = setInterval(() => {
@@ -12,7 +12,7 @@ export async function scrollToBottom(page: Page) {
 
         if (totalHeight >= scrollHeight) {
           clearInterval(timer)
-          resolve()
+          resolve(null)
         }
       }, 30)
     })
