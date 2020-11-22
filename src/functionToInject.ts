@@ -1,7 +1,9 @@
-/// Useful Functions to eject on puppetter so that we can use these functions in evaluate
+// You can inject these functions so u can use it inside page evaluate callback.
 
-function waitForElement(selector: string) {
-  return new Promise(function(resolve, reject) {
+// This is needed because we cannot do waitForEleemnt inside browser so we add shims.
+
+export function waitForElement(selector: string) {
+  return new Promise(function (resolve) {
     let node
     const element = document.querySelector(selector)
     if (element) {
@@ -9,7 +11,7 @@ function waitForElement(selector: string) {
       return
     }
 
-    var observer = new MutationObserver(function(mutations) {
+    let observer = new MutationObserver(function () {
       if ((node = document.querySelector(selector))) {
         observer.disconnect()
         resolve(node)
@@ -20,8 +22,8 @@ function waitForElement(selector: string) {
   })
 }
 
-function waitForElementToBeRemoved(selector: any) {
-  return new Promise(function(resolve, reject) {
+export function waitForElementToBeRemoved(selector: any) {
+  return new Promise(function (resolve) {
     let node
     const element = document.querySelector(selector)
     if (!element) {
@@ -29,7 +31,7 @@ function waitForElementToBeRemoved(selector: any) {
       return
     }
 
-    var observer = new MutationObserver(function(mutations) {
+    let observer = new MutationObserver(function () {
       if ((node = document.querySelector(selector))) {
         observer.disconnect()
         resolve(node)
@@ -40,17 +42,17 @@ function waitForElementToBeRemoved(selector: any) {
   })
 }
 
-function flatten(arr: any) {
-  return arr.reduce(function(flat: any, toFlatten: any) {
+export function flatten(arr: any) {
+  return arr.reduce(function (flat: any, toFlatten: any) {
     return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten)
   }, [])
 }
 
-function triggerInputChange(node: any, value = "") {
+export function triggerInputChange(node: any, value = "") {
   const inputTypes = [
     (window as any).HTMLInputElement,
     (window as any).HTMLSelectElement,
-    (window as any).HTMLTextAreaElement
+    (window as any).HTMLTextAreaElement,
   ]
   // only process the change on elements we know have a value setter in their constructor
   if (inputTypes.indexOf(node.__proto__.constructor) > -1) {
@@ -62,16 +64,10 @@ function triggerInputChange(node: any, value = "") {
   }
 }
 
-function delay(time: number) {
+export function delay(time: number) {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve()
+      resolve(null)
     }, time)
   })
-}
-
-export default {
-  waitForElement,
-  waitForElementToBeRemoved,
-  delay
 }

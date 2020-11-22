@@ -8,12 +8,13 @@ import playwright, {
   ChromiumBrowserContext,
   Page,
 } from "playwright"
-import functionsToInject from "../functionToInject"
-import pageStealth from "./pageStealth"
+import * as functionsToInject from "./functionToInject"
 import { PathLike } from "fs-extra"
+import { pageStealth } from "playwright-mini"
 
 let error = debug("scrapper_tools:fastpage:error")
 let info = debug("scrapper_tools:fastpage:info")
+
 let lock = new AsyncLock()
 
 interface BrowserTypeLaunchOptionsProxy {
@@ -83,78 +84,77 @@ async function loadHooks(hooks: any, name: string, ...args: any): Promise<void> 
 async function browser(instanceName: string): Promise<Browser> {
   return await lock
     .acquire("instance_" + instanceName, async function () {
-      if (config[instanceName].browserHandle) {
-        return config[instanceName].browserHandle
+      let ic = config[instanceName]
+      if (ic.browserHandle) {
+        return ic.browserHandle
       }
 
-      let args: Array<string> = [...config[instanceName].args]
+      let args: Array<string> = [...ic.args]
 
-      if (config[instanceName].browser === "chromium") {
+      if (ic.browser === "chromium") {
         args = args.concat([
           "--no-sandbox",
-          "--disable-features=site-per-process",
-          "--enable-features=NetworkService",
           "--allow-running-insecure-content",
-          "--enable-automation",
           "--disable-background-timer-throttling",
           "--disable-backgrounding-occluded-windows",
           "--disable-renderer-backgrounding",
           "--disable-web-security",
-          `--window-size=${config[instanceName].windowSize.width},${config[instanceName].windowSize.height}`,
+          `--window-size=${ic.windowSize.width},${ic.windowSize.height}`,
         ])
 
-        if (config[instanceName].extensions.length > 0) {
+        if (ic.extensions.length > 0) {
           args.push(
-            `--disable-extensions-except=${config[instanceName].extensions.join(",")}`,
-            `--load-extension=${config[instanceName].extensions.join(",")}`
+            `--disable-extensions-except=${ic.extensions.join(",")}`,
+            `--load-extension=${ic.extensions.join(",")}`
           )
         }
       }
 
-      if (config[instanceName].userDataDir) {
-        args.push(`---user-data-dir=${config[instanceName].userDataDir}`)
+      if (ic.userDataDir) {
+        args.push(`---user-data-dir=${ic.userDataDir}`)
       }
 
       let launchOption: any = {
-        headless: config[instanceName].headless,
+        headless: ic.headless,
         args,
-        devtools: config[instanceName].devtools,
+        devtools: ic.devtools,
         acceptDownloads: true,
       }
 
-      if (config[instanceName].downloadDir) {
-        launchOption.downloadsPath = config[instanceName].downloadDir
+      if (ic.downloadDir) {
+        launchOption.downloadsPath = ic.downloadDir
       }
 
-      if (config[instanceName].proxy) {
-        launchOption.proxy = config[instanceName].proxy
+      if (ic.proxy) {
+        launchOption.proxy = ic.proxy
       }
 
-      if (config[instanceName].userDataDir) {
-        config[instanceName].browserHandle = await playwright[
-          config[instanceName].browser
-        ].launchPersistentContext(config[instanceName].userDataDir!, {
+      if (ic.userDataDir) {
+        ic.browserHandle = await playwright[ic.browser].launchPersistentContext(ic.userDataDir!, {
           acceptDownloads: true,
           colorScheme: "dark",
           ...launchOption,
         })
       } else {
-        let browser = await playwright[config[instanceName].browser].launch(launchOption)
+        let browser = await playwright[ic.browser].launch(launchOption)
 
         let contextOption: BrowserContextOptions = {
           ignoreHTTPSErrors: true,
           acceptDownloads: true,
           bypassCSP: true,
-          userAgent:
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36",
+          userAgent: ic.userAgent,
           colorScheme: "dark",
+          viewport: {
+            width: ic.windowSize.width,
+            height: ic.windowSize.height,
+          },
         }
 
-        config[instanceName].nonPersistantBrowserHandle = browser
-        config[instanceName].browserHandle = await browser.newContext(contextOption)
+        ic.nonPersistantBrowserHandle = browser
+        ic.browserHandle = await browser.newContext(contextOption)
       }
 
-      return config[instanceName].browserHandle
+      return ic.browserHandle
     })
     .catch((err: any) => {
       error("Error on starting new page: Lock Error ->", err)

@@ -1,10 +1,12 @@
-# Scrapper Tools [In Development]
+# Scrapper Tools
 
-Its in development but I use it in all my web automation project.
+### Playwright Mini
 
-After 2.0.0 it will follow semantic versioning
-
-## Handbook
+[![npm version](https://img.shields.io/npm/v/scrapper-tools.svg)](https://www.npmjs.com/package/scrapper-tools)
+![CI](https://github.com/shirshak55/scrapper-tools/workflows/CI/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/sindresorhus/got/badge.svg?branch=mini)](https://coveralls.io/github/shirshak55/scrapper-tools?branch=mini)
+[![Downloads](https://img.shields.io/npm/dm/scrapper-tools.svg)](https://npmjs.com/scrapper-tools)
+[![Install size](https://packagephobia.now.sh/badge?p=scrapper-tools)](https://packagephobia.now.sh/result?p=scrapper-tools)
 
 ### Mission
 
@@ -15,6 +17,8 @@ After 2.0.0 it will follow semantic versioning
 - Easy to bypass captcha (Using 2 captcha plugin)
 - Using typescript to serve documentation
 - VPS friendly so u can scrape over vps like digital ocean or aws without running ur computer
+
+## Handbook
 
 ### Examples
 
@@ -84,18 +88,18 @@ I have created folder src and created src/bin.ts file which will contain automat
 Here is sample `src/bin.ts` file.
 
 ```js
-import { fastPage } from 'scrapper-tools'
-import path from 'path'
+import { fastPage } from "scrapper-tools"
+import path from "path"
 
 async function main() {
   // You can change many other settings like using 2tickets  api key to bypass captcha, width ,height etc. All of the following config are optional so don't worry if you don't use them
-  await fastPage().setUserDataDir(path.join(__dirname, '/../.userDataDir'))
+  await fastPage().setUserDataDir(path.join(__dirname, "/../.userDataDir"))
   await fastPage().setWindowSizeArg({ width: 1660, height: 960 })
   await fastPage().setDefaultNavigationTimeout(120 * 1000)
   await fastPage().setHeadless(false)
 
   let page = await fastPage().newPage()
-  await page.goto('https://khanacademy.com', { waitUntill: 'networkidle2' })
+  await page.goto("https://khanacademy.com", { waitUntill: "networkidle2" })
   await page.close()
 
   // At the end don't forget to close browser
@@ -162,9 +166,9 @@ On Remote PC
 I have added inject function like waiting for dom element etc which is not available in evaluation script (page.evaluate function).
 
 ```js
-import { functionsToInject } from 'scrapper-tools'
+import { functionsToInject } from "scrapper-tools"
 await page.addScriptTag({
-  content: `${functionsToInject.waitForElement} ${functionsToInject.waitForElementToBeRemoved} ${functionsToInject.delay}`
+  content: `${functionsToInject.waitForElement} ${functionsToInject.waitForElementToBeRemoved} ${functionsToInject.delay}`,
 })
 ```
 
