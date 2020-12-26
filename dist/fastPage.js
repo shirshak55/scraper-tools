@@ -1,15 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -29,76 +18,20 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-var __read = (this && this.__read) || function (o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-};
-var __spread = (this && this.__spread) || function () {
-    for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
-    return ar;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fastPage = exports.makePageFaster = void 0;
-var async_lock_1 = __importDefault(require("async-lock"));
-var debug_1 = __importDefault(require("debug"));
-var playwright_1 = __importDefault(require("playwright"));
-var functionsToInject = __importStar(require("./functionToInject"));
-var playwright_mini_1 = require("playwright-mini");
-var error = debug_1.default("scrapper_tools:fastpage:error");
-var info = debug_1.default("scrapper_tools:fastpage:info");
-var lock = new async_lock_1.default();
-var defaultConfig = {
+const async_lock_1 = __importDefault(require("async-lock"));
+const debug_1 = __importDefault(require("debug"));
+const playwright_1 = __importDefault(require("playwright"));
+const functionsToInject = __importStar(require("./functionToInject"));
+const playwright_mini_1 = require("playwright-mini");
+let error = debug_1.default("scrapper_tools:fastpage:error");
+let info = debug_1.default("scrapper_tools:fastpage:info");
+let lock = new async_lock_1.default();
+let defaultConfig = {
     browserHandle: undefined,
     browser: "chromium",
     nonPersistantBrowserHandle: undefined,
@@ -119,357 +52,240 @@ var defaultConfig = {
     hooks: [],
     downloadDir: null,
 };
-var config = {
-    default: __assign({}, defaultConfig),
+let config = {
+    default: { ...defaultConfig },
 };
-function loadHooks(hooks, name) {
-    var args = [];
-    for (var _i = 2; _i < arguments.length; _i++) {
-        args[_i - 2] = arguments[_i];
+async function loadHooks(hooks, name, ...args) {
+    hooks.filter((v) => v.name === name).forEach(async (v) => await v.action(...args));
+}
+async function browser(instanceName) {
+    return await lock
+        .acquire("instance_" + instanceName, async function () {
+        let ic = config[instanceName];
+        if (ic.browserHandle) {
+            return ic.browserHandle;
+        }
+        let args = [...ic.args];
+        if (ic.browser === "chromium") {
+            args = args.concat([
+                "--no-sandbox",
+                "--allow-running-insecure-content",
+                "--disable-background-timer-throttling",
+                "--disable-backgrounding-occluded-windows",
+                "--disable-renderer-backgrounding",
+                "--disable-web-security",
+                `--window-size=${ic.windowSize.width},${ic.windowSize.height}`,
+            ]);
+            if (ic.extensions.length > 0) {
+                args.push(`--disable-extensions-except=${ic.extensions.join(",")}`, `--load-extension=${ic.extensions.join(",")}`);
+            }
+        }
+        if (ic.userDataDir) {
+            args.push(`---user-data-dir=${ic.userDataDir}`);
+        }
+        let launchOption = {
+            headless: ic.headless,
+            args,
+            devtools: ic.devtools,
+            acceptDownloads: true,
+        };
+        if (ic.downloadDir) {
+            launchOption.downloadsPath = ic.downloadDir;
+        }
+        if (ic.proxy) {
+            launchOption.proxy = ic.proxy;
+        }
+        if (ic.userDataDir) {
+            ic.browserHandle = await playwright_1.default[ic.browser].launchPersistentContext(ic.userDataDir, {
+                acceptDownloads: true,
+                colorScheme: "dark",
+                ...launchOption,
+            });
+        }
+        else {
+            let browser = await playwright_1.default[ic.browser].launch(launchOption);
+            let contextOption = {
+                ignoreHTTPSErrors: true,
+                acceptDownloads: true,
+                bypassCSP: true,
+                userAgent: ic.userAgent,
+                colorScheme: "dark",
+                viewport: {
+                    width: ic.windowSize.width,
+                    height: ic.windowSize.height,
+                },
+            };
+            ic.nonPersistantBrowserHandle = browser;
+            ic.browserHandle = await browser.newContext(contextOption);
+        }
+        return ic.browserHandle;
+    })
+        .catch((err) => {
+        error("Error on starting new page: Lock Error ->", err);
+        throw err;
+    });
+}
+async function makePageFaster(page, instanceName) {
+    let instanceConfig = config[instanceName];
+    await loadHooks(instanceConfig["hooks"], "make_page_faster", page);
+    page.setDefaultNavigationTimeout(instanceConfig.defaultNavigationTimeout);
+    page.setDefaultTimeout(instanceConfig.defaultNavigationTimeout);
+    let session = null;
+    if (instanceConfig.browser === "chromium") {
+        session = await page.context().newCDPSession(page);
     }
-    return __awaiter(this, void 0, void 0, function () {
-        var _this = this;
-        return __generator(this, function (_a) {
-            hooks.filter(function (v) { return v.name === name; }).forEach(function (v) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, v.action.apply(v, __spread(args))];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            }); }); });
-            return [2 /*return*/];
-        });
+    if (instanceConfig.enableStealth === true) {
+        await playwright_mini_1.pageStealth(page);
+    }
+    await page.addScriptTag({
+        content: `${functionsToInject.waitForElement} ${functionsToInject.waitForElementToBeRemoved} ${functionsToInject.delay}`,
     });
-}
-function browser(instanceName) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, lock
-                        .acquire("instance_" + instanceName, function () {
-                        return __awaiter(this, void 0, void 0, function () {
-                            var ic, args, launchOption, _a, browser_1, contextOption, _b;
-                            return __generator(this, function (_c) {
-                                switch (_c.label) {
-                                    case 0:
-                                        ic = config[instanceName];
-                                        if (ic.browserHandle) {
-                                            return [2 /*return*/, ic.browserHandle];
-                                        }
-                                        args = __spread(ic.args);
-                                        if (ic.browser === "chromium") {
-                                            args = args.concat([
-                                                "--no-sandbox",
-                                                "--allow-running-insecure-content",
-                                                "--disable-background-timer-throttling",
-                                                "--disable-backgrounding-occluded-windows",
-                                                "--disable-renderer-backgrounding",
-                                                "--disable-web-security",
-                                                "--window-size=" + ic.windowSize.width + "," + ic.windowSize.height,
-                                            ]);
-                                            if (ic.extensions.length > 0) {
-                                                args.push("--disable-extensions-except=" + ic.extensions.join(","), "--load-extension=" + ic.extensions.join(","));
-                                            }
-                                        }
-                                        if (ic.userDataDir) {
-                                            args.push("---user-data-dir=" + ic.userDataDir);
-                                        }
-                                        launchOption = {
-                                            headless: ic.headless,
-                                            args: args,
-                                            devtools: ic.devtools,
-                                            acceptDownloads: true,
-                                        };
-                                        if (ic.downloadDir) {
-                                            launchOption.downloadsPath = ic.downloadDir;
-                                        }
-                                        if (ic.proxy) {
-                                            launchOption.proxy = ic.proxy;
-                                        }
-                                        if (!ic.userDataDir) return [3 /*break*/, 2];
-                                        _a = ic;
-                                        return [4 /*yield*/, playwright_1.default[ic.browser].launchPersistentContext(ic.userDataDir, __assign({ acceptDownloads: true, colorScheme: "dark" }, launchOption))];
-                                    case 1:
-                                        _a.browserHandle = _c.sent();
-                                        return [3 /*break*/, 5];
-                                    case 2: return [4 /*yield*/, playwright_1.default[ic.browser].launch(launchOption)];
-                                    case 3:
-                                        browser_1 = _c.sent();
-                                        contextOption = {
-                                            ignoreHTTPSErrors: true,
-                                            acceptDownloads: true,
-                                            bypassCSP: true,
-                                            userAgent: ic.userAgent,
-                                            colorScheme: "dark",
-                                            viewport: {
-                                                width: ic.windowSize.width,
-                                                height: ic.windowSize.height,
-                                            },
-                                        };
-                                        ic.nonPersistantBrowserHandle = browser_1;
-                                        _b = ic;
-                                        return [4 /*yield*/, browser_1.newContext(contextOption)];
-                                    case 4:
-                                        _b.browserHandle = _c.sent();
-                                        _c.label = 5;
-                                    case 5: return [2 /*return*/, ic.browserHandle];
-                                }
-                            });
-                        });
-                    })
-                        .catch(function (err) {
-                        error("Error on starting new page: Lock Error ->", err);
-                        throw err;
-                    })];
-                case 1: return [2 /*return*/, _a.sent()];
+    if (instanceConfig.showPageError === true) {
+        page.on("pageerror", (err) => {
+            error("Error happen at the page: ", err);
+        });
+        page.on("pageerror", (pageerr) => {
+            error("Page Error occurred: ", pageerr);
+        });
+    }
+    if (instanceConfig.blockCSS || instanceConfig.blockFonts || instanceConfig.blockImages) {
+        // await page.setRequestInterception(true)
+        page.on("request", (request) => {
+            if ((instanceConfig.blockImages && request.resourceType() === "image") ||
+                (instanceConfig.blockFonts && request.resourceType() === "font") ||
+                (instanceConfig.blockCSS && request.resourceType() === "stylesheet")) {
+                request.abort();
+            }
+            else {
+                request.continue();
             }
         });
-    });
-}
-function makePageFaster(page, instanceName) {
-    return __awaiter(this, void 0, void 0, function () {
-        var instanceConfig, session;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    instanceConfig = config[instanceName];
-                    return [4 /*yield*/, loadHooks(instanceConfig["hooks"], "make_page_faster", page)];
-                case 1:
-                    _a.sent();
-                    page.setDefaultNavigationTimeout(instanceConfig.defaultNavigationTimeout);
-                    page.setDefaultTimeout(instanceConfig.defaultNavigationTimeout);
-                    session = null;
-                    if (!(instanceConfig.browser === "chromium")) return [3 /*break*/, 3];
-                    return [4 /*yield*/, page.context().newCDPSession(page)];
-                case 2:
-                    session = _a.sent();
-                    _a.label = 3;
-                case 3:
-                    if (!(instanceConfig.enableStealth === true)) return [3 /*break*/, 5];
-                    return [4 /*yield*/, playwright_mini_1.pageStealth(page)];
-                case 4:
-                    _a.sent();
-                    _a.label = 5;
-                case 5: return [4 /*yield*/, page.addScriptTag({
-                        content: functionsToInject.waitForElement + " " + functionsToInject.waitForElementToBeRemoved + " " + functionsToInject.delay,
-                    })];
-                case 6:
-                    _a.sent();
-                    if (instanceConfig.showPageError === true) {
-                        page.on("pageerror", function (err) {
-                            error("Error happen at the page: ", err);
-                        });
-                        page.on("pageerror", function (pageerr) {
-                            error("Page Error occurred: ", pageerr);
-                        });
-                    }
-                    if (instanceConfig.blockCSS || instanceConfig.blockFonts || instanceConfig.blockImages) {
-                        // await page.setRequestInterception(true)
-                        page.on("request", function (request) {
-                            if ((instanceConfig.blockImages && request.resourceType() === "image") ||
-                                (instanceConfig.blockFonts && request.resourceType() === "font") ||
-                                (instanceConfig.blockCSS && request.resourceType() === "stylesheet")) {
-                                request.abort();
-                            }
-                            else {
-                                request.continue();
-                            }
-                        });
-                    }
-                    if (!session) return [3 /*break*/, 8];
-                    return [4 /*yield*/, session.send("Page.setWebLifecycleState", {
-                            state: "active",
-                        })];
-                case 7:
-                    _a.sent();
-                    _a.label = 8;
-                case 8: return [2 /*return*/, { session: session, page: page }];
-            }
+    }
+    if (session) {
+        await session.send("Page.setWebLifecycleState", {
+            state: "active",
         });
-    });
+    }
+    return { session, page };
 }
 exports.makePageFaster = makePageFaster;
-function fastPage(instanceName) {
-    var _this = this;
-    if (instanceName === void 0) { instanceName = "default"; }
-    function init(useCurrentDefaultConfig) {
-        if (useCurrentDefaultConfig === void 0) { useCurrentDefaultConfig = true; }
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                if (useCurrentDefaultConfig) {
-                    config[instanceName] = __assign({}, config.default);
-                }
-                else {
-                    config[instanceName] = __assign({}, defaultConfig);
-                }
-                return [2 /*return*/];
-            });
-        });
+function fastPage(instanceName = "default") {
+    async function init(useCurrentDefaultConfig = true) {
+        if (useCurrentDefaultConfig) {
+            config[instanceName] = { ...config.default };
+        }
+        else {
+            config[instanceName] = { ...defaultConfig };
+        }
     }
     return {
         init: init,
-        getBrowserHandle: function () { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, browser(instanceName)];
-                    case 1: return [2 /*return*/, _a.sent()];
+        getBrowserHandle: async () => {
+            return await browser(instanceName);
+        },
+        newPage: async () => {
+            info("Fast Page", "Launching new page ");
+            if (!config[instanceName]) {
+                info("Fast Page", "Using default config");
+                await init();
+            }
+            let brow = await browser(instanceName);
+            let { page } = await makePageFaster(await brow.newPage(), instanceName);
+            return page;
+        },
+        newPage1: async () => {
+            info("Fast Page", "Launching new page with session ");
+            let brow = await browser(instanceName);
+            let { page, session } = await makePageFaster(await brow.newPage(), instanceName);
+            return { page, session };
+        },
+        closeBrowser: async () => {
+            info("Fast Page", "Requesting to close browser ");
+            return await lock
+                .acquire("instance_close_" + instanceName, async function () {
+                if (config[instanceName].nonPersistantBrowserHandle) {
+                    config[instanceName].nonPersistantBrowserHandle.close();
                 }
-            });
-        }); },
-        newPage: function () { return __awaiter(_this, void 0, void 0, function () {
-            var brow, page, _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        info("Fast Page", "Launching new page ");
-                        if (!!config[instanceName]) return [3 /*break*/, 2];
-                        info("Fast Page", "Using default config");
-                        return [4 /*yield*/, init()];
-                    case 1:
-                        _b.sent();
-                        _b.label = 2;
-                    case 2: return [4 /*yield*/, browser(instanceName)];
-                    case 3:
-                        brow = _b.sent();
-                        _a = makePageFaster;
-                        return [4 /*yield*/, brow.newPage()];
-                    case 4: return [4 /*yield*/, _a.apply(void 0, [_b.sent(), instanceName])];
-                    case 5:
-                        page = (_b.sent()).page;
-                        return [2 /*return*/, page];
+                else if (config[instanceName].browserHandle) {
+                    let bHandle = await browser(instanceName);
+                    await bHandle.close();
                 }
-            });
-        }); },
-        newPage1: function () { return __awaiter(_this, void 0, void 0, function () {
-            var brow, _a, page, session, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
-                    case 0:
-                        info("Fast Page", "Launching new page with session ");
-                        return [4 /*yield*/, browser(instanceName)];
-                    case 1:
-                        brow = _c.sent();
-                        _b = makePageFaster;
-                        return [4 /*yield*/, brow.newPage()];
-                    case 2: return [4 /*yield*/, _b.apply(void 0, [_c.sent(), instanceName])];
-                    case 3:
-                        _a = _c.sent(), page = _a.page, session = _a.session;
-                        return [2 /*return*/, { page: page, session: session }];
-                }
-            });
-        }); },
-        closeBrowser: function () { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        info("Fast Page", "Requesting to close browser ");
-                        return [4 /*yield*/, lock
-                                .acquire("instance_close_" + instanceName, function () {
-                                return __awaiter(this, void 0, void 0, function () {
-                                    var bHandle;
-                                    return __generator(this, function (_a) {
-                                        switch (_a.label) {
-                                            case 0:
-                                                if (!config[instanceName].nonPersistantBrowserHandle) return [3 /*break*/, 1];
-                                                config[instanceName].nonPersistantBrowserHandle.close();
-                                                return [3 /*break*/, 4];
-                                            case 1:
-                                                if (!config[instanceName].browserHandle) return [3 /*break*/, 4];
-                                                return [4 /*yield*/, browser(instanceName)];
-                                            case 2:
-                                                bHandle = _a.sent();
-                                                return [4 /*yield*/, bHandle.close()];
-                                            case 3:
-                                                _a.sent();
-                                                _a.label = 4;
-                                            case 4:
-                                                config[instanceName].browserHandle = undefined;
-                                                config[instanceName].nonPersistantBrowserHandle = undefined;
-                                                return [2 /*return*/, "closed"];
-                                        }
-                                    });
-                                });
-                            })
-                                .catch(function (err) { return console.log("Error on closing browser: Lock Error ->", err); })];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        }); },
-        setProxy: function (value) {
+                config[instanceName].browserHandle = undefined;
+                config[instanceName].nonPersistantBrowserHandle = undefined;
+                return "closed";
+            })
+                .catch((err) => console.log("Error on closing browser: Lock Error ->", err));
+        },
+        setProxy: (value) => {
             info("Fast Page", "Setting proxy to ", value);
             config[instanceName].proxy = value;
         },
-        setDefaultBrowser: function (name) {
+        setDefaultBrowser: (name) => {
             config[instanceName].browser = name;
         },
-        setShowPageError: function (value) {
+        setShowPageError: (value) => {
             info("Fast Page", "Setting show page error to ", value);
             config[instanceName].showPageError = value;
         },
-        setHeadless: function (value) {
-            if (value === void 0) { value = false; }
+        setHeadless: (value = false) => {
             info("Fast Page", "Setting headless to ", value);
             config[instanceName].headless = value;
         },
-        setDevtools: function (value) {
-            if (value === void 0) { value = true; }
+        setDevtools: (value = true) => {
             info("Fast Page", "Setting devtools to ", value);
             config[instanceName].devtools = value;
         },
-        setUserDataDir: function (value) {
+        setUserDataDir: (value) => {
             info("Fast Page", "Storing chrome cache in  ", value);
             config[instanceName].userDataDir = value;
         },
-        setUserAgent: function (value) {
+        setUserAgent: (value) => {
             info("Fast Page", "Setting user agent in  ", value);
             config[instanceName].userAgent = value;
         },
-        setWindowSizeArg: function (value) {
+        setWindowSizeArg: (value) => {
             info("Fast Page", "Setting window size to ", value);
             config[instanceName].windowSize = value;
         },
-        setExtensionsPaths: function (value) {
+        setExtensionsPaths: (value) => {
             config[instanceName].extensions = value;
         },
-        setStealth: function (value) {
+        setStealth: (value) => {
             config[instanceName].enableStealth = value;
         },
-        setDefaultNavigationTimeout: function (value) {
+        setDefaultNavigationTimeout: (value) => {
             info("Fast Page", "Default navigation timeout", value);
             config[instanceName].defaultNavigationTimeout = value;
         },
-        setDownloadDir: function (value) {
+        setDownloadDir: (value) => {
             info("Fast Page", "Download timeout", value);
             config[instanceName].downloadDir = value;
         },
-        blockImages: function (value) {
-            if (value === void 0) { value = true; }
+        blockImages: (value = true) => {
             info("Fast Page", "Block Image", value);
             config[instanceName].blockImages = value;
         },
-        blockFonts: function (value) {
-            if (value === void 0) { value = true; }
+        blockFonts: (value = true) => {
             info("Fast Page", "Block Font", value);
             config[instanceName].blockFonts = value;
         },
-        blockCSS: function (value) {
-            if (value === void 0) { value = true; }
+        blockCSS: (value = true) => {
             info("Fast Page", "Block CSS", value);
             config[instanceName].blockCSS = value;
         },
-        getConfig: function (instanceName) {
-            if (instanceName === void 0) { instanceName = "default"; }
+        getConfig(instanceName = "default") {
             if (instanceName === null) {
                 return config;
             }
             return config[instanceName];
         },
-        addHook: function (name, action) {
-            config[instanceName].hooks.push({ name: name, action: action });
+        addHook(name, action) {
+            config[instanceName].hooks.push({ name, action });
         },
-        addArg: function (arg) {
+        addArg(arg) {
             config[instanceName].args.push(arg);
         },
     };
 }
 exports.fastPage = fastPage;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZmFzdFBhZ2UuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvZmFzdFBhZ2UudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFBQSwwREFBa0M7QUFDbEMsZ0RBQXlCO0FBQ3pCLDBEQU9tQjtBQUNuQixvRUFBdUQ7QUFFdkQsbURBQTZDO0FBRTdDLElBQUksS0FBSyxHQUFHLGVBQUssQ0FBQywrQkFBK0IsQ0FBQyxDQUFBO0FBQ2xELElBQUksSUFBSSxHQUFHLGVBQUssQ0FBQyw4QkFBOEIsQ0FBQyxDQUFBO0FBRWhELElBQUksSUFBSSxHQUFHLElBQUksb0JBQVMsRUFBRSxDQUFBO0FBK0IxQixJQUFJLGFBQWEsR0FBZ0I7SUFDL0IsYUFBYSxFQUFFLFNBQVM7SUFDeEIsT0FBTyxFQUFFLFVBQVU7SUFDbkIsMEJBQTBCLEVBQUUsU0FBUztJQUNyQyxLQUFLLEVBQUUsU0FBUztJQUNoQixRQUFRLEVBQUUsS0FBSztJQUNmLFFBQVEsRUFBRSxLQUFLO0lBQ2YsV0FBVyxFQUFFLFNBQVM7SUFDdEIsVUFBVSxFQUFFLEVBQUUsS0FBSyxFQUFFLEdBQUcsRUFBRSxNQUFNLEVBQUUsR0FBRyxFQUFFO0lBQ3ZDLFVBQVUsRUFBRSxLQUFLO0lBQ2pCLFdBQVcsRUFBRSxLQUFLO0lBQ2xCLFFBQVEsRUFBRSxLQUFLO0lBQ2YsYUFBYSxFQUFFLElBQUk7SUFDbkIsd0JBQXdCLEVBQUUsRUFBRSxHQUFHLElBQUk7SUFDbkMsVUFBVSxFQUFFLEVBQUU7SUFDZCxhQUFhLEVBQUUsS0FBSztJQUNwQixTQUFTLEVBQ1AsMEhBQTBIO0lBQzVILElBQUksRUFBRSxFQUFFO0lBQ1IsS0FBSyxFQUFFLEVBQUU7SUFDVCxXQUFXLEVBQUUsSUFBSTtDQUNsQixDQUFBO0FBTUQsSUFBSSxNQUFNLEdB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
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZmFzdFBhZ2UuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvZmFzdFBhZ2UudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUFBLDREQUFrQztBQUNsQyxrREFBeUI7QUFDekIsNERBT21CO0FBQ25CLHNFQUF1RDtBQUV2RCxxREFBNkM7QUFFN0MsSUFBSSxLQUFLLEdBQUcsZUFBSyxDQUFDLCtCQUErQixDQUFDLENBQUE7QUFDbEQsSUFBSSxJQUFJLEdBQUcsZUFBSyxDQUFDLDhCQUE4QixDQUFDLENBQUE7QUFFaEQsSUFBSSxJQUFJLEdBQUcsSUFBSSxvQkFBUyxFQUFFLENBQUE7QUErQjFCLElBQUksYUFBYSxHQUFnQjtJQUMvQixhQUFhLEVBQUUsU0FBUztJQUN4QixPQUFPLEVBQUUsVUFBVTtJQUNuQiwwQkFBMEIsRUFBRSxTQUFTO0lBQ3JDLEtBQUssRUFBRSxTQUFTO0lBQ2hCLFFBQVEsRUFBRSxLQUFLO0lBQ2YsUUFBUSxFQUFFLEtBQUs7SUFDZixXQUFXLEVBQUUsU0FBUztJQUN0QixVQUFVLEVBQUUsRUFBRSxLQUFLLEVBQUUsR0FBRyxFQUFFLE1BQU0sRUFBRSxHQUFHLEVBQUU7SUFDdkMsVUFBVSxFQUFFLEtBQUs7SUFDakIsV0FBVyxFQUFFLEtBQUs7SUFDbEIsUUFBUSxFQUFFLEtBQUs7SUFDZixhQUFhLEVBQUUsSUFBSTtJQUNuQix3QkFBd0IsRUFBRSxFQUFFLEdBQUcsSUFBSTtJQUNuQyxVQUFVLEVBQUUsRUFBRTtJQUNkLGFBQWEsRUFBRSxLQUFLO0lBQ3BCLFNBQVMsRUFDUCwwSEFBMEg7SUFDNUgsSUFBSSxFQUFFLEVBQUU7SUFDUixLQUFLLEVBQUUsRUFBRTtJQUNULFdBQVcsRUFBRSxJQUFJO0NBQ2xCLENBQUE7QUFNRCxJQUFJLE1BQU0sR0FBVztJQUNuQixPQUFPLEVBQUUsRUFBRSxHQUFHLGFBQWEsRUFBRTtDQUM5QixDQUFBO0FBRUQsS0FBSyxVQUFVLFNB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
