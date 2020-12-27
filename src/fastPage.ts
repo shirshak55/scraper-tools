@@ -110,10 +110,6 @@ async function browser(instanceName: string): Promise<Browser> {
         }
       }
 
-      if (ic.userDataDir) {
-        args.push(`---user-data-dir=${ic.userDataDir}`)
-      }
-
       let launchOption: any = {
         headless: ic.headless,
         args,
