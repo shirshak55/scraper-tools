@@ -8,6 +8,14 @@
 [![Downloads](https://img.shields.io/npm/dm/scrapper-tools.svg)](https://npmjs.com/scrapper-tools)
 [![Install size](https://packagephobia.now.sh/badge?p=scrapper-tools)](https://packagephobia.now.sh/result?p=scrapper-tools)
 
+
+After the advent of playwright I really don't think we need scraper-tools.
+If you disagree please email shirshak55@pm.me or shirshak55@gmail.com.
+
+Thank you
+
+-----------------------------------------------------------
+
 ### Mission
 
 - To run bot in parallel
